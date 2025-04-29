@@ -88,7 +88,6 @@
 import { db } from "../firebase-config";
 import { collection, addDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
-import { supabase } from "../supabase";
 
 export default {
   name: "AddProject",
@@ -125,16 +124,31 @@ export default {
       }
     },
     async uploadImage(file) {
-      const fileName = `${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage.from('project-images').upload(fileName, file);
+      const url = "https://api.cloudinary.com/v1_1/dgcpm3hlg/image/upload";
+      const formData = new FormData();
 
-      if (error) {
-        throw error;
+      formData.append("file", file);
+      formData.append("upload_preset", "unsigned");
+
+      console.log("Uploading to Cloudinary:", file);
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+
+      console.log("Cloudinary response status:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Cloudinary error response:", errorText);
+        throw new Error("Image upload failed");
       }
 
-      const { publicUrl } = supabase.storage.from('project-images').getPublicUrl(fileName).data;
+      const data = await response.json();
+      console.log("Cloudinary response data:", data);
 
-      return publicUrl;
+      return data.secure_url;
     },
     async submitForm() {
       this.loading = true;
@@ -192,6 +206,7 @@ export default {
   },
 };
 </script>
+
 
 
 <style scoped>
