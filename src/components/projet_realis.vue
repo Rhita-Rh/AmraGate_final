@@ -1,107 +1,97 @@
 <template>
-    <div>
-      <canvas id="projectsChart"></canvas>
-    </div>
-  </template>
-  
-  <script>
-  import { onMounted } from "vue";
-  import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
-  import { getAuth } from "firebase/auth";
-  import Chart from "chart.js/auto";
-  
-  export default {
-    name: "ProjectsChart",
-  
-    setup() {
-      const db = getFirestore();
-      const auth = getAuth();
-  
-      const getProjetsParMois = async () => {
-        const user = auth.currentUser;
-        if (!user) return {};
-  
-        // Requête Firestore pour obtenir les projets de cet utilisateur
-        const projetsQuery = query(
-          collection(db, "projets"),
-          where("userId", "==", user.uid)
+  <div>
+    <canvas id="projectsChart"></canvas>
+  </div>
+</template>
+
+<script>
+import { onMounted } from "vue";
+import Chart from "chart.js/auto";  // Chart.js for pie/doughnut charts
+import { auth, db } from "../firebase-config"; 
+import { collection, query, where, getDocs } from "firebase/firestore";
+
+export default {
+  name: "projet_realis",  // Name of the component
+
+  setup() {
+    const getProjects = async () => {
+      const user = auth.currentUser;
+      if (!user) return [];
+
+      try {
+        // Firestore query to get projects where userId matches the current user's ID
+        const projectsQuery = query(
+          collection(db, "projects"),
+          where("owner", "==", user.uid)  // Check if project owner matches the current user's ID
         );
-  
-        try {
-          const querySnapshot = await getDocs(projetsQuery);
-          const countsByMonth = {};
-          const countsByType = {};
-  
-          querySnapshot.forEach((doc) => {
-            const projet = doc.data();
-            const date = new Date(projet.dateRealisation);
-            const mois = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-            
-            // Comptage par mois
-            countsByMonth[mois] = (countsByMonth[mois] || 0) + 1;
-  
-            // Comptage par type de projet
-            countsByType[projet.type] = (countsByType[projet.type] || 0) + 1;
-          });
-  
-          return { countsByMonth, countsByType };
-        } catch (error) {
-          console.error("Erreur récupération des projets Firestore:", error);
-          return {};
+        const querySnapshot = await getDocs(projectsQuery);
+        const projects = querySnapshot.docs.map(doc => doc.data());
+
+        return projects;
+      } catch (error) {
+        console.error("Erreur récupération des projets Firestore :", error);
+        return [];
+      }
+    };
+
+    onMounted(async () => {
+      const projects = await getProjects();
+      
+      // Filter completed projects (assuming there's a 'status' field with value 'Terminé')
+      //const completedProjects = projects.filter((project) => project.status === "Terminé");
+      
+      // Count the completed projects by type (or any other attribute, you can modify this logic)
+      const projectTypes = projects.map((project) => project.type);
+      const data = projectTypes.reduce((acc, type) => {
+        acc[type] = (acc[type] || 0) + 1;  // Count the occurrences of each project type
+        return acc;
+      }, {});
+
+      const labels = Object.keys(data);  // Types of projects
+      const dataValues = Object.values(data);  // Number of completed projects per type
+
+      // Render Doughnut chart for projects
+      const ctx = document.getElementById("projectsChart").getContext("2d");
+      new Chart(ctx, {
+        type: "doughnut",  // Use doughnut chart
+        data: {
+          labels: labels,  // Use project types as labels
+          datasets: [{
+            label: "Projets réalisés",
+            data: dataValues,  // The count of completed projects by type
+            backgroundColor: [
+              "#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#33FFF5", 
+              "#FFD700", "#FF4500", "#32CD32", "#8A2BE2", "#7FFF00"
+            ],  // Colors for each segment
+            borderColor: ["#fff", "#fff", "#fff", "#fff", "#fff"],  // Border color for each slice
+            borderWidth: 2  // Border width
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "top",
+            },
+            tooltip: {
+              callbacks: {
+                label: function(tooltipItem) {
+                  return tooltipItem.label + ": " + tooltipItem.raw + " projet(s) terminé(s)";
+                }
+              }
+            }
+          }
         }
-      };
-  
-      onMounted(async () => {
-        const { countsByMonth, countsByType } = await getProjetsParMois();
-  
-        // Pour un graphique par mois
-        const labelsMonth = Object.keys(countsByMonth).sort();
-        const dataMonth = labelsMonth.map((mois) => countsByMonth[mois]);
-  
-        // Pour un graphique par type
-        const labelsType = Object.keys(countsByType);
-        const dataType = labelsType.map((type) => countsByType[type]);
-  
-        // Affichage du graphique par mois
-        const ctxMonth = document.getElementById("projectsChart").getContext("2d");
-        new Chart(ctxMonth, {
-          type: "bar", // Ou 'pie' pour un graphique circulaire
-          data: {
-            labels: labelsMonth,
-            datasets: [
-              {
-                label: "Projets réalisés par mois",
-                data: dataMonth,
-                backgroundColor: "rgba(75, 192, 192, 0.6)",
-              },
-            ],
-          },
-        });
-  
-        // Si tu veux afficher un autre graphique, par exemple, par type de projet :
-        const ctxType = document.getElementById("projectsChartType").getContext("2d");
-        new Chart(ctxType, {
-          type: "pie", // Graphique circulaire pour le type de projet
-          data: {
-            labels: labelsType,
-            datasets: [
-              {
-                label: "Projets par type",
-                data: dataType,
-                backgroundColor: ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0"],
-              },
-            ],
-          },
-        });
       });
-    },
-  };
-  </script>
-  
-  <style scoped>
-  canvas {
-    max-width: 100%;
-    margin-bottom: 30px;
+    });
   }
-  </style>
-  
+};
+</script>
+
+<style scoped>
+canvas {
+  max-width: 50%;
+  height: auto;
+}
+</style>
+
