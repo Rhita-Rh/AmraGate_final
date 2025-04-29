@@ -113,6 +113,8 @@ export default {
           email: this.email,
           phoneNumber: this.phoneNumber, // Add phone number
           bio: "",
+          followers:[],
+          following: [],
           createdAt: new Date(),
         };
 

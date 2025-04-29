@@ -7,13 +7,18 @@ import Signin from '../views/Signin.vue';
 import AjouterComp from '../views/AjouterComp.vue';
 import AddProject from '../views/AddProject.vue';
 import HomeView from '../views/HomeView.vue';
-
+import accounts from '../components/accounts.vue';
 
 const routes = [
   {
     path: '/Home',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/accounts',
+    name: 'accounts',
+    component: accounts
   },
   {
     path: "/signin", 
