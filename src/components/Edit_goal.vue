@@ -1,91 +1,67 @@
 <template>
-    <div>
-      <h3>Edit Goal</h3>
+  <div class="edit-goal">
+    <button @click="showForm = !showForm">
+      {{ showForm ? 'Cancel' : 'Edit Goal' }}
+    </button>
+
+    <div v-if="showForm">
+      <h4>Edit Goal</h4>
       <form @submit.prevent="saveGoal">
-        <div>
-          <label>Objectif:</label>
-          <input type="text" v-model="obj" />
-        </div>
-  
-        <div>
-          <label>Status:</label>
-          <input type="text" v-model="status" />
-        </div>
-  
-        <div>
-          <label>Suivi:</label>
-          <input type="text" v-model="suivi" />
-        </div>
-  
-        <button type="submit">Save Goal</button>
+        <label>Objectif:</label>
+        <input type="text" v-model="editedGoal.obj" required />
+
+        <label>Status:</label>
+        <select v-model="editedGoal.status" required>
+          <option value="Not Started">Not Started</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+
+        <label>Progression:</label>
+        <input type="text" v-model="editedGoal.suivi" required />
+
+        <button type="submit">Save</button>
       </form>
     </div>
-  </template>
-  
-  <script>
-  import { doc, getDoc, updateDoc } from "firebase/firestore";
-  import { db } from "../firebase-config"; // adjust path if needed
-  
-  export default {
-    name: "Edit_goal",
-    props: {
-      userId: {
-        type: String,
-        required: true
-      },
-      goal: {
-        type: Object,
-        required: true
-      },
-      goalIndex: {
-        type: Number,
-        required: true
+  </div>
+</template>
+
+<script>
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase-config";
+
+export default {
+  props: {
+    userId: String,
+    goal: Object,
+    goalIndex: Number,
+    goals: Array,
+  },
+  data() {
+    return {
+      editedGoal: { ...this.goal },
+      showForm: false,
+    };
+  },
+  methods: {
+    async saveGoal() {
+      try {
+        const updatedGoals = [...this.goals];
+        updatedGoals[this.goalIndex] = this.editedGoal;
+
+        const docRef = doc(db, "users", this.userId);
+        await updateDoc(docRef, { goals: updatedGoals });
+
+        // Emit the updated goal to the parent component
+        this.$emit("goalUpdated", this.editedGoal, this.goalIndex);
+
+        this.showForm = false;
+        alert("Goal updated successfully!");
+      } catch (error) {
+        console.error("Error updating goal:", error);
+        alert("Failed to update goal.");
       }
     },
-    data() {
-      return {
-        obj: "",
-        status: "",
-        suivi: ""
-      };
-    },
-    mounted() {
-      if (this.goal) {
-        this.obj = this.goal.obj;
-        this.status = this.goal.status;
-        this.suivi = this.goal.suivi;
-      }
-    },
-    methods: {
-      async saveGoal() {
-        try {
-          const userRef = doc(db, "users", this.userId);
-          const userSnap = await getDoc(userRef);
-          if (!userSnap.exists()) {
-            throw new Error("User not found");
-          }
-  
-          const userData = userSnap.data();
-          let goals = userData.goals || [];
-  
-          // Update the specific goal
-          goals[this.goalIndex] = {
-            obj: this.obj,
-            status: this.status,
-            suivi: this.suivi
-          };
-  
-          // Update in Firestore
-          await updateDoc(userRef, {
-            goals: goals
-          });
-  
-          alert("Goal updated successfully!");
-        } catch (error) {
-          alert("Error updating goal:", error);
-        }
-      }
-    }
-  };
-  </script>
-  
+  },
+};
+</script>

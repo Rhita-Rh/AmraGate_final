@@ -4,6 +4,10 @@
       <img src="R.png" alt="Logo" class="logo" />
       <button class="logout-btn">Log out</button>
     </header>
+    
+    <aside class="sidebar">
+      <router-link to="/accounts" class="nav-link">Accounts</router-link>
+    </aside>
 
     <aside class="sidebar">
       <router-link to="/Dashboard" class="nav-link">Dashboard</router-link>
@@ -13,17 +17,20 @@
     <main class="content">
       <ProjectsDi />
     </main>
+
+    
   </div>
 </template>
 
   
 <script>
 import ProjectsDi from '@/components/ProjectsDi.vue';
-
+import accounts from '../components/accounts.vue'; 
 export default {
   name: 'HomeView',
   components: {
-    ProjectsDi
+    ProjectsDi,
+    accounts,
   }
 }
 </script>
