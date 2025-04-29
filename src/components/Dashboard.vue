@@ -36,16 +36,6 @@
             {{ goalEditVisible[index] ? "Cancel Edit" : "Edit Goal" }}
           </button>
 
-          <Edit_goal 
-            v-if="goalEditVisible[index]"
-            :userId="currentUserId"
-            :goal="goals"
-            :goalIndex="index"
-            :goals="userData.goals"
-            @goalUpdated="updateGoalLocally" 
-          />
-          
-          <button @click="deletegoal(index)">Delete</button>
         </div>
         <div v-if="!showAddGoalForm">
           <button @click="set_true">Add a New Goal</button>
