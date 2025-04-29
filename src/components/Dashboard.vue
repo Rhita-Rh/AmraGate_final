@@ -81,7 +81,7 @@
             <p> Date of progression: {{ competence.date_progr }}</p>
             <Edit_comp 
               :userId="currentUserId" 
-              :competence="user.competences[index]" 
+              :competence="userData.competences[index]" 
               :competenceIndex="index"
             />
             <button @click="deleteCompetence(index)">Delete</button>
