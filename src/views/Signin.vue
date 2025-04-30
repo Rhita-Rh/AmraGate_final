@@ -83,120 +83,157 @@ export default {
   }
 };
 </script>
-
 <style scoped>
+/* Background Styling */
 .bigbro {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #fdf6f0; /* soft cream */
+  background: radial-gradient(circle at top left, #d0f8ce, #fce4ec);
+  font-family: 'Quicksand', sans-serif;
+  overflow: hidden;
+  animation: floatBg 10s infinite alternate;
 }
 
+@keyframes floatBg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* Card Container */
 .page-container {
-  width: 100%;
-  max-width: 400px;
-}
-.google-signin {
-  margin-bottom: 10px;
-  font-size: 14px;
-  color: #7d5a44;
-}
-.flexy {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.clickable-icon {
-  cursor: pointer;
-  vertical-align: middle;
-  margin-left: 10px;
-}
-.form-container {
-  background-color: #fffaf5; /* very light peach */
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(202, 164, 114, 0.2); /* soft golden-brown shadow */
-  width: 100%;
+  background: linear-gradient(145deg, #ffffff, #f8fff4);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.2);
+  padding: 40px 30px;
+  max-width: 420px;
+  width: 90%;
+  transition: transform 0.4s ease;
 }
 
+.page-container:hover {
+  transform: translateY(-5px);
+}
+
+/* Title */
 .title h1 {
-  margin-bottom: 20px;
   text-align: center;
-  font-size: 28px;
-  color: #8b5e3c; /* rich chestnut brown */
-  font-family: 'Georgia', serif;
+  color: #43a047;
+  font-size: 2.2em;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
 }
 
+/* Input Fields */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
-.form-group label {
+label {
+  color: #558b2f;
+  font-weight: 600;
+  font-size: 14px;
   display: block;
   margin-bottom: 6px;
-  font-weight: bold;
-  color: #9a6d45; /* warm brown */
 }
 
-.form-group input {
-  width: 95%;
-  padding: 10px 14px;
-  border: 1px solid #d4b197; /* soft tan */
-  border-radius: 6px;
-  font-size: 16px;
-  background-color: #fffefc; /* almost white */
-  color: #5a3d2b; /* darker text */
+input[type="email"],
+input[type="password"] {
+  width: 90%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #aed581;
+  background-color: #f9fff8;
+  font-size: 15px;
+  transition: all 0.3s ease;
+
 }
 
+input:focus {
+  border-color: #66bb6a;
+  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
+  outline: none;
+}
+
+/* Submit Button */
 button[type="submit"] {
   width: 100%;
-  background-color: #e8a87c; /* warm muted orange */
+  padding: 14px;
+  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
   color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
   font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
   cursor: pointer;
   margin-top: 10px;
-  transition: background-color 0.3s;
+  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
+  transition: all 0.3s ease;
 }
 
 button[type="submit"]:hover {
-  background-color: #d08b66; /* slightly deeper orange */
+  background: linear-gradient(135deg, #388e3c, #81c784);
+  transform: translateY(-2px);
 }
 
+/* Links and Prompts */
 .signup-prompt {
-  margin-top: 15px;
   text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
 }
 
 .signup-text {
-  font-size: 14px;
-  color: #7d5a44; /* medium soft brown */
+  color: #4e4e4e;
 }
 
 .signup-link {
-  margin-left: 5px;
-  color: #ba6c4f; /* soft reddish-brown */
+  color: #97ff80;
   text-decoration: none;
+  font-weight: bold;
+  margin-left: 5px;
+  transition: color 0.2s;
 }
 
 .signup-link:hover {
-  text-decoration: underline;
+  color: #d32f2f;
 }
 
 .forgot-password {
   display: block;
   text-align: center;
   margin-top: 12px;
-  font-size: 14px;
-  color: #b2765e; /* dusty rose */
-  text-decoration: none;
+  font-size: 13px;
+  color: #789262;
+  text-decoration: underline dashed;
+  transition: text-decoration 0.2s;
 }
 
 .forgot-password:hover {
-  text-decoration: underline;
+  text-decoration: underline solid;
+}
+
+/* Google Sign-in */
+.google-signin {
+  margin-top: 25px;
+  text-align: center;
+  font-size: 14px;
+  color: #616161;
+}
+
+.clickable-icon {
+  margin-left: 10px;
+  vertical-align: middle;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.clickable-icon:hover {
+  transform: rotate(-5deg) scale(1.1);
 }
 </style>

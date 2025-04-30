@@ -77,9 +77,9 @@
       {{ loading ? "Submitting..." : "Submit" }}
     </button>
 
-    <div v-if="errorMessage" class="error-message">
-      {{ errorMessage }}
-    </div>
+  <button type="button" @click="$router.push('/Home')" class="home-btn">
+    Back to Home
+  </button>
   </form>
 </template>
 
