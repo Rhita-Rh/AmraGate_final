@@ -1,68 +1,107 @@
 <template>
   <div class="user-profile">
-    <h2>My Dashboard</h2>
+    <div class="profile-container">
+      <div class="profile-section">
+        <h2>My Dashboard</h2>
 
-    <div class="navigation-links">
-      <router-link to="/my-projects">
-        <button>My Projects</button>
-      </router-link>
-      <router-link to="/UpdateProfile">
-        <button>Update Profile</button>
-      </router-link>
-      <router-link to="/AjouterComp">
-        <button>Add Competence</button>
-      </router-link>
-    </div>
-    <nbre_competences_mois />
-    <projet_realis/>
-
-    <div>
-      <p> Name: {{ userData.name }} </p>
-      <p> Email: {{ userData.email }} </p>
-      <p> Bio: {{ userData.bio }} </p>
-      
-      <div v-if="userData.goals && userData.goals.length">
-        <h3>Goals</h3>
-        <div
-          v-for="(goals, index) in userData.goals"
-          :key="index"
-          class="Goals-card"
-        >
-          <p> Goal: {{ goals.obj }}</p>
-          <p> Status: {{ goals.status }}</p>
-          <p> My progression: {{ goals.suivi }}</p>
-
-          <button @click="toggleGoalEdit(index)">
-            {{ goalEditVisible[index] ? "Cancel Edit" : "Edit Goal" }}
-          </button>
-
+        <div class="navigation-links">
+          <router-link to="/my-projects">
+            <button>My Projects</button>
+          </router-link>
+          <router-link to="/UpdateProfile">
+            <button>Update Profile</button>
+          </router-link>
+          <router-link to="/mycomp">
+            <button>My competences</button> 
+          </router-link>
         </div>
-        <div v-if="!showAddGoalForm">
-          <button @click="set_true">Add a New Goal</button>
+
+        <div class="user-info">
+          <h3>Personal Information</h3>
+          <div class="info-item">
+            <span class="info-label">Name:</span>
+            <span class="info-value">{{ userData.name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ userData.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Bio:</span>
+            <span class="info-value">{{ userData.bio }}</span>
+          </div>
+        </div>
+
+        <div class="goals-section">
+          <h3>My Goals</h3>
+          <div v-if="userData.goals && userData.goals.length">
+            <div
+              v-for="(goal, index) in userData.goals"
+              :key="index"
+              class="goal-card"
+            >
+              <div class="info-item">
+                <span class="info-label">Goal:</span>
+                <span class="info-value">{{ goal.obj }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Status:</span>
+                <span class="info-value">{{ goal.status }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Progress:</span>
+                <span class="info-value">{{ goal.suivi }}</span>
+              </div>
+
+              <router-link :to="{ name: 'Edit_goal', params: { index } }">
+                <button class="edit-btn">Edit</button>
+              </router-link>
+            </div>
+            <div v-if="!showAddGoalForm">
+              <button @click="set_true" class="add-btn">Add a New Goal</button>
+            </div>
+          </div>
+          <div v-else>
+            <p>No goals listed.</p>
+            <button @click="set_true" class="add-btn">Add a New Goal</button>
+          </div>
+          
+          <!-- Add new goal form -->
+          <div v-if="showAddGoalForm" class="add-goal-form">
+            <h3>Add a New Goal</h3>
+            <form @submit.prevent="addGoal">
+              <div class="form-group">
+                <label>Objective:</label>
+                <input type="text" v-model="newGoal.obj" placeholder="Goal objective" required>
+              </div>
+              <div class="form-group">
+                <label>Status:</label>
+                <select v-model="newGoal.status" required>
+                  <option value="Not Started">Not Started</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Progress:</label>
+                <input type="text" v-model="newGoal.suivi" placeholder="My progression" required>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="save-btn">Save Goal</button>
+                <button @click="set_false" type="button" class="cancel-btn">Cancel</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-      <div v-else>
-        <p>No goals listed.</p>
-        <button @click="set_true">Add a New Goal</button>
-      </div>
-      
-      <!-- Add new goal form -->
-      <div v-if="showAddGoalForm">
-        <h3>Add a New Goal</h3>
-        <form @submit.prevent="addGoal">
-          <label>Objectif:</label>
-          <input type="text" v-model="newGoal.obj" placeholder="Goal Objectif" required>
-          <label>Status:</label>
-          <select v-model="newGoal.status" required>
-            <option value="Not Started">Not Started</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-          </select>
-          <label>My progression:</label>
-          <input type="text" v-model="newGoal.suivi" placeholder="My Progression" required>
-          <button type="submit">Save Goal</button>
-          <button @click="set_false">Cancel</button>
-        </form>
+
+      <div class="charts-section">
+        <div class="chart-container">
+          <nbre_competences_mois />
+        </div>
+        <div class="chart-container">
+          <projet_realis/>
+        </div>
       </div>
     </div>
   </div>
@@ -77,6 +116,10 @@ import nbre_competences_mois from "./nbre_competences_mois.vue";
 import projet_realis from "./projet_realis.vue";
 
 export default {
+  props: {
+    goals: Array,
+    userId: String,
+  },
   components: {
     Edit_goal,
     Edit_comp,
@@ -99,7 +142,7 @@ export default {
         status: "",
         suivi: ""
       },
-      goalEditVisible: [] // Array to control visibility of goal editing
+      goalEditVisible: []
     };
   },
   created() {
@@ -115,14 +158,9 @@ export default {
           const data = docSnap.data();
           this.userData = data;
           this.competences = data.competences || [];
-          // Initialize all goals as not being edited
           this.goalEditVisible = (data.goals || []).map(() => false);
         }
       }
-    },
-    toggleGoalEdit(index) {
-      // Toggle edit mode for the clicked goal
-      this.goalEditVisible = this.goalEditVisible.map((item, idx) => idx === index ? !item : item);
     },
     set_true() {
       this.showAddGoalForm = true;
@@ -155,7 +193,6 @@ export default {
         const docRef = doc(db, "users", user.uid);
         const goals = this.userData.goals || [];
 
-        // Push new goal
         goals.push({
           obj: this.newGoal.obj,
           status: this.newGoal.status,
@@ -163,10 +200,7 @@ export default {
         });
         await updateDoc(docRef, { goals });
 
-        // Update local state
         this.userData.goals = goals;
-
-        // Reset form
         this.newGoal = { obj: "", status: "", suivi: "" };
         this.showAddGoalForm = false;
 
@@ -184,178 +218,223 @@ export default {
       }
     },
     updateGoalLocally(updatedGoal, goalIndex) {
-      this.userData.goals[goalIndex] = updatedGoal;  // Update the local goal data
+      this.userData.goals[goalIndex] = updatedGoal;
     }
   }
 };
 </script>
 
 <style scoped>
-/* Background Styling */
 .user-profile {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  background-color: #f5f7fa;
   min-height: 100vh;
-  background: radial-gradient(circle at top left, #d0f8ce, #fce4ec);
-  font-family: 'Quicksand', sans-serif;
-  overflow: hidden;
-  animation: floatBg 10s infinite alternate;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  padding: 20px;
 }
 
-@keyframes floatBg {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+.profile-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 30px;
 }
 
-/* Card Container */
-.page-container {
-  background: linear-gradient(145deg, #ffffff, #f8fff4);
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.2);
-  padding: 40px 30px;
-  max-width: 420px;
-  width: 90%;
-  transition: transform 0.4s ease;
+.profile-section {
+  flex: 1;
+  max-width: 700px;
 }
 
-.page-container:hover {
-  transform: translateY(-5px);
+.charts-section {
+  width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
-/* Title */
-.title h1 {
-  text-align: center;
-  color: #43a047;
-  font-size: 2.2em;
-  letter-spacing: 1px;
-  margin-bottom: 25px;
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Navigation Buttons */
+h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 28px;
+}
+
+h3 {
+  color: #2c3e50;
+  margin: 25px 0 15px;
+  font-size: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
 .navigation-links {
   display: flex;
-  gap: 20px;
-  justify-content: center;
+  gap: 15px;
   margin-bottom: 30px;
 }
 
-button {
-  padding: 12px 24px;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
+.navigation-links button {
+  background-color: #4caf50;
   color: white;
-  font-weight: bold;
+  font-weight: 500;
   border: none;
-  border-radius: 12px;
-  font-size: 16px;
+  border-radius: 6px;
+  padding: 10px 18px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
   transition: all 0.3s ease;
 }
 
-button:hover {
-  background: linear-gradient(135deg, #388e3c, #81c784);
+.navigation-links button:hover {
+  background-color: #388e3c;
   transform: translateY(-2px);
 }
 
-/* User Data Section */
-.user-profile p {
-  font-size: 18px;
-  color: #558b2f;
-  margin: 10px 0;
+.user-info {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* Goals Section */
-.Goals-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.2);
-  padding: 15px;
+.info-item {
+  display: flex;
   margin-bottom: 15px;
+  align-items: center;
 }
 
-.Goals-card p {
-  font-size: 16px;
-  color: #616161;
-  margin: 8px 0;
+.info-label {
+  font-weight: 600;
+  width: 100px;
+  color: #555;
 }
 
-button[type="submit"],
-button[type="button"] {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
-  color: white;
-  font-weight: bold;
-  border: none;
+.info-value {
+  flex: 1;
+  padding: 8px 12px;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+
+.goal-card {
+  background: white;
   border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 10px;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
-  transition: all 0.3s ease;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
 }
 
-button[type="submit"]:hover,
-button[type="button"]:hover {
-  background: linear-gradient(135deg, #388e3c, #81c784);
+.edit-btn {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.edit-btn:hover {
+  background-color: #0b7dda;
+  transform: translateY(-1px);
+}
+
+.add-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 15px;
+}
+
+.add-btn:hover {
+  background-color: #388e3c;
   transform: translateY(-2px);
 }
 
-/* Add New Goal Form */
-form {
-  background: linear-gradient(145deg, #ffffff, #f8fff4);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.2);
-  max-width: 420px;
-  margin: 0 auto;
+.add-goal-form {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  margin-top: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-form label {
-  font-size: 16px;
-  font-weight: 600;
-  color: #558b2f;
-  display: block;
-  margin-bottom: 10px;
-}
-
-form input,
-form select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1.5px solid #aed581;
-  background-color: #f9fff8;
-  font-size: 15px;
-  transition: all 0.3s ease;
+.form-group {
   margin-bottom: 20px;
 }
 
-form input:focus,
-form select:focus {
-  border-color: #66bb6a;
-  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
-  outline: none;
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
 }
 
-/* Add Competence & Project Container */
-.page-container {
-  background: linear-gradient(145deg, #ffffff, #f8fff4);
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.2);
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
 }
 
-/* Cancel Button */
-button[type="button"] {
-  background-color: #f44336;
-  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.save-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  cursor: pointer;
+  flex: 1;
   transition: all 0.3s ease;
 }
 
-button[type="button"]:hover {
-  background-color: #c62828;
-  transform: translateY(-2px);
+.save-btn:hover {
+  background-color: #388e3c;
+}
+
+.cancel-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #d32f2f;
+}
+
+@media (max-width: 992px) {
+  .profile-container {
+    flex-direction: column;
+  }
+  
+  .charts-section {
+    width: 100%;
+    margin-top: 30px;
+  }
 }
 </style>

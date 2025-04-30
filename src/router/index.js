@@ -8,6 +8,8 @@ import AjouterComp from '../views/AjouterComp.vue';
 import AddProject from '../views/AddProject.vue';
 import HomeView from '../views/HomeView.vue';
 import accounts from '../components/accounts.vue';
+import Edit_goal from '../components/Edit_goal.vue';
+import mycomp from '../components/mycomp.vue'
 
 const routes = [
   {
@@ -43,8 +45,10 @@ const routes = [
   { path: '/', name: 'Signin', component: Signin },
   {path: '/signup', name:'Signup',component: Signup},
   {
-    path: '/Edit_comp',
+    path: '/Edit_comp/:userId/:index',
     name: 'Edit_comp',
+    props: true,
+    meta: { requiresAuth: true },
     component: Edit_comp
   },
   {
@@ -60,6 +64,19 @@ const routes = [
     path: '/add-project',
     name: "AddProject", 
     component: AddProject
+  },
+  {
+    path: '/Edit_goal/:index',
+    name: 'Edit_goal',
+    component: () => import('../components/Edit_goal.vue'),
+    props: route => ({ index: parseInt(route.params.index) }), 
+    component: Edit_goal
+  },
+  {
+    path: '/mycomp',
+    name: 'mycomp',
+    component: mycomp,
+    meta: { requiresAuth: true }
   }
 ]
 
