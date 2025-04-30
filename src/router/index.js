@@ -10,6 +10,7 @@ import HomeView from '../views/HomeView.vue';
 import accounts from '../components/accounts.vue';
 import Edit_goal from '../components/Edit_goal.vue';
 import mycomp from '../components/mycomp.vue'
+import MyProjects from '../views/MyProjects.vue'
 
 const routes = [
   {
@@ -53,7 +54,8 @@ const routes = [
   },
   {
     path:'/my-projects',
-    name:'my-projects'
+    name:'MyProjects',
+    component: MyProjects
   },
   {
     path:'/AjouterComp',
