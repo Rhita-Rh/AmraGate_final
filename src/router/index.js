@@ -13,12 +13,17 @@ import mycomp from '../components/mycomp.vue'
 import MyProjects from '../views/MyProjects.vue'
 import ProjectsItem from '../views/ProjectsItem.vue';
 import UpdateProject from '../views/UpdateProject.vue';
-
+import FeedBackView from '@/views/FeedBackView.vue';
 const routes = [
   {
     path: '/Home',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/feedback',
+    name: 'FeedBackView',
+    component: FeedBackView
   },
   {
     path: '/accounts',

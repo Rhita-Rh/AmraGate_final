@@ -1,107 +1,157 @@
 <template>
-  <div class="container">
-    <header class="header">
+  <div class="user-profile">
+    <!-- Navbar -->
+    <nav class="navbar">
       <img src="R.png" alt="Logo" class="logo" />
-      <button class="logout-btn">Log out</button>
-    </header>
-    
-    <aside class="sidebar">
-      <router-link to="/accounts" class="nav-link">Accounts</router-link>
-    </aside>
+      <div class="nav-links">
+        <router-link to="/accounts" class="nav-btn">Accounts</router-link>
+        <router-link to="/dashboard" class="nav-btn">Dashboard</router-link>
+        <router-link to="/add-project" class="nav-btn">Add Project</router-link>
+        <router-link to="/AjouterComp" class="nav-btn">Add Competence</router-link>
+        <router-link to="/feedback" class="nav-btn bb">Feedback</router-link>
 
-    <aside class="sidebar">
-      <router-link to="/Dashboard" class="nav-link">Dashboard</router-link>
-      <router-link to="/add-project" class="nav-link">Add Project</router-link>
-    </aside>
+        <div class="dropdown" @click="toggleAbout">
+          <button class="nav-btn bb b">About Us</button>
+          <div v-if="showAbout" class="dropdown-menu">
+            <p>Email: AMRA_GATE@gmial.com</p>
+            <p>Phone: +123 456 7890</p>
+          </div>
+        </div>
 
-    <main class="content">
+        
+      </div>
+      <button class="logout-btn" @click="handleLogout">Log out</button>
+
+    </nav>
+
+    <!-- Project List -->
+    <main class="project-list">
       <ProjectsDi />
     </main>
-
-    
   </div>
 </template>
 
-  
 <script>
+import { signOut } from "firebase/auth";
+import { auth } from "../firebase-config";
 import ProjectsDi from '@/components/ProjectsDi.vue';
-import accounts from '../components/accounts.vue'; 
+
 export default {
   name: 'HomeView',
   components: {
     ProjectsDi,
-    accounts,
-  }
-}
+  },
+  data() {
+    return {
+      showAbout: false,
+    };
+  },
+  methods: {
+    toggleAbout() {
+      this.showAbout = !this.showAbout;
+    },
+    async handleLogout() {
+      try {
+        await signOut(auth);
+        console.log("User signed out.");
+        this.$router.push('/signup'); 
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
-/* General layout */
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+.user-profile {
+  background-color: #f5f7fa;
+  min-height: 100vh;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #f5f3f0;
+  color: #333;
+}
+.bb{
+  font-weight: bold;
 }
 
-/* Header */
-.header {
+.navbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background-color: #ae917a; /* brown */
-  padding: 10px 20px;
-  color: white;
+  justify-content: space-between;
+  padding: 15px 30px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.b{
+  padding: 20px;
 }
 
 .logo {
   height: 40px;
 }
 
-.logout-btn {
-  background-color: #baefc8; /* green */
-  border: none;
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-btn {
+  background-color: #4caf50;
   color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 2px 6px rgba(10, 9, 9, 0.15);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.nav-btn:hover {
+  background-color: #388e3c;
+}
+
+.logout-btn {
+  background-color: #f44336;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .logout-btn:hover {
-  background-color: #769c7f;
+  background-color: #d32f2f;
 }
 
-/* Sidebar */
-.sidebar {
+.project-list {
+  max-width: 800px;
+  margin: 30px auto;
   display: flex;
+  flex-direction: column;
   gap: 20px;
-  background-color: #e7d3b3;
-  padding: 10px 20px;
 }
 
-.nav-link {
-  color: #3b7d4d;
-  text-decoration: none;
-  font-weight: bold;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: background 0.3s ease;
+.dropdown {
+  position: relative;
 }
 
-.nav-link:hover {
-  background-color: #c2e4cb;
-}
-
-/* Content */
-.content {
-  flex: 1;
-  padding: 20px;
-  background-color: #ffffff;
-  overflow-y: auto;
+.dropdown-menu {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  background-color: #fff;
+  padding: 12px 18px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  white-space: nowrap;
+  font-size: 14px;
+  z-index: 200;
 }
 </style>
-
-  
