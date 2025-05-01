@@ -181,7 +181,7 @@ export default {
 }
 
 .view-details-button:hover {
-    background-color: #33b770;;
+    background-color: #33b770;
 }
 
 .project-image {

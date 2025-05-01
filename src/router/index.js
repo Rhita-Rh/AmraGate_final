@@ -11,6 +11,8 @@ import accounts from '../components/accounts.vue';
 import Edit_goal from '../components/Edit_goal.vue';
 import mycomp from '../components/mycomp.vue'
 import MyProjects from '../views/MyProjects.vue'
+import ProjectsItem from '../views/ProjectsItem.vue';
+import UpdateProject from '../views/UpdateProject.vue';
 
 const routes = [
   {
@@ -79,6 +81,16 @@ const routes = [
     name: 'mycomp',
     component: mycomp,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/project/:id',
+    name: 'ProjectDetails',
+    component: ProjectsItem
+  },
+  {
+    path: '/update-project/:id',
+    name: "UpdateProject",
+    component: UpdateProject
   }
 ]
 
