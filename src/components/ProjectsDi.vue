@@ -11,21 +11,25 @@
           </div>
         </div>
         
-        <!-- Projet Title and Description -->
-        <h2 class="project-title">{{ project.title }}</h2>
-        <p class="project-description">{{ project.description }}</p>
-        
-        <!-- Project GitHub Link -->
-        <a :href="project.github" class="project-github" target="_blank">GitHub</a>
+        <div class="project-content">
+          <div class="project-details">
+            <!-- Projet Title and Description -->
+            <h2 class="project-title">{{ project.title }}</h2>
+            <p class="project-description">{{ project.description }}</p>
+            
+            <!-- Project GitHub Link -->
+            <a :href="project.github" class="project-github" target="_blank">GitHub</a>
 
-        <!-- Project Image -->
-        <div v-if="project.image" class="project-image">
-          <img :src="project.image" alt="Project Image" />
-        </div>
+            <!-- Tech Stack -->
+            <div class="tech-stack">
+              <span v-for="tech in project.techStack" :key="tech" class="tech-item">{{ tech }}</span>
+            </div>
+          </div>
 
-        <!-- Tech Stack -->
-        <div class="tech-stack">
-          <span v-for="tech in project.techStack" :key="tech" class="tech-item">{{ tech }}</span>
+          <!-- Project Image -->
+          <div v-if="project.imageUrl" class="project-image">
+            <img :src="project.imageUrl" alt="Project Image" />
+          </div>
         </div>
       </li>
     </ul>
@@ -55,82 +59,134 @@ export default {
 </script>
 
 <style scoped>
+
+li{
+  list-style-type: none;
+}
+
+.projects-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.add-project {
+    margin: 0;
+}
+
+.add-project-button {
+    background-color: #48bb78;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.add-project-button:hover {
+    background-color: #38a169;
+}
+
+.home-button {
+    background-color: #e2e8f0;
+    color: #2d3748;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.home-button:hover {
+    background-color: #cbd5e0;
+}
+
 .project-card {
-  background-color: #ffffff;
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  color: #333;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .project-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.profile-pic {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-right: 12px;
-}
-
-.author-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.author-name {
-  font-weight: bold;
-  font-size: 14px;
-  color: #333;
-}
-
-.post-time {
-  font-size: 12px;
-  color: #777;
+    margin-bottom: 16px;
 }
 
 .project-title {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: rgb(173, 208, 171); /* LinkedIn-style color */
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.project-content {
+    display: flex;
+    gap: 24px;
+}
+
+.project-details {
+    flex: 1;
 }
 
 .project-description {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 12px;
+    font-size: 15px;
+    color: #4a5568;
+    line-height: 1.6;
+    margin-bottom: 16px;
 }
 
 .project-github {
-  color: rgb(173, 208, 171);
-  text-decoration: none;
-  font-weight: bold;
-  margin-bottom: 12px;
+    display: inline-block;
+    color: #48bb78;
+    text-decoration: none;
+    font-weight: 500;
+    margin-bottom: 16px;
+    transition: color 0.2s ease;
+}
+
+.project-github:hover {
+    color: #38a169;
+}
+
+.project-image {
+    width: 30%;
+    max-width: 300px;
+    margin-left: auto;
 }
 
 .project-image img {
-  max-width: 100%;
-  border-radius: 8px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .tech-stack {
-  margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
 }
 
 .tech-item {
-  background-color: rgb(173, 208, 171);
-  color: white;
-  border-radius: 20px;
-  padding: 4px 12px;
-  margin-right: 8px;
-  font-size: 12px;
-  margin-bottom: 8px;
-  display: inline-block;
+    background-color: #c6f6d5;
+    color: #22543d;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 500;
 }
 </style>
