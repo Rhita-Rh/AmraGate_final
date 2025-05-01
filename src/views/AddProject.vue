@@ -1,9 +1,9 @@
 <template>
   <form @submit.prevent="submitForm" class="form">
-    <h1>Add Project</h1>
+    <h1 class="form-title">Add Project</h1>
 
     <div class="form-group">
-      <label>Project's name</label>
+      <label class="form-label">Project's name</label>
       <input
         type="text"
         v-model="formData.title"
@@ -14,7 +14,7 @@
     </div>
 
     <div class="form-group">
-      <label>Description</label>
+      <label class="form-label">Description</label>
       <textarea
         v-model="formData.description"
         required
@@ -24,7 +24,7 @@
     </div>
 
     <div class="form-group">
-      <label>Project Stack</label>
+      <label class="form-label">Project Stack</label>
       <div class="input-container">
         <input
           type="text"
@@ -55,7 +55,7 @@
     </div>
 
     <div class="form-group">
-      <label>Github Link</label>
+      <label class="form-label">Github Link</label>
       <input
         type="url"
         v-model="formData.github"
@@ -65,24 +65,25 @@
     </div>
 
     <div class="form-group">
-      <label>Upload project image</label>
-      <input type="file" @change="handleImageUpload" accept="image/*" />
+      <label class="form-label">Upload project image</label>
+      <input type="file" @change="handleImageUpload" accept="image/*" class="file-input" />
 
       <div v-if="previewImage" class="preview">
         <img :src="previewImage" alt="Preview" class="preview-img" />
       </div>
     </div>
 
-    <button type="submit" class="submit-btn" :disabled="loading">
-      {{ loading ? "Submitting..." : "Submit" }}
-    </button>
+    <div class="form-actions">
+      <button type="submit" class="submit-btn" :disabled="loading">
+        {{ loading ? "Submitting..." : "Submit" }}
+      </button>
 
-  <button type="button" @click="$router.push('/Dashboard')" class="home-btn">
-    Back to Home
-  </button>
+      <button type="button" @click="$router.push('/Dashboard')" class="home-btn">
+        Back to Home
+      </button>
+    </div>
   </form>
 </template>
-
 
 <script>
 import { db } from "../firebase-config";
@@ -207,60 +208,144 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
-.input-container {
-  display: flex;
-  margin-bottom: 10px;
+.form {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.tech-input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+.form-title {
+  color: #2d3748;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.form-input,
+.tech-input,
+.file-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.tech-input:focus {
   outline: none;
+  border-color: #a0aec0;
+  box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.1);
+}
+
+.input-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .add-btn {
-  margin-left: 10px;
-  padding: 8px 12px;
-  background-color: #28a745;
-  color: white;
+  padding: 0.5rem 1rem;
+  background-color: #9ae6b4;
+  color: #2d3748;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .add-btn:hover {
-  background-color: #218838;
+  background-color: #81e6d9;
 }
 
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .tech-tag {
   display: inline-flex;
   align-items: center;
-  background-color: #e9ecef;
-  padding: 4px 8px;
+  background-color: #e6fffa;
+  padding: 0.25rem 0.75rem;
   border-radius: 16px;
-  font-size: 14px;
+  font-size: 0.875rem;
+  color: #2d3748;
 }
 
 .remove-btn {
-  margin-left: 8px;
+  margin-left: 0.5rem;
   background: none;
   border: none;
-  color: #6c757d;
+  color: #718096;
   cursor: pointer;
+  padding: 0;
 }
 
 .remove-btn:hover {
-  color: #dc3545;
+  color: #e53e3e;
 }
+
+.preview {
+  margin-top: 1rem;
+}
+
+.preview-img {
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.submit-btn,
+.home-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.submit-btn {
+  background-color: #9ae6b4;
+  color: #2d3748;
+}
+
+.submit-btn:hover {
+  background-color: #81e6d9;
+}
+
+.submit-btn:disabled {
+  background-color: #cbd5e0;
+  cursor: not-allowed;
+}
+
+.home-btn {
+  background-color: #e2e8f0;
+}
+
 </style>
