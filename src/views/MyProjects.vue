@@ -102,8 +102,8 @@ export default {
 }
 
 .home-button {
-    background-color: #e2e8f0;
-    color: #2d3748;
+    background-color: #f44336;
+    color: white;
     padding: 10px 20px;
     border-radius: 6px;
     text-decoration: none;
@@ -112,7 +112,7 @@ export default {
 }
 
 .home-button:hover {
-    background-color: #cbd5e0;
+    background-color: #f44336;
 }
 
 .project-card {

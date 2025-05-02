@@ -1,93 +1,62 @@
 <template>
   <div class="edit-competence-container">
-    <form @submit.prevent="saveCompetence" class="competence-form">
+    <form v-if="loaded" @submit.prevent="saveCompetence" class="competence-form">
       <h2 class="form-title">Edit Competence</h2>
-      
+
       <div class="form-group">
         <label class="form-label">Name:</label>
-        <input 
-          type="text" 
-          v-model="name" 
-          class="form-input"
-          required
-          placeholder="Enter competence name"
-        >
+        <input v-model="name" type="text" class="form-input" required placeholder="Enter competence name" />
       </div>
 
       <div class="form-group">
         <label class="form-label">Level:</label>
-        <select 
-          v-model="level" 
-          class="form-select"
-          required
-        >
+        <select v-model="level" class="form-select" required>
           <option value="" disabled>Select a level</option>
-          <option value="Débutant">Débutant</option>
-          <option value="Intermédiaire">Intermédiaire</option>
-          <option value="Avancé">Avancé</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
         </select>
       </div>
 
       <div class="form-group">
         <label class="form-label">Acquisition Date:</label>
-        <input 
-          type="date" 
-          v-model="date_acqui" 
-          class="form-input"
-        >
+        <input v-model="date_acqui" type="date" class="form-input" />
       </div>
 
       <div class="form-group">
         <label class="form-label">Progress Date:</label>
-        <input 
-          type="date" 
-          v-model="date_progr" 
-          class="form-input"
-        >
+        <input v-model="date_progr" type="date" class="form-input" />
       </div>
 
       <div class="form-group">
         <label class="form-label">Start Date:</label>
-        <input 
-          type="date" 
-          v-model="date_debut" 
-          class="form-input"
-          required
-        >
+        <input v-model="date_debut" type="date" class="form-input" required />
       </div>
 
       <div class="form-actions">
         <button type="submit" class="submit-btn">Save Changes</button>
-        <button 
-          type="button" 
-          class="cancel-btn"
-          @click="$router.go(-1)"
-        >
-          Cancel
-        </button>
+        <button type="button" class="cancel-btn" @click="$router.go(-1)">Cancel</button>
       </div>
     </form>
+
+    <p v-else>Loading competence...</p>
   </div>
 </template>
 
 <script>
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../firebase-config";
+import { db, auth } from "../firebase-config";
 
 export default {
-  name: 'Edit_comp',
+  name: "Edit_comp",
   props: {
     userId: {
       type: String,
       required: true
     },
-    competenceIndex: {
+    index: {
       type: Number,
       required: true
-    },
-    competence: {
-      type: Object,
-      default: () => ({})
     }
   },
   data() {
@@ -96,34 +65,48 @@ export default {
       level: "",
       date_acqui: "",
       date_progr: "",
-      date_debut: ""
-    }
+      date_debut: "",
+      loaded: false,
+      competences: []
+    };
   },
-  mounted() {
-    if (this.competence) {
-      this.name = this.competence.name || "";
-      this.level = this.competence.level || "";
-      this.date_acqui = this.competence.date_acqui || "";
-      this.date_progr = this.competence.date_progr || "";
-      this.date_debut = this.competence.date_debut || "";
-    }
+  created() {
+    this.loadCompetence();
   },
   methods: {
-    async saveCompetence() {
-      if (!this.validateForm()) return;
-      
+    async loadCompetence() {
       try {
         const userRef = doc(db, "users", this.userId);
         const userSnap = await getDoc(userRef);
-        
-        if (!userSnap.exists()) {
-          throw new Error("User not found");
-        }
 
-        const userData = userSnap.data();
-        const competences = [...(userData.competences || [])];
+        if (!userSnap.exists()) throw new Error("User not found");
 
-        competences[this.competenceIndex] = {
+        const data = userSnap.data();
+        this.competences = Array.isArray(data.competences) ? data.competences : [];
+
+        const comp = this.competences[this.index];
+        if (!comp) throw new Error("Invalid competence index");
+
+        this.name = comp.name || "";
+        this.level = comp.level || "";
+        this.date_acqui = comp.date_acqui || "";
+        this.date_progr = comp.date_progr || "";
+        this.date_debut = comp.date_debut || "";
+        this.loaded = true;
+      } catch (error) {
+        console.error("Error loading competence:", error);
+        alert("Failed to load competence: " + error.message);
+        this.$router.push("/Dashboard");
+      }
+    },
+
+    async saveCompetence() {
+      if (!this.validateForm()) return;
+
+      try {
+        const userRef = doc(db, "users", this.userId);
+
+        this.competences[this.index] = {
           name: this.name,
           level: this.level,
           date_acqui: this.date_acqui,
@@ -131,15 +114,16 @@ export default {
           date_debut: this.date_debut
         };
 
-        await updateDoc(userRef, { competences });
-        this.$emit('competence-updated');
+        await updateDoc(userRef, { competences: this.competences });
+
         alert("Competence updated successfully!");
-        this.$router.go(-1); // Go back to previous page
+        this.$router.go(-1);
       } catch (error) {
         console.error("Update error:", error);
         alert("Failed to update competence: " + error.message);
       }
     },
+
     validateForm() {
       if (!this.name.trim()) {
         alert("Please enter a competence name");
@@ -156,7 +140,7 @@ export default {
       return true;
     }
   }
-}
+};
 </script>
 
 <style scoped>
