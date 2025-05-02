@@ -14,6 +14,7 @@ import MyProjects from '../views/MyProjects.vue'
 import ProjectsItem from '../views/ProjectsItem.vue';
 import UpdateProject from '../views/UpdateProject.vue';
 import FeedBackView from '@/views/FeedBackView.vue';
+import Starred from "../views/Starred.vue";
 const routes = [
   {
     path: '/Home',
@@ -96,6 +97,11 @@ const routes = [
     path: '/update-project/:id',
     name: "UpdateProject",
     component: UpdateProject
+  },
+  {
+    path: "/starred",
+    name: "Starred",
+    component: Starred
   }
 ]
 
