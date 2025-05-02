@@ -19,6 +19,8 @@ import following from '../components/following1.vue';
 import UserDetails from '../components/userdetails.vue';
 import Forgot from '../views/Forgot.vue';
 import Starred from "../views/Starred.vue";
+import NotFound from '../views/NotFound.vue';
+
 const routes = [
   {
     path: '/Home',
@@ -127,6 +129,15 @@ const routes = [
     path: "/starred",
     name: "Starred",
     component: Starred
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404'
+  },
+  {
+    path: '/404',
+    name: 'NotFound',
+    component: NotFound
   }
 ]
 
