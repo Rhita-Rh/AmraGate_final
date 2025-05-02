@@ -30,27 +30,26 @@
           type="text"
           v-model="newTech"
           @keyup.enter="addTech"
-          placeholder="Add a new technology and hit Enter"
+          placeholder="Add a new technology and click on Add"
           class="tech-input"
         />
         <button type="button" @click="addTech" class="add-btn">Add</button>
-
-        <div class="tags">
-          <span
-            v-for="(tech, index) in formData.techStack"
-            :key="index"
-            class="tech-tag"
+      </div>
+      <div class="tags">
+        <span
+          v-for="(tech, index) in formData.techStack"
+          :key="index"
+          class="tech-tag"
+        >
+          {{ tech }}
+          <button
+            type="button"
+            @click="removeTech(index)"
+            class="remove-btn"
           >
-            {{ tech }}
-            <button
-              type="button"
-              @click="removeTech(index)"
-              class="remove-btn"
-            >
-              x
-            </button>
-          </span>
-        </div>
+            x
+          </button>
+        </span>
       </div>
     </div>
 
@@ -66,11 +65,21 @@
 
     <div class="form-group">
       <label class="form-label">Upload project image</label>
-      <input type="file" @change="handleImageUpload" accept="image/*" class="file-input" />
+      <div class="file-upload-container">
+        <label class="custom-file-label">
+          <input type="file" @change="handleImageUpload" accept="image/*" class="hidden-file-input" />
+          <span class="custom-button">Choose File</span>
+        </label>
+        <span class="file-name">{{ uploadedImage?.name || "No file chosen" }}</span>
+      </div>
 
       <div v-if="previewImage" class="preview">
         <img :src="previewImage" alt="Preview" class="preview-img" />
       </div>
+    </div>
+
+    <div v-if="previewImage" class="preview">
+      <img :src="previewImage" alt="Preview" class="preview-img" />
     </div>
 
     <div class="form-actions">
@@ -78,7 +87,7 @@
         {{ loading ? "Submitting..." : "Submit" }}
       </button>
 
-      <button type="button" @click="$router.push('/Dashboard')" class="home-btn">
+      <button type="button" @click="$router.push('/Home')" class="home-btn">
         Back to Home
       </button>
     </div>
@@ -170,6 +179,7 @@ export default {
         }
 
         const userId = user.uid;
+        const timestamp = new Date().toISOString(); // Store timestamp in ISO format
 
         const projectData = {
           title: this.formData.title,
@@ -179,6 +189,7 @@ export default {
           techStack: this.formData.techStack,
           github: this.formData.github,
           imageUrl: imageUrl,
+          timestamp: timestamp, // Add timestamp to project data
         };
 
         const projectRef = await addDoc(collection(db, "projects"), projectData);
@@ -262,8 +273,9 @@ export default {
 
 .add-btn {
   padding: 0.5rem 1rem;
-  background-color: #9ae6b4;
-  color: #2d3748;
+  background-color: #4caf50;
+  color: white;
+  font-weight: 500;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -271,13 +283,15 @@ export default {
 }
 
 .add-btn:hover {
-  background-color: #81e6d9;
+  background-color: #388e3c;
+  transform: translateY(-2px);
 }
 
 .tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .tech-tag {
@@ -301,6 +315,7 @@ export default {
 
 .remove-btn:hover {
   color: #e53e3e;
+  transform: translateY(-2px);
 }
 
 .preview {
@@ -326,17 +341,20 @@ export default {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  color: white;
   font-weight: 500;
   transition: background-color 0.2s;
 }
 
 .submit-btn {
-  background-color: #9ae6b4;
-  color: #2d3748;
+  background-color: #4caf50;
+  color: white;
+  font-weight: 500;
 }
 
 .submit-btn:hover {
-  background-color: #81e6d9;
+  background-color: #388e3c;
+  transform: translateY(-2px);
 }
 
 .submit-btn:disabled {
@@ -346,6 +364,45 @@ export default {
 
 .home-btn {
   background-color: #e2e8f0;
+  color: black;
 }
+
+.home-btn:hover{
+  background-color: #c9cdd3;
+  transform: translateY(-2px);
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+.custom-file-label {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+}
+
+.custom-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.custom-button:hover {
+  background-color: #388e3c;
+  transform: translateY(-2px);
+}
+
+.file-name {
+  margin-left: 1rem;
+  color: #4a5568;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
 
 </style>

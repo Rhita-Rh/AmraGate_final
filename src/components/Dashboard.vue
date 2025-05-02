@@ -1,5 +1,32 @@
 <template>
   <div class="user-profile">
+    <router-link to="/Home"><button class="back">Back to Home</button></router-link>
+    <div class="profile-picture-section">
+          <div class="avatar-container">
+            <img 
+              v-if="userData.photoURL" 
+              :src="userData.photoURL" 
+              alt="Profile Picture"
+              class="profile-avatar"
+            >
+            <div v-else class="default-avatar">
+              {{ userInitials }}
+            </div>
+          </div>
+          <input 
+            type="file" 
+            id="avatar-upload" 
+            accept="image/*" 
+            @change="handleFileUpload"
+            style="display: none"
+          >
+          <button 
+            class="upload-btn"
+            @click="triggerFileInput"
+          >
+            {{ userData.photoURL ? 'Change Photo' : 'Upload Photo' }}
+          </button>
+        </div>
     <div class="profile-container">
       <div class="profile-section">
         <h2>My Dashboard</h2>
@@ -12,7 +39,14 @@
             <button>Update Profile</button>
           </router-link>
           <router-link to="/mycomp">
-            <button>My competences</button> 
+            <button>My competences</button>
+          </router-link>
+
+          <router-link to="/followers">
+            <button>My followers</button> 
+          </router-link>
+          <router-link to="/following">
+            <button>Following</button> 
           </router-link>
         </div>
 
@@ -29,6 +63,10 @@
           <div class="info-item">
             <span class="info-label">Bio:</span>
             <span class="info-value">{{ userData.bio }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone:</span>
+            <span class="info-value">{{ userData.phone }}</span>
           </div>
         </div>
 
@@ -56,6 +94,7 @@
               <router-link :to="{ name: 'Edit_goal', params: { index } }">
                 <button class="edit-btn">Edit</button>
               </router-link>
+              <button @click="deletegoal(index)" class="cancel-btn">Delete</button>
             </div>
             <div v-if="!showAddGoalForm">
               <button @click="set_true" class="add-btn">Add a New Goal</button>
@@ -67,7 +106,7 @@
           </div>
           
           <!-- Add new goal form -->
-          <div v-if="showAddGoalForm" class="add-goal-form">
+          <div v-if="showAddGoalForm" class="add-goal-form" ref="down">
             <h3>Add a New Goal</h3>
             <form @submit.prevent="addGoal">
               <div class="form-group">
@@ -88,7 +127,7 @@
               </div>
               <div class="form-actions">
                 <button type="submit" class="save-btn">Save Goal</button>
-                <button @click="set_false" type="button" class="cancel-btn">Cancel</button>
+                <button @click="set_false" type="button" class="delete-btn">Cancel</button>
               </div>
             </form>
           </div>
@@ -114,6 +153,8 @@ import Edit_goal from "../components/Edit_goal.vue";
 import Edit_comp from "../components/Edit_comp.vue";
 import nbre_competences_mois from "./nbre_competences_mois.vue";
 import projet_realis from "./projet_realis.vue";
+import { nextTick } from "vue";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default {
   props: {
@@ -133,6 +174,7 @@ export default {
         name: "",
         email: "",
         bio: "",
+        phone: "",
         goals: [],
         competences: []
       },
@@ -144,6 +186,13 @@ export default {
       },
       goalEditVisible: []
     };
+  },
+  computed: {
+    userInitials() {
+      if (!this.userData.name) return '?';
+      const names = this.userData.name.split(' ');
+      return names.map(name => name[0]).join('').toUpperCase();
+    }
   },
   created() {
     this.fetchUserData();
@@ -164,6 +213,12 @@ export default {
     },
     set_true() {
       this.showAddGoalForm = true;
+      nextTick(() => {
+        this.$refs.down?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      });
     },
     set_false() {
       this.showAddGoalForm = false;
@@ -208,23 +263,104 @@ export default {
       }
     },
     async deletegoal(index) {
-      const user = auth.currentUser;
-      if (user) {
-        const docRef = doc(db, "users", user.uid);
-        const goals = this.userData.goals || [];
-        goals.splice(index, 1);
-        await updateDoc(docRef, { goals });
-        this.userData.goals = goals;
+      if(confirm("Do you want to delete this goal?")){
+        const user = auth.currentUser;
+        if (user) {
+          const docRef = doc(db, "users", user.uid);
+          const goals = this.userData.goals || [];
+          goals.splice(index, 1);
+          await updateDoc(docRef, { goals });
+          this.userData.goals = goals;
+        }
+          alert("Goal deleted!");
       }
+      
     },
     updateGoalLocally(updatedGoal, goalIndex) {
       this.userData.goals[goalIndex] = updatedGoal;
+    },
+    triggerFileInput() {
+      document.getElementById('avatar-upload').click();
+    },
+    async handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      try {
+        const user = auth.currentUser;
+        const storage = getStorage();
+        const storageRef = ref(storage, `profile_pictures/${user.uid}`);
+        
+        // Upload the file
+        await uploadBytes(storageRef, file);
+        
+        // Get download URL
+        const photoURL = await getDownloadURL(storageRef);
+        
+        // Update user profile in Firestore
+        const docRef = doc(db, "users", user.uid);
+        await updateDoc(docRef, { photoURL });
+        
+        // Update local data
+        this.userData.photoURL = photoURL;
+        
+      } catch (error) {
+        console.error("Error uploading profile picture:", error);
+        alert("Error uploading profile picture");
+      }
+    },
     }
-  }
+  
 };
 </script>
 
 <style scoped>
+.profile-picture-section {
+  margin-top:20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.avatar-container {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  font-size: 32px;
+  font-weight: bold;
+  color: #555;
+}
+
+.upload-btn {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+  background-color: #0b7dda;
+}
+
 .user-profile {
   background-color: #f5f7fa;
   min-height: 100vh;
@@ -258,7 +394,17 @@ export default {
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
-
+.back{
+  background-color: #f44336;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 h2 {
   color: #2c3e50;
   margin-bottom: 20px;
@@ -336,17 +482,33 @@ h3 {
   color: white;
   border: none;
   border-radius: 6px;
+  height: 40px;
   padding: 8px 15px;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 10px;
+  margin: 10px;
 }
 
 .edit-btn:hover {
   background-color: #0b7dda;
   transform: translateY(-1px);
 }
-
+.delete-btn {
+  background-color: #f44336;
+  height: 40px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+.delete-btn:hover {
+  background-color: #952c25;
+  transform: translateY(-1px);
+}
 .add-btn {
   background-color: #4caf50;
   color: white;

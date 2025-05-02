@@ -1,9 +1,9 @@
 <template>
   <router-link to="/Dashboard"><button class="back">Back to Dashboard</button></router-link>
   <div class="accounts-container">
-    <h2>Followers</h2>
+    <h2>Following</h2>
 
-    <!-- Search Bar -->
+    <!-- Barre de recherche -->
     <input
       v-model="searchQuery"
       type="text"
@@ -11,97 +11,110 @@
       class="search-bar"
     />
 
-    <div
-      class="user-card"
-      v-for="follower in filteredFollowers"
-      :key="follower.id"
-    >
+    <div class="user-card" v-for="user in filteredFollowing" :key="user.id">
       <div class="user-info">
         <img
-          :src="follower.profilePhoto || '/profile.png'"
+          :src="user.profilePhoto || '/profile.png'"
           alt="Profile Photo"
           class="profile-photo"
         />
         <div class="user-details">
-          <h3>{{ follower.name }}</h3>
-          <p>@{{ follower.username }}</p>
+          <h3>{{ user.name }}</h3>
+          <p>@{{ user.username }}</p>
         </div>
-        <button class="unfollow-btn" @click="goToUserDetails(follower.id)">
-    View Details
-  </button>
+      </div>
+      <div class="follow-buttons">
+        <button @click="unfollowUser(user)" class="unfollow-btn">
+          Unfollow
+        </button>
       </div>
     </div>
 
-    <p v-if="filteredFollowers.length === 0">No followers found.</p>
+    <p v-if="filteredFollowing.length === 0">
+      You're not following anyone yet.
+    </p>
   </div>
 </template>
 
 <script>
-import { ref, onMounted,computed } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, computed } from "vue";
 import {
   getFirestore,
-  getDoc,
   doc,
-  getDocs,
+  getDoc,
+  updateDoc,
   collection,
+  getDocs,
+  arrayRemove,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 export default {
-  name: "followers",
+  name: "Following",
   setup() {
-    const router = useRouter();
-  const goToUserDetails = (userId) => {
-    router.push(`/accounts/${userId}`);
-  };
     const db = getFirestore();
     const auth = getAuth();
+
     const currentUser = ref(null);
-    const followers = ref([]);
+    const followingUsers = ref([]);
     const searchQuery = ref("");
 
-    const getFollowers = async () => {
+    const loadFollowingUsers = async () => {
       currentUser.value = auth.currentUser;
       if (!currentUser.value) return;
 
       const userDoc = await getDoc(doc(db, "users", currentUser.value.uid));
       if (!userDoc.exists()) return;
 
-      const followerIds = userDoc.data().followers || [];
+      const followingIds = userDoc.data().following || [];
 
-      if (followerIds.length === 0) {
-        followers.value = [];
+      if (followingIds.length === 0) {
+        followingUsers.value = [];
         return;
       }
 
       const usersSnapshot = await getDocs(collection(db, "users"));
-
-      followers.value = usersSnapshot.docs
-        .filter((doc) => followerIds.includes(doc.id))
+      followingUsers.value = usersSnapshot.docs
+        .filter((doc) => followingIds.includes(doc.id))
         .map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
     };
 
-    const filteredFollowers = computed(() => {
-      return followers.value.filter((follower) =>
-        follower.name
+    const unfollowUser = async (user) => {
+      try {
+        if (!currentUser.value) return;
+
+        await updateDoc(doc(db, "users", currentUser.value.uid), {
+          following: arrayRemove(user.id),
+        });
+
+        await updateDoc(doc(db, "users", user.id), {
+          followers: arrayRemove(currentUser.value.uid),
+        });
+
+        await loadFollowingUsers();
+      } catch (error) {
+        console.error("Error unfollowing user:", error);
+      }
+    };
+
+    const filteredFollowing = computed(() => {
+      return followingUsers.value.filter((user) =>
+        user.name
           ?.toLowerCase()
           .startsWith(searchQuery.value.trim().toLowerCase())
       );
     });
 
-    onMounted(() => {
-      getFollowers();
-    });
+    onMounted(loadFollowingUsers);
 
     return {
-      followers,
+      followingUsers,
       searchQuery,
-      filteredFollowers,
-      goToUserDetails,
+      filteredFollowing,
+      unfollowUser,
     };
   },
 };
@@ -126,20 +139,6 @@ export default {
   letter-spacing: 1px;
 }
 
-.unfollow-btn {
-  display: flex;
-  margin-left: 400px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 25px;
-  font-size: 0.95rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.25);
-}
 .search-bar {
   width: 100%;
   padding: 10px 15px;
@@ -193,6 +192,30 @@ export default {
   font-size: 0.95rem;
   color: #66bb6a;
   font-weight: 500;
+}
+
+.follow-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.unfollow-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.25);
+}
+
+.unfollow-btn:hover {
+  background: linear-gradient(135deg, #66bb6a, #81c784);
+  transform: scale(1.04);
 }
 .back{
   background-color: #f44336;

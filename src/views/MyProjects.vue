@@ -1,5 +1,15 @@
 <template>
     <div class="projects-container">
+        <div class="header-actions">
+            <div class="add-project">
+                <router-link to="/add-project" class="add-project-button">
+                    + Add New Project
+                </router-link>
+            </div>
+            <router-link to="/Dashboard" class="home-button">
+                Back to Home
+            </router-link>
+        </div>
         <div class="project-card" v-for="project in projects" :key="project.id">
             <div class="project-header">
                 <div class="project-title">{{ project.title }}</div>
@@ -15,6 +25,12 @@
                             {{ element }}
                         </span>
                     </div>
+                    <router-link 
+                        :to="`/project/${project.id}`" 
+                        class="view-details-button"
+                    >
+                        View Details
+                    </router-link>
                 </div>
                 <div class="project-image" v-if="project.imageUrl">
                     <img :src="project.imageUrl" alt="Project image">
@@ -58,6 +74,45 @@ export default {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+}
+
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.add-project {
+    margin: 0;
+}
+
+.add-project-button {
+    background-color: #48bb78;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.add-project-button:hover {
+    background-color: #38a169;
+}
+
+.home-button {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.home-button:hover {
+    background-color: #f44336;
 }
 
 .project-card {
@@ -111,6 +166,22 @@ export default {
 
 .project-github:hover {
     color: #38a169;
+}
+
+.view-details-button {
+    display: inline-block;
+    background-color: #228550;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.view-details-button:hover {
+    background-color: #33b770;
 }
 
 .project-image {

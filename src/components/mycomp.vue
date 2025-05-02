@@ -43,7 +43,7 @@
                   <span>{{ formatDate(competence.date_progr) }}</span>
                 </div>
               </div>
-              
+            <div class="buttons">
               <router-link 
                 :to="{ name: 'Edit_comp', params: { 
                   userId: currentUserId, 
@@ -53,6 +53,14 @@
               >
                 Edit
               </router-link>
+
+              <button 
+                class="delete-btn" 
+                @click="deletecomp(index)"
+              >
+                Delete 
+              </button>
+            </div>
             </div>
           </div>
         </div>
@@ -62,7 +70,7 @@
   
   <script>
   import { db, auth } from '../firebase-config'
-  import { doc, getDoc } from 'firebase/firestore'
+  import { doc, getDoc,updateDoc } from 'firebase/firestore'
   
   export default {
     name: 'CompetencesView',
@@ -99,9 +107,29 @@
         if (!dateString) return 'N/A'
         const options = { year: 'numeric', month: 'short', day: 'numeric' }
         return new Date(dateString).toLocaleDateString(undefined, options)
-      }
+      },
+      async deletecomp(index) {
+        if (confirm("Do you want to delete this competence?")) {
+          const user = auth.currentUser;
+          if (user) {
+            const docRef = doc(db, "users", user.uid);
+            const updatedCompetences = [...this.competences];
+            updatedCompetences.splice(index, 1);
+            
+            try {
+              await updateDoc(docRef, { competences: updatedCompetences });
+              this.competences = updatedCompetences;
+              alert("Competence deleted!");
+            } catch (error) {
+              console.error("Failed to delete competence:", error);
+              alert("Error deleting competence.");
+            }
+          }
+      
+        }
     }
   }
+}
   </script>
   
   <style scoped>
@@ -220,7 +248,6 @@
     font-size: 0.8rem;
     font-weight: 600;
     text-transform: capitalize;
-    margin-right: 60px;
   }
   
   .level-badge.beginner {
@@ -255,8 +282,16 @@
     color: #2c3e50;
   }
   
-  .edit-btn {
+  .buttons{
+    position:absolute;
+    display: flex;
+    direction:column;
+    justify-content: space-between;
     position: absolute;
+    bottom: 15px;
+    right: 15px;
+  }
+  .edit-btn {
     top: 15px;
     right: 15px;
     background-color: #42b983;
@@ -278,6 +313,28 @@
     box-shadow: 0 3px 6px rgba(66, 185, 131, 0.4);
   }
   
+  .delete-btn {
+    margin-left:15px;
+    top: 15px;
+    right: 15px;
+    background-color: #c62828;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(66, 185, 131, 0.3);
+  }
+  
+  .delete-btn:hover {
+    background-color: #b71c1c;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(66, 185, 131, 0.4);
+  }
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .header-section {
