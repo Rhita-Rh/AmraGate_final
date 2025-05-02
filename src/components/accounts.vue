@@ -1,4 +1,7 @@
 <template>
+  <router-link to="/Home" class="back-button">
+    <button class="back">Back to Home</button>
+  </router-link>
   <div class="accounts-container">
     <h2>All Users</h2>
     <input
@@ -289,7 +292,16 @@ export default {
   font-size: 1.2rem;
   color: #789262;
 }
-
+.back{
+  background-color: #c62828;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
 @media (max-width: 600px) {
   .user-card {
     flex-direction: column;

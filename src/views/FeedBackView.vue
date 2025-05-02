@@ -1,5 +1,6 @@
 <template>
     <div class="feedback-form">
+      <router-link to="/Home"><button class="back">Back to Home</button></router-link>
       <h2>Send Feedback</h2>
       <textarea v-model="message" placeholder="Your message..."></textarea>
       <button @click="sendFeedback">Send</button>
@@ -66,6 +67,18 @@
   </script>
   
   <style scoped>
+  .back{
+  background-color: #f44336;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  
+}
   .feedback-form {
     max-width: 600px;
     margin: 50px auto;

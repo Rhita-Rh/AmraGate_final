@@ -17,6 +17,8 @@ import FeedBackView from '@/views/FeedBackView.vue';
 import followers from '../components/followers.vue';
 import following from '../components/following1.vue';
 import UserDetails from '../components/userdetails.vue';
+import Forgot from '../views/Forgot.vue';
+
 const routes = [
   {
     path: '/Home',
@@ -77,6 +79,11 @@ const routes = [
     props: true,
     meta: { requiresAuth: true },
     component: Edit_comp
+  },
+  {
+    path:'/Forgot',
+    name:'Forgot',
+    component: Forgot
   },
   {
     path:'/my-projects',

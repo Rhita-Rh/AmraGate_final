@@ -7,7 +7,6 @@
         <router-link to="/accounts" class="follow-btn">Accounts</router-link>
         <router-link to="/dashboard" class="follow-btn">Dashboard</router-link>
         <router-link to="/add-project" class="follow-btn">Add Project</router-link>
-        <router-link to="/AjouterComp" class="follow-btn">Add Competence</router-link>
         <router-link to="/feedback" class="follow-btn">Feedback</router-link>
 
         <div class="dropdown" @click="toggleAbout">
@@ -54,7 +53,7 @@ export default {
       try {
         await signOut(auth);
         console.log("User signed out.");
-        this.$router.push('/signup'); 
+        this.$router.push('/'); 
       } catch (error) {
         console.error("Error signing out:", error);
       }
