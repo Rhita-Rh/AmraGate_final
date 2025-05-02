@@ -14,11 +14,30 @@ import MyProjects from '../views/MyProjects.vue'
 import ProjectsItem from '../views/ProjectsItem.vue';
 import UpdateProject from '../views/UpdateProject.vue';
 import FeedBackView from '@/views/FeedBackView.vue';
+import followers from '../components/followers.vue';
+import following from '../components/following1.vue';
+import UserDetails from '../components/userdetails.vue';
 const routes = [
   {
     path: '/Home',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/accounts/:id',
+    name: 'UserDetails',
+    component: UserDetails,
+    props: true, // Allows route params to be passed as props
+  },
+  {
+    path: '/followers',
+    name: 'followers',
+    component: followers
+  },
+  {
+    path: '/following',
+    name: 'following',
+    component: following
   },
   {
     path: '/feedback',

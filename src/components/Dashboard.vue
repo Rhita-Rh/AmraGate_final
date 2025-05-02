@@ -14,6 +14,12 @@
           <router-link to="/mycomp">
             <button>My competences</button> 
           </router-link>
+          <router-link to="/followers">
+            <button>My followers</button> 
+          </router-link>
+          <router-link to="/following">
+            <button>Following</button> 
+          </router-link>
         </div>
 
         <div class="user-info">
