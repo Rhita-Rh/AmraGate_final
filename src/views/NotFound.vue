@@ -10,9 +10,6 @@
       </div>
       <h1>Oops! Page Not Found</h1>
       <p>Looks like you've wandered into uncharted territory. Let's get you back on track!</p>
-      <router-link to="/" class="home-button">
-        Take Me Home
-      </router-link>
     </div>
   </div>
 </template>
@@ -64,25 +61,6 @@ p {
   font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 30px;
-}
-
-.home-button {
-  display: inline-block;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.25);
-}
-
-.home-button:hover {
-  background: linear-gradient(135deg, #4caf50, #81c784);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(102, 187, 106, 0.35);
 }
 
 @media (max-width: 480px) {
