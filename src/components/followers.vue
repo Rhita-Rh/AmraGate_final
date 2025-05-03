@@ -1,4 +1,5 @@
 <template>
+  <router-link to="/Dashboard"><button class="back">Back to Dashboard</button></router-link>
   <div class="accounts-container">
     <h2>Followers</h2>
 
@@ -193,7 +194,17 @@ export default {
   color: #66bb6a;
   font-weight: 500;
 }
-
+.back{
+  background-color: #f44336;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 .accounts-container p {
   text-align: center;
   margin-top: 40px;

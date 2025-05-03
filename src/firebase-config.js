@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, 
          signInWithPopup, GoogleAuthProvider, setPersistence, browserLocalPersistence, 
-         signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged,updateProfile } from "firebase/auth";
+         signInWithPhoneNumber, RecaptchaVerifier, onAuthStateChanged,updateProfile, sendPasswordResetEmail } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -110,14 +110,23 @@ const storeUserInFirestore = async (user) => {
     throw error;
   }
 };
+const verifyResetCode = async (oobCode) => {
+  return await verifyPasswordResetCode(auth, oobCode);
+  };
+  
+  // Updates the password
+  const confirmReset = async (oobCode, newPassword) => {
+  return await confirmPasswordReset(auth, oobCode, newPassword);
+  };
 
 export {
   auth,
   db,
   loginWithEmailAndPassword,
   signInWithGoogle,
-  
-  
+  sendPasswordResetEmail ,
+  verifyResetCode,
+  confirmReset,
   storeUserInFirestore,
   registerWithEmailAndPassword,
 };

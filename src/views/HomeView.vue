@@ -7,13 +7,12 @@
         <router-link to="/accounts" class="follow-btn">Accounts</router-link>
         <router-link to="/dashboard" class="follow-btn">Dashboard</router-link>
         <router-link to="/add-project" class="follow-btn">Add Project</router-link>
-        <router-link to="/AjouterComp" class="follow-btn">Add Competence</router-link>
         <router-link to="/feedback" class="follow-btn">Feedback</router-link>
 
         <div class="dropdown" @click="toggleAbout">
           <button class="follow-btn">About Us</button>
           <div v-if="showAbout" class="dropdown-menu">
-            <p>Email: AMRA_GATE@gmial.com</p>
+            <p>Email: AMRA_GATE@gmail.com</p>
             <p>Phone: +123 456 7890</p>
           </div>
         </div>
@@ -54,7 +53,7 @@ export default {
       try {
         await signOut(auth);
         console.log("User signed out.");
-        this.$router.push('/signup'); 
+        this.$router.push('/'); 
       } catch (error) {
         console.error("Error signing out:", error);
       }
@@ -97,6 +96,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 15px;
+  text-decoration: none;
 }
 
 .nav-btn {
@@ -127,6 +127,7 @@ export default {
   background: linear-gradient(135deg, #66bb6a, #a5d6a7);
   color: #ffffff;
   box-shadow: 0 4px 12px rgba(102, 187, 106, 0.25);
+  text-decoration: none;
 }
 .logout-btn {
   background-color: #f44336;

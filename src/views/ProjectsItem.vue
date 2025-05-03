@@ -3,10 +3,10 @@
     <div class="project-header">
       <h1>{{ project.title }}</h1>
       <div class="project-actions">
-        <button @click="updateProject" class="update-btn">Update</button>
-        <button @click="deleteProject" class="delete-btn">Delete</button>
+        <button v-if="isOwner" @click="updateProject" class="update-btn">Update</button>
+        <button v-if="isOwner" @click="deleteProject" class="delete-btn">Delete</button>
       </div>
-      <router-link to="/my-projects" class="home-button">Back to Home</router-link>
+      <router-link to="/my-projects" class="home-button">Back to My Projects</router-link>
     </div>
     
     <div class="project-content">
@@ -51,7 +51,8 @@ export default {
     return {
       project: {},
       loading: true,
-      error: null
+      error: null,
+      isOwner: false
     }
   },
   async created() {
@@ -62,6 +63,9 @@ export default {
       
       if (projectSnap.exists()) {
         this.project = { id: projectSnap.id, ...projectSnap.data() };
+        const auth = getAuth();
+        const user = auth.currentUser;
+        this.isOwner = user && user.uid === this.project.owner;
       } else {
         this.error = "Project not found";
       }

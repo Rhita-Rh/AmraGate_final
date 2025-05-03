@@ -24,6 +24,11 @@
             <div class="tech-stack">
               <span v-for="tech in project.techStack" :key="tech" class="tech-item">{{ tech }}</span>
             </div>
+          <!-- Star Button -->
+          <button @click="toggleStar(project.id)" class="star-button">
+            <span v-if="starredProjects.includes(project.id)">★</span>
+            <span v-else>☆</span>
+          </button>
           </div>
 
           <!-- Project Image -->
@@ -37,29 +42,75 @@
 </template>
 
 <script>
-import { db } from "../firebase-config.js"; 
-import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase-config.js";
+import { getAuth } from 'firebase/auth';
+import { collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 
 export default {
   name: 'ProjectsDiv',
   data() {
     return {
       projects: [],
+      starredProjects: []
     };
   },
+  methods: {
+    async toggleStar(projectId) {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (!user) {
+        console.error('No user is currently signed in');
+        return;
+      }
 
+      const userId = user.uid;
+      const starredRef = collection(db, 'starred');
+      const starDoc = doc(starredRef, `${userId}_${projectId}`); // Unique document ID combining user and project
+      
+      try {
+        const starSnapshot = await getDoc(starDoc);
+        if (starSnapshot.exists()) {
+          await deleteDoc(starDoc);
+          this.starredProjects = this.starredProjects.filter(id => id !== projectId);
+        } else {
+          await setDoc(starDoc, {
+            projectId: projectId,
+            timestamp: new Date(),
+            userId: userId
+          });
+          this.starredProjects.push(projectId);
+        }
+      } catch (error) {
+        console.error('Error toggling star:', error);
+      }
+    }
+  },
   async created() {
+    // Fetch projects
     const querySnapshot = await getDocs(collection(db, "projects"));
     this.projects = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     }));
+
+    // Fetch starred projects for current user
+    const auth = getAuth();
+    const user = auth.currentUser;
+    
+    if (user) {
+      const userId = user.uid;
+      const starredQuery = collection(db, 'starred');
+      const starredSnapshot = await getDocs(starredQuery);
+      this.starredProjects = starredSnapshot.docs
+        .filter(doc => doc.data().userId === userId)
+        .map(doc => doc.data().projectId);
+    }
   }
 };
 </script>
 
 <style scoped>
-
 li{
   list-style-type: none;
 }
@@ -188,5 +239,29 @@ li{
     padding: 6px 12px;
     font-size: 13px;
     font-weight: 500;
+}
+
+.star-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #ffd700;
+  padding: 0;
+  margin-left: 10px;
+  transition: transform 0.2s ease;
+}
+
+.star-button:hover {
+  transform: scale(1.2);
+}
+
+.star-button span {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.star-button:hover span {
+  transform: scale(1.2);
 }
 </style>

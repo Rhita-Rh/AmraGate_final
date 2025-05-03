@@ -88,7 +88,7 @@
       </button>
 
       <button type="button" @click="$router.push('/Dashboard')" class="home-btn">
-        Back to Home
+        Back to Dashboard
       </button>
     </div>
   </form>

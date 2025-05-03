@@ -31,7 +31,7 @@
 
               <div class="form-group">
                 <label>PHONE NUMBER (Optional)</label>
-                <input type="tel" v-model="phoneNumber" placeholder="Enter your phone number" />
+                <input type="tel" v-model="phone" placeholder="Enter your phone number" />
               </div>
 
               <div class="form-group">
@@ -74,7 +74,7 @@ export default {
       username: "",
       email: "",
       password: "",
-      phoneNumber: "", // Added phone number
+      phone: "", // Added phone number
       agreeToTerms: false,
       photo: null, // Added photo for profile picture
     };
@@ -111,11 +111,12 @@ export default {
           name: this.name,
           username: this.username,
           email: this.email,
-          phoneNumber: this.phoneNumber, // Add phone number
+          phone: this.phone, // Add phone number
           bio: "",
           followers:[],
           following: [],
           createdAt: new Date(),
+          photoURL: "", // Placeholder for photo URL
         };
 
         // If the user uploaded a photo, include it (you'll need to handle storage separately if needed)

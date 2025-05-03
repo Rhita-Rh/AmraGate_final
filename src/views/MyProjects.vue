@@ -7,35 +7,40 @@
                 </router-link>
             </div>
             <router-link to="/Dashboard" class="home-button">
-                Back to Home
+                Back to Dashboard
             </router-link>
         </div>
-        <div class="project-card" v-for="project in projects" :key="project.id">
-            <div class="project-header">
-                <div class="project-title">{{ project.title }}</div>
-            </div>
-            <div class="project-content">
-                <div class="project-details">
-                    <div class="project-description">{{ project.description }}</div>
-                    <a :href="project.github" class="project-github" target="_blank">
-                        View on GitHub
-                    </a>
-                    <div class="tech-stack">
-                        <span class="tech-item" v-for="element in project.techStack" :key="element">
-                            {{ element }}
-                        </span>
+        <div v-if="projects.length > 0">
+            <div class="project-card" v-for="project in projects" :key="project.id">
+                <div class="project-header">
+                    <div class="project-title">{{ project.title }}</div>
+                </div>
+                <div class="project-content">
+                    <div class="project-details">
+                        <div class="project-description">{{ project.description }}</div>
+                        <a :href="project.github" class="project-github" target="_blank">
+                            View on GitHub
+                        </a>
+                        <div class="tech-stack">
+                            <span class="tech-item" v-for="element in project.techStack" :key="element">
+                                {{ element }}
+                            </span>
+                        </div>
+                        <router-link 
+                            :to="`/project/${project.id}`" 
+                            class="view-details-button"
+                        >
+                            View Details
+                        </router-link>
                     </div>
-                    <router-link 
-                        :to="`/project/${project.id}`" 
-                        class="view-details-button"
-                    >
-                        View Details
-                    </router-link>
-                </div>
-                <div class="project-image" v-if="project.imageUrl">
-                    <img :src="project.imageUrl" alt="Project image">
+                    <div class="project-image" v-if="project.imageUrl">
+                        <img :src="project.imageUrl" alt="Project image">
+                    </div>
                 </div>
             </div>
+        </div>
+        <div v-else class="no-projects">
+            <p>No projects added yet. Click the button above to add your first project!</p>
         </div>
     </div>
 </template>
@@ -102,8 +107,8 @@ export default {
 }
 
 .home-button {
-    background-color: #e2e8f0;
-    color: #2d3748;
+    background-color: #f44336;
+    color: white;
     padding: 10px 20px;
     border-radius: 6px;
     text-decoration: none;
@@ -112,7 +117,7 @@ export default {
 }
 
 .home-button:hover {
-    background-color: #cbd5e0;
+    background-color: #f44336;
 }
 
 .project-card {
@@ -209,5 +214,15 @@ export default {
     padding: 6px 12px;
     font-size: 13px;
     font-weight: 500;
+}
+
+.no-projects {
+    text-align: center;
+    padding: 40px;
+    color: #718096;
+    font-size: 18px;
+    background-color: #f8fafc;
+    border-radius: 12px;
+    margin-top: 20px;
 }
 </style>
