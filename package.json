@@ -9,6 +9,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",
     "chart.js": "^4.4.9",
+    "cloudinary": "^2.6.0",
     "core-js": "^3.8.3",
     "firebase": "^11.6.1",
     "js-message": "^2.1.0",
