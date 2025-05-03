@@ -1,6 +1,11 @@
 <template>
   <div class="user-profile">
-    <router-link to="/Home"><button class="back">Back to Home</button></router-link>
+    <div class="back-button-container">
+      <router-link to="/Home" class="back-button">
+        <span class="back-icon">←</span>
+        <span class="back-text">Back to Home</span>
+      </router-link>
+    </div>
     <div class="profile-picture-section">
           <div class="avatar-container">
             <img 
@@ -67,6 +72,32 @@
           <div class="info-item">
             <span class="info-label">Phone:</span>
             <span class="info-value">{{ userData.phone }}</span>
+          </div>
+        </div>
+
+        <!-- Starred Projects Section -->
+        <div class="starred-projects-section">
+          <h3>Starred Projects</h3>
+          <div v-if="starredProjects.length > 0">
+            <div
+              v-for="project in starredProjects"
+              :key="project.id"
+              class="project-card"
+            >
+              <div class="info-item">
+                <span class="info-label">Project:</span>
+                <span class="info-value">{{ project.title }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Description:</span>
+                <span class="info-value">{{ project.description }}</span>
+              </div>
+              <button @click="unstarProject(project.id)" class="unstar-btn">Unstar</button>
+              <router-link :to="`/project/${project.id}`" class="details-btn">View Details</router-link>
+            </div>
+          </div>
+          <div v-else>
+            <p>No starred projects.</p>
           </div>
         </div>
 
@@ -155,6 +186,8 @@ import nbre_competences_mois from "./nbre_competences_mois.vue";
 import projet_realis from "./projet_realis.vue";
 import { nextTick } from "vue";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, getDocs, deleteDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 export default {
   props: {
@@ -176,8 +209,9 @@ export default {
         bio: "",
         phone: "",
         goals: [],
-        competences: []
+        competences: [],
       },
+      starredProjects: [],
       showAddGoalForm: false,
       newGoal: {
         obj: "",
@@ -196,6 +230,7 @@ export default {
   },
   created() {
     this.fetchUserData();
+    this.fetchStarredProjects();
   },
   methods: {
     async fetchUserData() {
@@ -208,6 +243,50 @@ export default {
           this.userData = data;
           this.competences = data.competences || [];
           this.goalEditVisible = (data.goals || []).map(() => false);
+        }
+      }
+    },
+    async fetchStarredProjects() {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (user) {
+        try {
+          // Get starred projects for current user
+          const starredQuery = collection(db, 'starred');
+          const starredSnapshot = await getDocs(starredQuery);
+          const starredProjectIds = starredSnapshot.docs
+            .filter(doc => doc.data().userId === user.uid)
+            .map(doc => doc.data().projectId);
+
+          // Get project details for each starred project
+          const projectsCollection = collection(db, 'projects');
+          const projectsSnapshot = await getDocs(projectsCollection);
+          this.starredProjects = projectsSnapshot.docs
+            .filter(doc => starredProjectIds.includes(doc.id))
+            .map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }));
+        } catch (error) {
+          console.error('Error fetching starred projects:', error);
+        }
+      }
+    },
+    async unstarProject(projectId) {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (user) {
+        try {
+          const starredRef = collection(db, 'starred');
+          const starDoc = doc(starredRef, `${user.uid}_${projectId}`);
+          await deleteDoc(starDoc);
+          
+          // Update local state
+          this.starredProjects = this.starredProjects.filter(project => project.id !== projectId);
+        } catch (error) {
+          console.error('Error unstarring project:', error);
         }
       }
     },
@@ -394,17 +473,41 @@ export default {
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
-.back{
-  background-color: #f44336;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+.back-button-container {
+  margin-bottom: 20px;
 }
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f8fafc;
+  color: #2d3748;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.back-button:hover {
+  background-color: #edf2f7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.back-icon {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.back-text {
+  margin-left: 4px;
+}
+
 h2 {
   color: #2c3e50;
   margin-bottom: 20px;
@@ -589,6 +692,22 @@ h3 {
   background-color: #d32f2f;
 }
 
+.starred-projects-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.project-card {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
 @media (max-width: 992px) {
   .profile-container {
     flex-direction: column;
@@ -598,5 +717,41 @@ h3 {
     width: 100%;
     margin-top: 30px;
   }
+}
+
+.unstar-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.unstar-btn:hover {
+  background-color: #d32f2f;
+  transform: translateY(-1px);
+}
+
+.details-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  margin-top: 8px;
+  text-decoration: none;
+  margin-left: 15px;
+}
+
+.details-btn:hover {
+  background-color: #388e3c;
+  transform: translateY(-1px);
 }
 </style>
