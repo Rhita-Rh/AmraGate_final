@@ -14,11 +14,34 @@ import MyProjects from '../views/MyProjects.vue'
 import ProjectsItem from '../views/ProjectsItem.vue';
 import UpdateProject from '../views/UpdateProject.vue';
 import FeedBackView from '@/views/FeedBackView.vue';
+import followers from '../components/followers.vue';
+import following from '../components/following1.vue';
+import UserDetails from '../components/userdetails.vue';
+import Forgot from '../views/Forgot.vue';
+import Starred from "../views/Starred.vue";
+import NotFound from '../views/NotFound.vue';
+
 const routes = [
   {
     path: '/Home',
     name: 'home',
     component: HomeView
+  },
+  {
+    path: '/accounts/:id',
+    name: 'UserDetails',
+    component: UserDetails,
+    props: true, // Allows route params to be passed as props
+  },
+  {
+    path: '/followers',
+    name: 'followers',
+    component: followers
+  },
+  {
+    path: '/following',
+    name: 'following',
+    component: following
   },
   {
     path: '/feedback',
@@ -60,6 +83,11 @@ const routes = [
     component: Edit_comp
   },
   {
+    path:'/Forgot',
+    name:'Forgot',
+    component: Forgot
+  },
+  {
     path:'/my-projects',
     name:'MyProjects',
     component: MyProjects
@@ -96,6 +124,20 @@ const routes = [
     path: '/update-project/:id',
     name: "UpdateProject",
     component: UpdateProject
+  },
+  {
+    path: "/starred",
+    name: "Starred",
+    component: Starred
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/404'
+  },
+  {
+    path: '/404',
+    name: 'NotFound',
+    component: NotFound
   }
 ]
 

@@ -1,5 +1,37 @@
 <template>
   <div class="user-profile">
+    <div class="back-button-container">
+      <router-link to="/Home" class="back-button">
+        <span class="back-icon">←</span>
+        <span class="back-text">Back to Home</span>
+      </router-link>
+    </div>
+    <div class="profile-picture-section">
+          <div class="avatar-container">
+            <img 
+              v-if="userData.photoURL" 
+              :src="userData.photoURL" 
+              alt="Profile Picture"
+              class="profile-avatar"
+            >
+            <div v-else class="default-avatar">
+              {{ userInitials }}
+            </div>
+          </div>
+          <input 
+            type="file" 
+            id="avatar-upload" 
+            accept="image/*" 
+            @change="handleFileUpload"
+            style="display: none"
+          >
+          <button 
+            class="upload-btn"
+            @click="triggerFileInput"
+          >
+            {{ userData.photoURL ? 'Change Photo' : 'Upload Photo' }}
+          </button>
+        </div>
     <div class="profile-container">
       <div class="profile-section">
         <h2>My Dashboard</h2>
@@ -12,7 +44,14 @@
             <button>Update Profile</button>
           </router-link>
           <router-link to="/mycomp">
-            <button>My competences</button> 
+            <button>My competences</button>
+          </router-link>
+
+          <router-link to="/followers">
+            <button>My followers</button> 
+          </router-link>
+          <router-link to="/following">
+            <button>Following</button> 
           </router-link>
         </div>
 
@@ -29,6 +68,36 @@
           <div class="info-item">
             <span class="info-label">Bio:</span>
             <span class="info-value">{{ userData.bio }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Phone:</span>
+            <span class="info-value">{{ userData.phone }}</span>
+          </div>
+        </div>
+
+        <!-- Starred Projects Section -->
+        <div class="starred-projects-section">
+          <h3>Starred Projects</h3>
+          <div v-if="starredProjects.length > 0">
+            <div
+              v-for="project in starredProjects"
+              :key="project.id"
+              class="project-card"
+            >
+              <div class="info-item">
+                <span class="info-label">Project:</span>
+                <span class="info-value">{{ project.title }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Description:</span>
+                <span class="info-value">{{ project.description }}</span>
+              </div>
+              <button @click="unstarProject(project.id)" class="unstar-btn">Unstar</button>
+              <router-link :to="`/project/${project.id}`" class="details-btn">View Details</router-link>
+            </div>
+          </div>
+          <div v-else>
+            <p>No starred projects.</p>
           </div>
         </div>
 
@@ -56,6 +125,7 @@
               <router-link :to="{ name: 'Edit_goal', params: { index } }">
                 <button class="edit-btn">Edit</button>
               </router-link>
+              <button @click="deletegoal(index)" class="cancel-btn">Delete</button>
             </div>
             <div v-if="!showAddGoalForm">
               <button @click="set_true" class="add-btn">Add a New Goal</button>
@@ -67,7 +137,7 @@
           </div>
           
           <!-- Add new goal form -->
-          <div v-if="showAddGoalForm" class="add-goal-form">
+          <div v-if="showAddGoalForm" class="add-goal-form" ref="down">
             <h3>Add a New Goal</h3>
             <form @submit.prevent="addGoal">
               <div class="form-group">
@@ -88,7 +158,7 @@
               </div>
               <div class="form-actions">
                 <button type="submit" class="save-btn">Save Goal</button>
-                <button @click="set_false" type="button" class="cancel-btn">Cancel</button>
+                <button @click="set_false" type="button" class="delete-btn">Cancel</button>
               </div>
             </form>
           </div>
@@ -114,6 +184,10 @@ import Edit_goal from "../components/Edit_goal.vue";
 import Edit_comp from "../components/Edit_comp.vue";
 import nbre_competences_mois from "./nbre_competences_mois.vue";
 import projet_realis from "./projet_realis.vue";
+import { nextTick } from "vue";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, getDocs, deleteDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 export default {
   props: {
@@ -133,9 +207,11 @@ export default {
         name: "",
         email: "",
         bio: "",
+        phone: "",
         goals: [],
-        competences: []
+        competences: [],
       },
+      starredProjects: [],
       showAddGoalForm: false,
       newGoal: {
         obj: "",
@@ -145,8 +221,16 @@ export default {
       goalEditVisible: []
     };
   },
+  computed: {
+    userInitials() {
+      if (!this.userData.name) return '?';
+      const names = this.userData.name.split(' ');
+      return names.map(name => name[0]).join('').toUpperCase();
+    }
+  },
   created() {
     this.fetchUserData();
+    this.fetchStarredProjects();
   },
   methods: {
     async fetchUserData() {
@@ -162,8 +246,58 @@ export default {
         }
       }
     },
+    async fetchStarredProjects() {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (user) {
+        try {
+          // Get starred projects for current user
+          const starredQuery = collection(db, 'starred');
+          const starredSnapshot = await getDocs(starredQuery);
+          const starredProjectIds = starredSnapshot.docs
+            .filter(doc => doc.data().userId === user.uid)
+            .map(doc => doc.data().projectId);
+
+          // Get project details for each starred project
+          const projectsCollection = collection(db, 'projects');
+          const projectsSnapshot = await getDocs(projectsCollection);
+          this.starredProjects = projectsSnapshot.docs
+            .filter(doc => starredProjectIds.includes(doc.id))
+            .map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }));
+        } catch (error) {
+          console.error('Error fetching starred projects:', error);
+        }
+      }
+    },
+    async unstarProject(projectId) {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (user) {
+        try {
+          const starredRef = collection(db, 'starred');
+          const starDoc = doc(starredRef, `${user.uid}_${projectId}`);
+          await deleteDoc(starDoc);
+          
+          // Update local state
+          this.starredProjects = this.starredProjects.filter(project => project.id !== projectId);
+        } catch (error) {
+          console.error('Error unstarring project:', error);
+        }
+      }
+    },
     set_true() {
       this.showAddGoalForm = true;
+      nextTick(() => {
+        this.$refs.down?.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      });
     },
     set_false() {
       this.showAddGoalForm = false;
@@ -208,23 +342,104 @@ export default {
       }
     },
     async deletegoal(index) {
-      const user = auth.currentUser;
-      if (user) {
-        const docRef = doc(db, "users", user.uid);
-        const goals = this.userData.goals || [];
-        goals.splice(index, 1);
-        await updateDoc(docRef, { goals });
-        this.userData.goals = goals;
+      if(confirm("Do you want to delete this goal?")){
+        const user = auth.currentUser;
+        if (user) {
+          const docRef = doc(db, "users", user.uid);
+          const goals = this.userData.goals || [];
+          goals.splice(index, 1);
+          await updateDoc(docRef, { goals });
+          this.userData.goals = goals;
+        }
+          alert("Goal deleted!");
       }
+      
     },
     updateGoalLocally(updatedGoal, goalIndex) {
       this.userData.goals[goalIndex] = updatedGoal;
+    },
+    triggerFileInput() {
+      document.getElementById('avatar-upload').click();
+    },
+    async handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      try {
+        const user = auth.currentUser;
+        const storage = getStorage();
+        const storageRef = ref(storage, `profile_pictures/${user.uid}`);
+        
+        // Upload the file
+        await uploadBytes(storageRef, file);
+        
+        // Get download URL
+        const photoURL = await getDownloadURL(storageRef);
+        
+        // Update user profile in Firestore
+        const docRef = doc(db, "users", user.uid);
+        await updateDoc(docRef, { photoURL });
+        
+        // Update local data
+        this.userData.photoURL = photoURL;
+        
+      } catch (error) {
+        console.error("Error uploading profile picture:", error);
+        alert("Error uploading profile picture");
+      }
+    },
     }
-  }
+  
 };
 </script>
 
 <style scoped>
+.profile-picture-section {
+  margin-top:20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.avatar-container {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  font-size: 32px;
+  font-weight: bold;
+  color: #555;
+}
+
+.upload-btn {
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-btn:hover {
+  background-color: #0b7dda;
+}
+
 .user-profile {
   background-color: #f5f7fa;
   min-height: 100vh;
@@ -257,6 +472,40 @@ export default {
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+.back-button-container {
+  margin-bottom: 20px;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f8fafc;
+  color: #2d3748;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.back-button:hover {
+  background-color: #edf2f7;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.back-icon {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.back-text {
+  margin-left: 4px;
 }
 
 h2 {
@@ -336,17 +585,33 @@ h3 {
   color: white;
   border: none;
   border-radius: 6px;
+  height: 40px;
   padding: 8px 15px;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 10px;
+  margin: 10px;
 }
 
 .edit-btn:hover {
   background-color: #0b7dda;
   transform: translateY(-1px);
 }
-
+.delete-btn {
+  background-color: #f44336;
+  height: 40px;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+.delete-btn:hover {
+  background-color: #952c25;
+  transform: translateY(-1px);
+}
 .add-btn {
   background-color: #4caf50;
   color: white;
@@ -427,6 +692,22 @@ h3 {
   background-color: #d32f2f;
 }
 
+.starred-projects-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.project-card {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
 @media (max-width: 992px) {
   .profile-container {
     flex-direction: column;
@@ -436,5 +717,41 @@ h3 {
     width: 100%;
     margin-top: 30px;
   }
+}
+
+.unstar-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.unstar-btn:hover {
+  background-color: #d32f2f;
+  transform: translateY(-1px);
+}
+
+.details-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  margin-top: 8px;
+  text-decoration: none;
+  margin-left: 15px;
+}
+
+.details-btn:hover {
+  background-color: #388e3c;
+  transform: translateY(-1px);
 }
 </style>

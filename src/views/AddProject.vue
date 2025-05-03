@@ -88,7 +88,7 @@
       </button>
 
       <button type="button" @click="$router.push('/Dashboard')" class="home-btn">
-        Back to Home
+        Back to Dashboard
       </button>
     </div>
   </form>
@@ -179,6 +179,7 @@ export default {
         }
 
         const userId = user.uid;
+        const timestamp = new Date().toISOString(); // Store timestamp in ISO format
 
         const projectData = {
           title: this.formData.title,
@@ -188,6 +189,7 @@ export default {
           techStack: this.formData.techStack,
           github: this.formData.github,
           imageUrl: imageUrl,
+          timestamp: timestamp, // Add timestamp to project data
         };
 
         const projectRef = await addDoc(collection(db, "projects"), projectData);
