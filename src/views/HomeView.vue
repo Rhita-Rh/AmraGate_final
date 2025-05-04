@@ -2,7 +2,7 @@
   <div class="user-profile">
     <!-- Navbar -->
     <nav class="navbar">
-      <img src="R.png" alt="Logo" class="logo" />
+      <img src="@/assets/logo.png" alt="Logo" class="logo" />
       <div class="nav-links">
         <router-link to="/accounts" class="follow-btn">Accounts</router-link>
         <router-link to="/dashboard" class="follow-btn">Dashboard</router-link>
@@ -95,7 +95,11 @@ export default {
   display: flex;
   align-items: center;
   gap: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
+
 
 .follow-btn {
   padding: 10px 18px;
