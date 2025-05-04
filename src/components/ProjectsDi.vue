@@ -1,7 +1,7 @@
 <template>
   <div>
     <ul>
-      <li v-for="project in projects" :key="project.id" class="project-card">
+      <li v-for="project in filteredProjects" :key="project.id" class="project-card">
         <!-- Project Header: Author and Profile Picture -->
         <div class="project-header">
           <div class="author-details">
@@ -27,7 +27,7 @@
                     alt="Profile Picture"
                     class="profile-avatar"
                   />
-                  <span v-else class="default-avatar">{{ project.authorName ? project.authorName.charAt(0) : 'N' }}</span>
+                  <span v-else class="default-avatar">{{ project.authorName ? project.authorName.trim().charAt(0) : 'N' }}</span>
                 </router-link>
               </div>
             </div>
@@ -83,6 +83,10 @@ import { getAuth } from 'firebase/auth';
 import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 
 export default {
+  props: {
+    searchQuery: String,
+    selectedTech: String
+  },
   name: 'ProjectsDiv',
   data() {
     return {
@@ -90,18 +94,25 @@ export default {
       starredProjects: [],
       followedUsers: [],
       user: null,
+      allProjects: [], // full list of projects
+      filteredProjects: [] // filtered list
     };
+  },
+  watch: {
+    searchQuery: 'filterProjects',
+    selectedTech: 'filterProjects'
   },
   computed: {
     filteredProjects() {
-      return this.projects.filter(project => {
-        const matchesSearch = this.searchQuery === '' || 
-          project.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          project.description.toLowerCase().includes(this.searchQuery.toLowerCase());
-        
-        const matchesTech = this.selectedTech === '' || 
-          (project.techStack && project.techStack.includes(this.selectedTech));
-        
+      const search = this.searchQuery?.toLowerCase() || '';
+      const selected = this.selectedTech || '';
+          return this.projects.filter(project => {
+        const title = project.title?.toLowerCase() || '';
+        const matchesSearch = search === '' || title.includes(search);
+
+        const matchesTech = selected === '' || 
+          (project.techStack && project.techStack.map(t => t.toLowerCase()).includes(selected.toLowerCase()));
+
         return matchesSearch && matchesTech;
       });
     }
