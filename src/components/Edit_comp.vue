@@ -1,4 +1,4 @@
-<template>
+<template>  
   <div class="edit-competence-container">
     <form v-if="loaded" @submit.prevent="saveCompetence" class="competence-form">
       <h2 class="form-title">Edit Competence</h2>
@@ -24,13 +24,13 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Progress Date:</label>
-        <input v-model="date_progr" type="date" class="form-input" />
-      </div>
-
-      <div class="form-group">
         <label class="form-label">Start Date:</label>
-        <input v-model="date_debut" type="date" class="form-input" required />
+        <input
+          type="text"
+          :value="elapsedText"
+          readonly
+          class="readonly-field"
+        />
       </div>
 
       <div class="form-actions">
@@ -45,7 +45,7 @@
 
 <script>
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db, auth } from "../firebase-config";
+import { db } from "../firebase-config";
 
 export default {
   name: "Edit_comp",
@@ -66,10 +66,12 @@ export default {
       date_acqui: "",
       date_progr: "",
       date_debut: "",
+      start_date: "", // actual ISO timestamp
       loaded: false,
       competences: []
     };
   },
+ 
   created() {
     this.loadCompetence();
   },
@@ -92,6 +94,7 @@ export default {
         this.date_acqui = comp.date_acqui || "";
         this.date_progr = comp.date_progr || "";
         this.date_debut = comp.date_debut || "";
+        this.start_date = comp.start_date || ""; // keep original
         this.loaded = true;
       } catch (error) {
         console.error("Error loading competence:", error);
@@ -110,8 +113,9 @@ export default {
           name: this.name,
           level: this.level,
           date_acqui: this.date_acqui,
-          date_progr: this.date_progr,
-          date_debut: this.date_debut
+          date_progr: new Date().toISOString(),
+          date_debut: this.date_debut,
+          start_date: this.start_date || new Date().toISOString(),
         };
 
         await updateDoc(userRef, { competences: this.competences });
@@ -133,15 +137,32 @@ export default {
         alert("Please select a level");
         return false;
       }
-      if (!this.date_debut) {
-        alert("Please select a start date");
+      if (!this.start_date) {
+        alert("Missing start date from database");
         return false;
       }
       return true;
     }
+  },
+  computed: {
+    elapsedText() {
+    if (!this.start_date) return "Unknown start date";
+
+    const start = new Date(this.start_date);  // Use full timestamp
+    const now = new Date();
+    const diffMs = now - start;
+
+    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+    return `Started ${days} day(s), ${hours} hour(s), and ${minutes} minute(s) ago`;
   }
+
+}
 };
 </script>
+
 <style scoped>
 .edit-competence-container {
   max-width: 600px;
@@ -246,7 +267,7 @@ export default {
     margin: 1rem;
     border-radius: 12px;
   }
-  
+ 
   .form-actions {
     flex-direction: column;
     gap: 0.8rem;
@@ -256,4 +277,19 @@ export default {
     width: 100%;
   }
 }
+.elapsed-text {
+  margin-top: 0.3rem;
+  font-size: 0.95rem;
+  color: #5b6b82;
+  font-style: italic;
+}
+.readonly-field {
+  background-color: #f0f0f0;
+  cursor: not-allowed;
+  padding: 0.85rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  border: 1px solid #d0d6e2;
+}
+
 </style>

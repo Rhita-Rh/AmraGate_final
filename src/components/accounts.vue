@@ -13,13 +13,16 @@
     <div class="user-card" v-for="(user, index) in filteredUsers" :key="index">
       <div class="user-info">
         <img
-          :src="user.profilePhoto || '/profile.png'"
+          v-if="user.photoURL"
+          :src="user.photoURL"
           alt="Profile Photo"
           class="profile-photo"
         />
+        <span v-else class="default-avatar">{{ user.name ? user.name.charAt(0).toUpperCase()  : 'N' }}</span>
         <div class="user-details">
           <h3>{{ user.name }}</h3>
           <p>@{{ user.username }}</p>
+          <p class="createdat">{{ formattedCreatedAt(user) }}</p>
         </div>
       </div>
       <div class="follow-buttons" v-if="currentUser?.uid !== user.id">
@@ -94,11 +97,20 @@ export default {
       try {
         const querySnapshot = await getDocs(collection(db, "users"));
         users.value = querySnapshot.docs
-          .map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }))
-          .filter((user) => user.id !== auth.currentUser?.uid); // 🔥 Exclure soi-même
+          .map((doc) => {
+            const userData = doc.data();
+            return {
+              id: doc.id,
+              ...userData,
+              // Ensure createdAt is properly formatted
+              createdAt: userData.createdAt 
+                ? userData.createdAt.seconds 
+                  ? new Date(userData.createdAt.seconds * 1000).toISOString()
+                  : userData.createdAt
+                : new Date().toISOString()
+            };
+          })
+          .filter((user) => user.id !== auth.currentUser?.uid);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -109,6 +121,30 @@ export default {
         currentUserData.value?.following &&
         currentUserData.value.following.includes(user.id)
       );
+    };
+
+    const formattedCreatedAt = (user) => {
+      if (!user?.createdAt) return 'Member since: Unknown date';
+      
+      try {
+        // Handle both string timestamps and Firestore Timestamp objects
+        const date = typeof user.createdAt === 'string' 
+          ? new Date(user.createdAt)
+          : new Date(user.createdAt.seconds * 1000);
+        
+        if (isNaN(date.getTime())) {
+          return 'Member since: Unknown date';
+        }
+        
+        return `Member since: ${date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })}`;
+      } catch (e) {
+        console.error('Error formatting date:', e);
+        return 'Member since: Unknown date';
+      }
     };
 
     const followUser = async (user) => {
@@ -181,6 +217,7 @@ export default {
       searchQuery,
       filteredUsers,
       goToUserDetails,
+      formattedCreatedAt
     };
   },
 };
@@ -357,6 +394,16 @@ export default {
   color: #7ba6dd;
 }
 
+.createdat {
+  padding: 6px 12px;
+  background-color: #f0f7ff; 
+  border-radius: 6px;
+  font-size: 14px;
+  color: #5a7ba6;
+  display: inline-block;
+  margin: 10px 0;
+}
+
 .info-value {
   flex: 1;
   padding: 8px 12px;
@@ -376,5 +423,6 @@ export default {
   color: #6b7c93;
   border: 2px solid #7ba6dd;
   font-size: 24px;
+  margin-right: 20px;
 }
 </style>
