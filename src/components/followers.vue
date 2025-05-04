@@ -26,9 +26,18 @@
           <h3>{{ follower.name }}</h3>
           <p>@{{ follower.username }}</p>
         </div>
-        <button class="unfollow-btn" @click="goToUserDetails(follower.id)">
-    View Details
-  </button>
+        <div class="follow-buttons">
+          <button 
+            v-if="currentUser?.uid !== follower.id"
+            @click="isFollowing(follower) ? unfollowUser(follower) : followUser(follower)"
+            :class="isFollowing(follower) ? 'unfollow-btn' : 'follow-btn'"
+          >
+            {{ isFollowing(follower) ? 'Unfollow' : 'Follow' }}
+          </button>
+          <button class="view-details-btn" @click="goToUserDetails(follower.id)">
+            View Details
+          </button>
+        </div>
       </div>
     </div>
 
@@ -37,7 +46,7 @@
 </template>
 
 <script>
-import { ref, onMounted,computed } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import {
   getFirestore,
@@ -45,6 +54,9 @@ import {
   doc,
   getDocs,
   collection,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
@@ -52,14 +64,75 @@ export default {
   name: "followers",
   setup() {
     const router = useRouter();
-  const goToUserDetails = (userId) => {
-    router.push(`/accounts/${userId}`);
-  };
     const db = getFirestore();
     const auth = getAuth();
     const currentUser = ref(null);
     const followers = ref([]);
     const searchQuery = ref("");
+    const currentUserData = ref({});
+
+    const getCurrentUser = async () => {
+      currentUser.value = auth.currentUser;
+      if (currentUser.value) {
+        const userDoc = await getDoc(doc(db, "users", currentUser.value.uid));
+        if (userDoc.exists()) {
+          currentUserData.value = userDoc.data();
+        }
+      }
+    };
+
+    const isFollowing = (user) => {
+      return currentUserData.value?.following?.includes(user.id) || false;
+    };
+
+    const followUser = async (user) => {
+      if (!currentUser.value) return;
+
+      try {
+        await updateDoc(doc(db, "users", currentUser.value.uid), {
+          following: arrayUnion(user.id),
+        });
+
+        await updateDoc(doc(db, "users", user.id), {
+          followers: arrayUnion(currentUser.value.uid),
+        });
+
+        if (!currentUserData.value.following) {
+          currentUserData.value.following = [];
+        }
+        if (!currentUserData.value.following.includes(user.id)) {
+          currentUserData.value.following.push(user.id);
+        }
+      } catch (error) {
+        console.error("Error following user:", error);
+      }
+    };
+
+    const unfollowUser = async (user) => {
+      if (!currentUser.value) return;
+
+      try {
+        await updateDoc(doc(db, "users", currentUser.value.uid), {
+          following: arrayRemove(user.id),
+        });
+
+        await updateDoc(doc(db, "users", user.id), {
+          followers: arrayRemove(currentUser.value.uid),
+        });
+
+        if (currentUserData.value.following) {
+          currentUserData.value.following = currentUserData.value.following.filter(
+            (id) => id !== user.id
+          );
+        }
+      } catch (error) {
+        console.error("Error unfollowing user:", error);
+      }
+    };
+
+    const goToUserDetails = (userId) => {
+      router.push(`/accounts/${userId}`);
+    };
 
     const getFollowers = async () => {
       currentUser.value = auth.currentUser;
@@ -93,8 +166,9 @@ export default {
       );
     });
 
-    onMounted(() => {
-      getFollowers();
+    onMounted(async () => {
+      await getCurrentUser();
+      await getFollowers();
     });
 
     return {
@@ -102,6 +176,10 @@ export default {
       searchQuery,
       filteredFollowers,
       goToUserDetails,
+      currentUser,
+      isFollowing,
+      followUser,
+      unfollowUser,
     };
   },
 };
@@ -195,7 +273,49 @@ export default {
   font-weight: 500;
 }
 
+.follow-buttons {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.follow-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
+  color: white;
+  box-shadow: 0 4px 12px rgba(148, 229, 148, 0.2);
+}
+
+.follow-btn:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
+}
+
 .unfollow-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+  color: white;
+  box-shadow: 0 4px 12px rgba(228, 138, 138, 0.2);
+}
+
+.unfollow-btn:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
+}
+
+.view-details-btn {
   padding: 10px 20px;
   border: none;
   border-radius: 10px;
@@ -206,10 +326,9 @@ export default {
   background: linear-gradient(135deg, #7ba6dd, #a5c1eb);
   color: white;
   box-shadow: 0 4px 12px rgba(123, 166, 221, 0.15);
-  margin-left: auto;
 }
 
-.unfollow-btn:hover {
+.view-details-btn:hover {
   background: linear-gradient(135deg, #6a96d2, #95b4e0);
   transform: translateY(-2px);
 }
@@ -250,10 +369,16 @@ export default {
     align-items: flex-start;
   }
   
-  .unfollow-btn {
+  .follow-buttons {
     width: 100%;
     margin-top: 15px;
     margin-left: 0;
+  }
+  
+  .follow-btn,
+  .unfollow-btn,
+  .view-details-btn {
+    width: 100%;
   }
 }
 </style>

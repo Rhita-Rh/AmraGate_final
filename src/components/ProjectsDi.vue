@@ -1,7 +1,7 @@
 <template>
   <div>
     <ul>
-      <li v-for="project in filteredProjects" :key="project.id" class="project-card">
+      <li v-for="project in projects" :key="project.id" class="project-card">
         <!-- Project Header: Author and Profile Picture -->
         <div class="project-header">
           <div class="author-details">
@@ -47,7 +47,8 @@
             <!-- Project Title and Description -->
             <h2 class="project-title">{{ project.title }}</h2>
             <p class="project-description">{{ project.description }}</p>
-            
+            <p class="project-timestamp">Added: {{ formatTimestamp(project.timestamp) }}</p>
+
             <!-- Project GitHub Link -->
             <a :href="project.github" class="project-github" target="_blank">GitHub</a>
 
@@ -83,16 +84,6 @@ import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, updateDoc, arrayUn
 
 export default {
   name: 'ProjectsDiv',
-  props: {
-    searchQuery: {
-      type: String,
-      default: ''
-    },
-    selectedTech: {
-      type: String,
-      default: ''
-    }
-  },
   data() {
     return {
       projects: [],
@@ -116,6 +107,19 @@ export default {
     }
   },
   methods: {
+    formatTimestamp(timestamp) {
+  if (!timestamp) return 'Unknown';
+  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+  return date.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+},
+
     async toggleStar(projectId) {
       const auth = getAuth();
       const user = auth.currentUser;
@@ -179,13 +183,6 @@ export default {
       ...doc.data(),
     }));
 
-    // Sort projects by timestamp in descending order (most recent first)
-    this.projects.sort((a, b) => {
-      const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
-      const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
-      return dateB - dateA;
-    });
-
     for (let project of this.projects) {
       const authorId = project.owner;
       if (authorId) {
@@ -214,7 +211,6 @@ export default {
     }
   }
 };
-
 </script>
 <style scoped>
 li {
@@ -268,6 +264,7 @@ li {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(211, 208, 208, 0.3);
+  border: 2px solid #7ba6dd;
 }
 
 .follow-button {
@@ -280,7 +277,6 @@ li {
   cursor: pointer;
   height: 40px;
   transition: all 0.3s ease;
-  margin-left: auto;
   white-space: nowrap;
   min-width: 100px;
   text-align: center;
@@ -301,7 +297,6 @@ li {
   cursor: pointer;
   height: 40px;
   transition: all 0.3s ease;
-  margin-left: auto;
   white-space: nowrap;
   min-width: 100px;
   text-align: center;
@@ -336,7 +331,7 @@ li {
 .default-avatar {
   font-size: 24px;
   font-weight: bold;
-  color: #a0aec0;
+  color: #7ba6dd;
 }
 
 .project-header {
@@ -354,9 +349,10 @@ li {
 }
 
 .author-name {
-  color: #000000;
-  font-weight: 500;
+  color: #4a4a4a;
+  font-weight: 600;
   margin: 0;
+  font-size: 1rem;
 }
 
 .project-content {

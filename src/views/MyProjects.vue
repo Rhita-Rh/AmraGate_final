@@ -1,63 +1,69 @@
 <template>
-    <div class="projects-container">
-        <div class="header-actions">
-            <div class="add-project">
-                <router-link to="/add-project" class="add-project-button">
-                    + Add New Project
-                </router-link>
-            </div>
-            <router-link to="/Dashboard" class="home-button">
-                Back to Dashboard
-            </router-link>
-        </div>
-        
-        <!-- Search and Filter Section -->
-        <div class="search-filter-container">
-            <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Search projects..."
-                class="search-bar"
-            />
-            <select v-model="selectedTech" class="tech-filter">
-                <option value="">All Technologies</option>
-                <option v-for="tech in allTechStack" :key="tech" :value="tech">{{ tech }}</option>
-            </select>
-        </div>
-
-        <div v-if="filteredProjects.length > 0">
-            <div class="project-card" v-for="project in filteredProjects" :key="project.id">
-                <div class="project-header">
-                    <div class="project-title">{{ project.title }}</div>
-                </div>
-                <div class="project-content">
-                    <div class="project-details">
-                        <div class="project-description">{{ project.description }}</div>
-                        <a :href="project.github" class="project-github" target="_blank">
-                            View on GitHub
-                        </a>
-                        <div class="tech-stack">
-                            <span class="tech-item" v-for="element in project.techStack" :key="element">
-                                {{ element }}
-                            </span>
-                        </div>
-                        <router-link 
-                            :to="`/project/${project.id}`" 
-                            class="view-details-button"
-                        >
-                            View Details
-                        </router-link>
-                    </div>
-                    <div class="project-image" v-if="project.imageUrl">
-                        <img :src="project.imageUrl" alt="Project image">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div v-else class="no-projects">
-            <p>No projects found matching your search.</p>
-        </div>
+  <div class="projects-container">
+    <div class="header-actions">
+      <div class="add-project">
+        <router-link to="/add-project" class="add-project-button">
+          + Add New Project
+        </router-link>
+      </div>
+      <router-link to="/Dashboard" class="home-button">
+        Back to Dashboard
+      </router-link>
     </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-filter-container">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Search projects..."
+        class="search-bar"
+      />
+      <select v-model="selectedTech" class="tech-filter">
+        <option value="">All Technologies</option>
+        <option v-for="tech in allTechStack" :key="tech" :value="tech">{{ tech }}</option>
+      </select>
+    </div>
+
+    <div v-if="filteredProjects.length > 0">
+      <div class="project-card" v-for="project in filteredProjects" :key="project.id">
+        <div class="project-header">
+          <div class="project-title">{{ project.title }}</div>
+        </div>
+        <div class="project-content">
+          <div class="project-details">
+            <div class="project-description">{{ project.description }}</div>
+
+            <!-- Timestamp Display -->
+            <div class="project-timestamp">
+              <strong>Added:</strong> {{ formatTimestamp(project.timestamp) }}
+            </div>
+
+            <a :href="project.github" class="project-github" target="_blank">
+              View on GitHub
+            </a>
+            <div class="tech-stack">
+              <span class="tech-item" v-for="element in project.techStack" :key="element">
+                {{ element }}
+              </span>
+            </div>
+            <router-link 
+              :to="`/project/${project.id}`" 
+              class="view-details-button"
+            >
+              View Details
+            </router-link>
+          </div>
+          <div class="project-image" v-if="project.imageUrl">
+            <img :src="project.imageUrl" alt="Project image">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-else class="no-projects">
+      <p>No projects found matching your search.</p>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -66,57 +72,72 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 export default {
-    name: 'ProjectsDi',
-    data() {
-        return {
-            projects: [],
-            searchQuery: '',
-            selectedTech: '',
-            allTechStack: []
-        }
-    },
-    computed: {
-        filteredProjects() {
-            let filtered = this.projects;
+  name: 'ProjectsDi',
+  data() {
+    return {
+      projects: [],
+      searchQuery: '',
+      selectedTech: '',
+      allTechStack: []
+    };
+  },
+  computed: {
+    filteredProjects() {
+      let filtered = this.projects;
 
-            if (this.searchQuery) {
-                const query = this.searchQuery.toLowerCase();
-                filtered = filtered.filter(project => 
-                    project.title.toLowerCase().includes(query) ||
-                    project.description.toLowerCase().includes(query) ||
-                    project.techStack.some(tech => tech.toLowerCase().includes(query))
-                );
-            }
+      if (this.searchQuery) {
+        const queryText = this.searchQuery.toLowerCase();
+        filtered = filtered.filter(project => 
+          project.title.toLowerCase().includes(queryText) ||
+          project.description.toLowerCase().includes(queryText) ||
+          project.techStack.some(tech => tech.toLowerCase().includes(queryText))
+        );
+      }
 
-            if (this.selectedTech) {
-                filtered = filtered.filter(project => 
-                    project.techStack.includes(this.selectedTech)
-                );
-            }
+      if (this.selectedTech) {
+        filtered = filtered.filter(project => 
+          project.techStack.includes(this.selectedTech)
+        );
+      }
 
-            return filtered;
-        }
-    },
-    async created() {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        
-        if (user) {
-            const q = query(collection(db, "projects"), where("owner", "==", user.uid));
-            const querySnapshot = await getDocs(q);
-            this.projects = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-
-            // Get all unique tech stack values
-            const allTech = new Set();
-            this.projects.forEach(project => {
-                project.techStack.forEach(tech => allTech.add(tech));
-            });
-            this.allTechStack = Array.from(allTech).sort();
-        }
+      return filtered;
     }
+  },
+  async created() {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    
+    if (user) {
+      const q = query(collection(db, "projects"), where("owner", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+      this.projects = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      const allTech = new Set();
+      this.projects.forEach(project => {
+        project.techStack.forEach(tech => allTech.add(tech));
+      });
+      this.allTechStack = Array.from(allTech).sort();
+    }
+  },
+  methods: {
+    formatTimestamp(timestamp) {
+      if (!timestamp) return "Unknown";
+
+      const date = new Date(timestamp);
+      const options = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      };
+      return date.toLocaleDateString('en-US', options) + ' ' + date.toLocaleTimeString('en-US', options);
+    }
+  }
 };
 </script>
 <style scoped>
