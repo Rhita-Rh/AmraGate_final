@@ -10,8 +10,23 @@
                 Back to Dashboard
             </router-link>
         </div>
-        <div v-if="projects.length > 0">
-            <div class="project-card" v-for="project in projects" :key="project.id">
+        
+        <!-- Search and Filter Section -->
+        <div class="search-filter-container">
+            <input
+                v-model="searchQuery"
+                type="text"
+                placeholder="Search projects..."
+                class="search-bar"
+            />
+            <select v-model="selectedTech" class="tech-filter">
+                <option value="">All Technologies</option>
+                <option v-for="tech in allTechStack" :key="tech" :value="tech">{{ tech }}</option>
+            </select>
+        </div>
+
+        <div v-if="filteredProjects.length > 0">
+            <div class="project-card" v-for="project in filteredProjects" :key="project.id">
                 <div class="project-header">
                     <div class="project-title">{{ project.title }}</div>
                 </div>
@@ -40,7 +55,7 @@
             </div>
         </div>
         <div v-else class="no-projects">
-            <p>No projects added yet. Click the button above to add your first project!</p>
+            <p>No projects found matching your search.</p>
         </div>
     </div>
 </template>
@@ -55,9 +70,33 @@ export default {
     data() {
         return {
             projects: [],
+            searchQuery: '',
+            selectedTech: '',
+            allTechStack: []
         }
     },
+    computed: {
+        filteredProjects() {
+            let filtered = this.projects;
 
+            if (this.searchQuery) {
+                const query = this.searchQuery.toLowerCase();
+                filtered = filtered.filter(project => 
+                    project.title.toLowerCase().includes(query) ||
+                    project.description.toLowerCase().includes(query) ||
+                    project.techStack.some(tech => tech.toLowerCase().includes(query))
+                );
+            }
+
+            if (this.selectedTech) {
+                filtered = filtered.filter(project => 
+                    project.techStack.includes(this.selectedTech)
+                );
+            }
+
+            return filtered;
+        }
+    },
     async created() {
         const auth = getAuth();
         const user = auth.currentUser;
@@ -69,6 +108,13 @@ export default {
                 id: doc.id,
                 ...doc.data()
             }));
+
+            // Get all unique tech stack values
+            const allTech = new Set();
+            this.projects.forEach(project => {
+                project.techStack.forEach(tech => allTech.add(tech));
+            });
+            this.allTechStack = Array.from(allTech).sort();
         }
     }
 };
@@ -89,6 +135,38 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+}
+
+.search-filter-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.search-bar {
+  width: 90%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.tech-filter {
+  width: 200px;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+}
+
+.search-bar:focus,
+.tech-filter:focus {
+  outline: none;
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
 }
 
 .add-project-button,

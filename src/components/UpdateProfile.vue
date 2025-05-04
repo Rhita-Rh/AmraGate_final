@@ -68,7 +68,6 @@
 <script>
 import { db, auth } from "../firebase-config";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default {
   name: "UpdateProfile",
@@ -124,14 +123,26 @@ export default {
       if (!file) return;
       
       try {
-        const user = auth.currentUser;
-        const storage = getStorage();
-        const storageRef = ref(storage, `profile_pictures/${user.uid}`);
+        const url = "https://api.cloudinary.com/v1_1/dgcpm3hlg/image/upload";
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", "unsigned");
+
+        const response = await fetch(url, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Cloudinary error response:", errorText);
+          throw new Error("Image upload failed");
+        }
+
+        const data = await response.json();
+        const photoURL = data.secure_url;
         
-        await uploadBytes(storageRef, file);
-        const photoURL = await getDownloadURL(storageRef);
-        
-        const docRef = doc(db, "users", user.uid);
+        const docRef = doc(db, "users", auth.currentUser.uid);
         await updateDoc(docRef, { photoURL });
         
         this.userData.photoURL = photoURL;
