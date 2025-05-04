@@ -57,13 +57,21 @@
       </div>
     </div>
 
-    <!-- Project List -->
-    <main class="project-list">
-      <ProjectsDi 
-        :search-query="searchQuery"
-        :selected-tech="selectedTech"
-      />
-    </main>
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Activity Feed -->
+      <div class="feed-section">
+        <ActivityFeed />
+      </div>
+
+      <!-- Project List -->
+      <div class="project-section">
+        <ProjectsDi 
+          :search-query="searchQuery"
+          :selected-tech="selectedTech"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -71,6 +79,7 @@
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
 import ProjectsDi from '@/components/ProjectsDi.vue';
+import ActivityFeed from '@/components/ActivityFeed.vue';
 import { onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc, collection, getDocs } from "firebase/firestore";
 const db = getFirestore();
@@ -79,6 +88,7 @@ export default {
   name: 'HomeView',
   components: {
     ProjectsDi,
+    ActivityFeed
   },
   data() {
     return {
@@ -469,6 +479,33 @@ export default {
 @media (max-width: 480px) {
   .search-container {
     margin-bottom: 1.5rem;
+  }
+}
+
+.main-content {
+  display: flex;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.feed-section {
+  flex: 1;
+  max-width: 400px;
+}
+
+.project-section {
+  flex: 2;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    flex-direction: column;
+  }
+  
+  .feed-section {
+    max-width: 100%;
   }
 }
 </style>
