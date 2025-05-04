@@ -47,7 +47,8 @@
             <!-- Project Title and Description -->
             <h2 class="project-title">{{ project.title }}</h2>
             <p class="project-description">{{ project.description }}</p>
-            
+            <p class="project-timestamp">Added: {{ formatTimestamp(project.timestamp) }}</p>
+
             <!-- Project GitHub Link -->
             <a :href="project.github" class="project-github" target="_blank">GitHub</a>
 
@@ -106,6 +107,19 @@ export default {
     }
   },
   methods: {
+    formatTimestamp(timestamp) {
+  if (!timestamp) return 'Unknown';
+  const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+  return date.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+},
+
     async toggleStar(projectId) {
       const auth = getAuth();
       const user = auth.currentUser;

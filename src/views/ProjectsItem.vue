@@ -20,6 +20,9 @@
           <p>{{ project.description }}</p>
         </div>
         
+        <h3>Added at: </h3>
+        <div>{{ formattedTimestamp }}</div>
+        
         <div class="project-tech-stack">
           <h3>Tech Stack</h3>
           <div class="tech-tags">
@@ -53,7 +56,7 @@ export default {
       loading: true,
       error: null,
       isOwner: false
-    }
+    };
   },
   async created() {
     try {
@@ -73,6 +76,21 @@ export default {
       this.error = error.message;
     } finally {
       this.loading = false;
+    }
+  },
+  computed: {
+    formattedTimestamp() {
+      const date = new Date(this.project.timestamp);
+      const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true,
+      };
+      return date.toLocaleDateString('en-US', options) ; 
     }
   },
   methods: {
@@ -242,6 +260,4 @@ export default {
   display: inline-block;
   transition: background-color 0.2s ease;
 }
-
-
 </style>
