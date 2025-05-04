@@ -6,7 +6,7 @@
         <button v-if="isOwner" @click="updateProject" class="update-btn">Update</button>
         <button v-if="isOwner" @click="deleteProject" class="delete-btn">Delete</button>
       </div>
-      <router-link to="/my-projects" class="home-button">Back to My Projects</router-link>
+      <router-link to="/Home" class="home-button">Back to Home</router-link>
     </div>
     
     <div class="project-content">
