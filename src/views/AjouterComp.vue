@@ -1,4 +1,4 @@
-<template>
+<template> 
   <div class="add-competence-container">
     <div class="form-card">
       <h1>Add New Competence</h1>
@@ -48,13 +48,11 @@
               <button class="back">Back to Dashboard</button>
             </router-link>
           </div>
-        
         </div>
-        
       </form>
 
       <div v-if="lastAdded" class="success-message">
-        ✓ Added <strong>{{ lastAdded.name }}</strong> ({{ getDaysSince(lastAdded.date_progr) }} days ago)
+        ✓ Added <strong>{{ lastAdded.name }}</strong> ({{ elapsed }})
       </div>
 
       <div v-if="error" class="error-message">
@@ -79,15 +77,20 @@ export default {
       today: new Date().toISOString().split('T')[0],
       lastAdded: null,
       isLoading: false,
-      error: null
+      error: null,
+      elapsed: '',
+      timer: null,
+      startTime: null,
     };
   },
   methods: {
     async ajouterCompetence() {
       if (!this.validateForm()) return;
-      
+
       this.isLoading = true;
       this.error = null;
+
+      const now = new Date();
 
       try {
         const auth = getAuth();
@@ -96,21 +99,22 @@ export default {
         if (!user) throw new Error('User not authenticated');
 
         const userRef = doc(db, 'users', user.uid);
-        const today = this.today;
 
         const competence = {
           name: this.name.trim(),
           level: this.level,
           date_acqui: this.date_acqui,
-          date_debut: today,
-          date_progr: today
+          date_debut: now.toISOString().split('T')[0],
+          date_progr: now.toISOString(),
         };
 
         await updateDoc(userRef, {
-          competences: arrayUnion(competence)
+          competences: arrayUnion(competence),
         });
 
         this.lastAdded = competence;
+        this.startTime = new Date(competence.date_progr);
+        this.elapsed = this.getTimeSince(this.startTime);
         this.resetForm();
       } catch (error) {
         console.error("Error adding competence:", error);
@@ -119,6 +123,7 @@ export default {
         this.isLoading = false;
       }
     },
+
     validateForm() {
       if (!this.name.trim()) {
         this.error = "Please enter a skill name";
@@ -134,21 +139,43 @@ export default {
       }
       return true;
     },
+
     resetForm() {
       this.name = '';
       this.level = '';
       this.date_acqui = '';
     },
-    getDaysSince(date) {
+
+    getTimeSince(startTime) {
       const now = new Date();
-      const past = new Date(date);
-      const diff = now - past;
-      return Math.floor(diff / (1000 * 60 * 60 * 24));
-    }
-  }
+      const then = new Date(startTime);
+      const diffMs = now - then;
+
+      const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+      const parts = [];
+      if (days > 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
+      if (hours > 0) parts.push(`${hours} hour${hours !== 1 ? 's' : ''}`);
+      if (minutes > 0) parts.push(`${minutes} minute${minutes !== 1 ? 's' : ''}`);
+
+      if (parts.length === 0) return 'just now';
+      return parts.join(', ') + ' ago';
+    },
+  },
+  mounted() {
+    this.timer = setInterval(() => {
+      if (this.startTime) {
+        this.elapsed = this.getTimeSince(this.startTime);
+      }
+    }, 60000); // Update every 60 seconds
+  },
+  beforeUnmount() {
+    clearInterval(this.timer);
+  },
 };
 </script>
-
 <style scoped>
 .add-competence-container {
   display: flex;
