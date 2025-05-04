@@ -1,6 +1,6 @@
 <template>
     <div v-if="user" class="user-details-container">
-      <h2>{{ user.name }}'s Details</h2>
+      <h2>{{ user.name }}</h2>
       <div v-if="user">
         <img :src="user.profilePhoto || '/profile.png'" alt="Profile Photo" class="profile-photo" />
         <p>@{{ user.username }}</p>
