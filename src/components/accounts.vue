@@ -302,6 +302,10 @@ export default {
   font-weight: 500;
   transition: all 0.3s ease;
 }
+.back:hover{
+  background-color: #b71c1c;
+  transform: scale(1.05);
+}
 @media (max-width: 600px) {
   .user-card {
     flex-direction: column;

@@ -4,6 +4,19 @@
     <nav class="navbar">
       <img src="R.png" alt="Logo" class="logo" />
       <div class="nav-links">
+        <router-link to="/Dashboard" style="text-decoration: none;">
+          <div v-if="user && user.photoURL" class="profile-avatar-wrapper">
+            <img 
+              :src="user.photoURL" 
+              alt="Profile Picture"
+              class="profile-avatar"
+            />
+          </div>
+          <div v-else-if="user" class="initials-avatar">
+            {{ userInitials }}
+          </div>
+          
+        </router-link>
         <router-link to="/accounts" class="follow-btn">Accounts</router-link>
         <router-link to="/dashboard" class="follow-btn">Dashboard</router-link>
         <router-link to="/add-project" class="follow-btn">Add Project</router-link>
@@ -34,6 +47,9 @@
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
 import ProjectsDi from '@/components/ProjectsDi.vue';
+import { onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+const db = getFirestore();
 
 export default {
   name: 'HomeView',
@@ -43,7 +59,28 @@ export default {
   data() {
     return {
       showAbout: false,
+      user:null
     };
+  },
+  computed: {
+    userInitials() {
+      if (!this.user || !this.user.displayName) return '?';
+      const names = this.user.displayName.split(' ');
+      return names.map(name => name[0]).join('').toUpperCase();
+    }
+  },
+  created() {
+    onAuthStateChanged(auth, async (authUser) => {
+      if (authUser) {
+        const docSnap = await getDoc(doc(db, "users", authUser.uid));
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          this.user = { ...authUser, ...userData }; // merge both
+        } else {
+          this.user = authUser; // fallback
+        }
+      }
+    });
   },
   methods: {
     toggleAbout() {
@@ -175,6 +212,27 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
+}
+.profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #66bb6a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.initials-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgb(202, 200, 200);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Responsive */
