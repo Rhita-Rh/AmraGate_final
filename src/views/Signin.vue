@@ -83,6 +83,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 /* Background Styling */
 .bigbro {
@@ -90,10 +91,10 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: radial-gradient(circle at top left, #d0f8ce, #fce4ec);
   font-family: 'Quicksand', sans-serif;
-  overflow: hidden;
+  background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
   animation: floatBg 10s infinite alternate;
+  color: #4a4a4a;
 }
 
 @keyframes floatBg {
@@ -103,9 +104,9 @@ export default {
 
 /* Card Container */
 .page-container {
-  background: linear-gradient(145deg, #ffffff, #f8fff4);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.2);
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
   padding: 40px 30px;
   max-width: 420px;
   width: 90%;
@@ -119,8 +120,12 @@ export default {
 /* Title */
 .title h1 {
   text-align: center;
-  color: #43a047;
-  font-size: 2.2em;
+  background: linear-gradient(to right, #7ba6dd, #94b6e7);
+  background: linear-gradient(135deg, #7ba6dd 0%, #94b6e7 50%, #7ba6dd 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-size: 2.4em;
   letter-spacing: 1px;
   margin-bottom: 25px;
 }
@@ -131,7 +136,7 @@ export default {
 }
 
 label {
-  color: #558b2f;
+  color: #7ba6dd;
   font-weight: 600;
   font-size: 14px;
   display: block;
@@ -140,19 +145,18 @@ label {
 
 input[type="email"],
 input[type="password"] {
-  width: 90%;
+  width: 95%;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1.5px solid #aed581;
-  background-color: #f9fff8;
+  border: 1.5px solid #d0d6e2;
+  background-color: #f9fafd;
   font-size: 15px;
   transition: all 0.3s ease;
-
 }
 
 input:focus {
-  border-color: #66bb6a;
-  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
+  border-color: #7ba6dd;
+  box-shadow: 0 0 0 3px rgba(123, 166, 221, 0.2);
   outline: none;
 }
 
@@ -160,7 +164,7 @@ input:focus {
 button[type="submit"] {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   font-weight: bold;
   border: none;
@@ -168,12 +172,12 @@ button[type="submit"] {
   font-size: 16px;
   cursor: pointer;
   margin-top: 10px;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
+  box-shadow: 0 4px 15px rgba(148, 182, 229, 0.2);
   transition: all 0.3s ease;
 }
 
 button[type="submit"]:hover {
-  background: linear-gradient(135deg, #388e3c, #81c784);
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
 }
 
@@ -185,11 +189,11 @@ button[type="submit"]:hover {
 }
 
 .signup-text {
-  color: #4e4e4e;
+  color: #4d5a6a;
 }
 
 .signup-link {
-  color: #97ff80;
+  color: #7ba6dd;
   text-decoration: none;
   font-weight: bold;
   margin-left: 5px;
@@ -197,7 +201,7 @@ button[type="submit"]:hover {
 }
 
 .signup-link:hover {
-  color: #d32f2f;
+  color: #94b6e7;
 }
 
 .forgot-password {
@@ -205,7 +209,7 @@ button[type="submit"]:hover {
   text-align: center;
   margin-top: 12px;
   font-size: 13px;
-  color: #789262;
+  color: #7ba6dd;
   text-decoration: underline dashed;
   transition: text-decoration 0.2s;
 }
@@ -216,24 +220,48 @@ button[type="submit"]:hover {
 
 /* Google Sign-in */
 .google-signin {
-  margin-top: 25px;
+  margin-top: 20px;
   text-align: center;
-  font-size: 14px;
-  color: #616161;
 }
 
-.clickable-icon {
-  margin-left: 10px;
-  vertical-align: middle;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+.google-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: white;
+  border: 1px solid #d0d6e2;
+  border-radius: 12px;
+  color: #4d5a6a;
+  font-weight: 600;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.clickable-icon:hover {
-  transform: rotate(-5deg) scale(1.1);
+.google-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #7ba6dd;
+}
+
+.google-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 480px) {
+  .page-container {
+    padding: 30px 20px;
+  }
+  
+  .title h1 {
+    font-size: 2rem;
+  }
+  
+  input[type="email"],
+  input[type="password"] {
+    width: 100%;
+  }
 }
 </style>

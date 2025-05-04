@@ -1,24 +1,32 @@
 <template>
-  <div class="edit-goal-page">
-    <h2>Edit Goal</h2>
+  <div class="edit-goal-container">
+    <h2 class="form-title">Edit Goal</h2>
 
-    <form v-if="editedGoal" @submit.prevent="updateGoal">
-      <label>Objectif:</label>
-      <input v-model="editedGoal.obj" required />
+    <form v-if="editedGoal" @submit.prevent="updateGoal" class="goal-form">
+      <div class="form-group">
+        <label class="form-label">Objectif:</label>
+        <input v-model="editedGoal.obj" required class="form-input" />
+      </div>
 
-      <label>Status:</label>
-      <select v-model="editedGoal.status" required>
-        <option value="Not Started">Not Started</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
-      </select>
+      <div class="form-group">
+        <label class="form-label">Status:</label>
+        <select v-model="editedGoal.status" required class="form-select">
+          <option value="Not Started">Not Started</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
 
-      <label>Progression:</label>
-      <input v-model="editedGoal.suivi" required />
+      <div class="form-group">
+        <label class="form-label">Progression:</label>
+        <input v-model="editedGoal.suivi" required class="form-input" />
+      </div>
 
-      <div style="display:flex; justify-content:space-between; margin-top:20px;">
-        <button type="submit">Update</button>
-        <router-link to="/Dashboard"><button type="button">Back to Dashboard</button></router-link>
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">Update</button>
+        <router-link to="/Dashboard">
+          <button type="button" class="cancel-btn">Back to Dashboard</button>
+        </router-link>
       </div>
     </form>
 
@@ -95,103 +103,131 @@ export default {
   },
 };
 </script>
-
 <style scoped>
-.edit-goal-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
-  background-color: #f5f7fa;
-  min-height: 100vh;
+.edit-goal-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(148, 182, 229, 0.15);
+  border: 1px solid #e0e8f5;
   font-family: 'Segoe UI', sans-serif;
   color: #333;
+  min-height: 100vh;
 }
 
-h2 {
-  color: #2f855a;
-  margin-bottom: 30px;
-}
-
-/* Form layout */
-form {
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 30px;
-  width: 100%;
-  max-width: 600px;
-  box-sizing: border-box;
-}
-
-label {
-  display: block;
-  margin-bottom: 8px;
+.form-title {
+  text-align: center;
+  color: #4d5a6a;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
   font-weight: 600;
-  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 12px;
 }
 
-input,
-select {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  font-size: 14px;
-  box-sizing: border-box;
-}
-
-input:focus,
-select:focus {
-  border-color: #4CAF50;
-  outline: none;
-}
-
-/* Button styles */
-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-/* Submit button */
-button[type="submit"] {
-  background-color: #4CAF50;
-}
-
-button[type="submit"]:hover {
-  background-color: #388E3C;
-}
-
-/* Back button */
-button[type="button"] {
-  background-color: #f44336;
-}
-
-button[type="button"]:hover {
-  background-color: #c62828;
-}
-
-/* Form button container */
-form > div {
+.goal-form {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-  gap: 15px;
+  flex-direction: column;
+  gap: 1.8rem;
 }
 
-/* Loading message */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.form-label {
+  font-weight: 600;
+  color: #6b7c93;
+  font-size: 1rem;
+}
+
+.form-input,
+.form-select {
+  padding: 0.85rem;
+  border: 1px solid #d0d6e2;
+  border-radius: 10px;
+  font-size: 1rem;
+  background-color: #f9fafd;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: #7ba6dd;
+  box-shadow: 0 0 0 3px rgba(123, 166, 221, 0.2);
+}
+
+.form-actions {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, #94e594, #9eeec2);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.85rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(148, 182, 229, 0.2);
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
+}
+
+.cancel-btn {
+  background: linear-gradient(135deg, #f5f5f5, #f0f0f0);
+  color: #6b7c93;
+  border: 1px solid #d0d6e2;
+  border-radius: 10px;
+  padding: 0.85rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  flex: 1;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background: linear-gradient(135deg, #e0e0e0, #f0f0f0);
+  transform: translateY(-2px);
+  color: #4d5a6a;
+}
+
 p {
   margin-top: 20px;
   color: #666;
   font-size: 16px;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .edit-goal-container {
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 12px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .submit-btn,
+  .cancel-btn {
+    width: 100%;
+  }
 }
 </style>

@@ -1,19 +1,50 @@
 <template>
   <div>
     <ul>
-      <li v-for="project in projects" :key="project.id" class="project-card">
+      <li v-for="project in filteredProjects" :key="project.id" class="project-card">
         <!-- Project Header: Author and Profile Picture -->
         <div class="project-header">
-          <img :src="project.authorProfilePic" alt="Author's Profile Picture" class="profile-pic" />
           <div class="author-details">
+            <div class="avatar-container">
+              <!-- Display author photo if available, otherwise show the author's initials -->
+              <div v-if="project.owner === user.uid">
+                <router-link to="/Dashboard" style="text-decoration: none;">
+                  <img 
+                    v-if="project.authorPhotoURL" 
+                    :src="project.authorPhotoURL" 
+                    alt="Profile Picture"
+                    class="profile-avatar"
+                  />
+                  <span v-else class="default-avatar">{{ user.displayName ? user.displayName.charAt(0) : 'N' }}</span>
+                </router-link>
+              </div>
+              
+              <div v-else>
+                <router-link :to="`/accounts/${project.owner}`" style="text-decoration: none;">
+                  <img 
+                    v-if="project.authorPhotoURL" 
+                    :src="project.authorPhotoURL" 
+                    alt="Profile Picture"
+                    class="profile-avatar"
+                  />
+                  <span v-else class="default-avatar">{{ project.authorName ? project.authorName.charAt(0) : 'N' }}</span>
+                </router-link>
+              </div>
+            </div>
             <p class="author-name">{{ project.authorName }}</p>
-            <p class="post-time">{{ project.timestamp }}</p>
           </div>
+          <button 
+            v-if="user && project.owner !== user.uid" 
+            @click="toggleFollow(project.owner)" 
+            :class="followedUsers.includes(project.owner) ? 'unfollow-button' : 'follow-button'"
+          >
+            {{ followedUsers.includes(project.owner) ? 'Unfollow' : 'Follow' }}
+          </button>
         </div>
         
         <div class="project-content">
           <div class="project-details">
-            <!-- Projet Title and Description -->
+            <!-- Project Title and Description -->
             <h2 class="project-title">{{ project.title }}</h2>
             <p class="project-description">{{ project.description }}</p>
             
@@ -24,11 +55,15 @@
             <div class="tech-stack">
               <span v-for="tech in project.techStack" :key="tech" class="tech-item">{{ tech }}</span>
             </div>
-          <!-- Star Button -->
-          <button @click="toggleStar(project.id)" class="star-button">
-            <span v-if="starredProjects.includes(project.id)">★</span>
-            <span v-else>☆</span>
-          </button>
+            
+            <!-- Star Button -->
+            <button @click="toggleStar(project.id)" class="star-button">
+              <span v-if="starredProjects.includes(project.id)">★</span>
+              <span v-else>☆</span>
+            </button>
+            <div style="margin-top: 15px;">
+              <router-link :to="`/project/${project.id}`" class="follow-button" style="text-decoration: none;">View Project</router-link>
+            </div>
           </div>
 
           <!-- Project Image -->
@@ -44,224 +79,386 @@
 <script>
 import { db } from "../firebase-config.js";
 import { getAuth } from 'firebase/auth';
-import { collection, getDocs, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 
 export default {
   name: 'ProjectsDiv',
+  props: {
+    searchQuery: {
+      type: String,
+      default: ''
+    },
+    selectedTech: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       projects: [],
-      starredProjects: []
+      starredProjects: [],
+      followedUsers: [],
+      user: null,
     };
+  },
+  computed: {
+    filteredProjects() {
+      return this.projects.filter(project => {
+        const matchesSearch = this.searchQuery === '' || 
+          project.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          project.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+        
+        const matchesTech = this.selectedTech === '' || 
+          (project.techStack && project.techStack.includes(this.selectedTech));
+        
+        return matchesSearch && matchesTech;
+      });
+    }
   },
   methods: {
     async toggleStar(projectId) {
       const auth = getAuth();
       const user = auth.currentUser;
-      
-      if (!user) {
-        console.error('No user is currently signed in');
-        return;
-      }
+      if (!user) return;
 
-      const userId = user.uid;
-      const starredRef = collection(db, 'starred');
-      const starDoc = doc(starredRef, `${userId}_${projectId}`); // Unique document ID combining user and project
-      
+      const starDocRef = doc(db, 'starred', `${user.uid}_${projectId}`);
+      const snapshot = await getDoc(starDocRef);
+      if (snapshot.exists()) {
+        await deleteDoc(starDocRef);
+        this.starredProjects = this.starredProjects.filter(id => id !== projectId);
+      } else {
+        await setDoc(starDocRef, {
+          projectId,
+          userId: user.uid,
+          timestamp: new Date(),
+        });
+        this.starredProjects.push(projectId);
+      }
+    },
+
+    async toggleFollow(authorId) {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      if (!currentUser || authorId === currentUser.uid) return;
+
+      const currentUserRef = doc(db, 'users', currentUser.uid);
+      const authorRef = doc(db, 'users', authorId);
+
+      const isFollowing = this.followedUsers.includes(authorId);
+
       try {
-        const starSnapshot = await getDoc(starDoc);
-        if (starSnapshot.exists()) {
-          await deleteDoc(starDoc);
-          this.starredProjects = this.starredProjects.filter(id => id !== projectId);
-        } else {
-          await setDoc(starDoc, {
-            projectId: projectId,
-            timestamp: new Date(),
-            userId: userId
+        if (isFollowing) {
+          await updateDoc(currentUserRef, {
+            following: arrayRemove(authorId)
           });
-          this.starredProjects.push(projectId);
+          await updateDoc(authorRef, {
+            followers: arrayRemove(currentUser.uid)
+          });
+          this.followedUsers = this.followedUsers.filter(id => id !== authorId);
+        } else {
+          await updateDoc(currentUserRef, {
+            following: arrayUnion(authorId)
+          });
+          await updateDoc(authorRef, {
+            followers: arrayUnion(currentUser.uid)
+          });
+          this.followedUsers.push(authorId);
         }
       } catch (error) {
-        console.error('Error toggling star:', error);
+        console.error("Error updating follow state:", error);
       }
     }
   },
   async created() {
-    // Fetch projects
+    const auth = getAuth();
+    this.user = auth.currentUser;
+
     const querySnapshot = await getDocs(collection(db, "projects"));
     this.projects = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     }));
 
-    // Fetch starred projects for current user
-    const auth = getAuth();
-    const user = auth.currentUser;
-    
-    if (user) {
-      const userId = user.uid;
-      const starredQuery = collection(db, 'starred');
-      const starredSnapshot = await getDocs(starredQuery);
+    for (let project of this.projects) {
+      const authorId = project.owner;
+      if (authorId) {
+        const userDocRef = doc(db, 'users', authorId);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          project.authorPhotoURL = data.photoURL || null;
+          project.authorName = data.name || 'Unknown';
+        }
+      }
+    }
+
+    if (this.user) {
+      const userDocRef = doc(db, 'users', this.user.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        this.followedUsers = data.following || [];
+      }
+
+      const starredSnapshot = await getDocs(collection(db, 'starred'));
       this.starredProjects = starredSnapshot.docs
-        .filter(doc => doc.data().userId === userId)
+        .filter(doc => doc.data().userId === this.user.uid)
         .map(doc => doc.data().projectId);
     }
   }
 };
-</script>
 
+</script>
 <style scoped>
-li{
+li {
   list-style-type: none;
 }
 
 .projects-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .header-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
 .add-project {
-    margin: 0;
+  margin: 0;
+}
+.e {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .add-project-button {
-    background-color: #48bb78;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
+  background-color: #48bb78;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
 .add-project-button:hover {
-    background-color: #38a169;
+  background-color: #38a169;
 }
 
-.home-button {
-    background-color: #e2e8f0;
-    color: #2d3748;
-    padding: 10px 20px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
+.avatar-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #e9e9e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(211, 208, 208, 0.3);
 }
 
-.home-button:hover {
-    background-color: #cbd5e0;
+.follow-button {
+  background: linear-gradient(135deg, #94e594, #9eeec2);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 40px;
+  transition: all 0.3s ease;
+  margin-left: auto;
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
+}
+
+.follow-button:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
+}
+
+.unfollow-button {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 40px;
+  transition: all 0.3s ease;
+  margin-left: auto;
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
+}
+
+.unfollow-button:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
 }
 
 .project-card {
-    background-color: #f8fafc;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: #ffffff;
+  border-left: 4px solid #48bb78;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(244, 244, 244, 0.2);
+  transition: all 0.3s ease;
 }
 
 .project-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  font-size: 24px;
+  font-weight: bold;
+  color: #a0aec0;
 }
 
 .project-header {
-    margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  gap: 1rem;
 }
 
-.project-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #2d3748;
+.author-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.author-name {
+  color: #000000;
+  font-weight: 500;
+  margin: 0;
 }
 
 .project-content {
-    display: flex;
-    gap: 24px;
+  display: flex;
+  gap: 24px;
 }
 
 .project-details {
-    flex: 1;
+  flex: 1;
+}
+
+.project-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #080909;
+  margin-bottom: 12px;
 }
 
 .project-description {
-    font-size: 15px;
-    color: #4a5568;
-    line-height: 1.6;
-    margin-bottom: 16px;
+  font-size: 0.9rem;
+  color: #424343;
+  line-height: 1.6;
+  margin-bottom: 16px;
 }
 
 .project-github {
-    display: inline-block;
-    color: #48bb78;
-    text-decoration: none;
-    font-weight: 500;
-    margin-bottom: 16px;
-    transition: color 0.2s ease;
+  display: inline-block;
+  color: #178e82;
+  text-decoration: none;
+  font-weight: 500;
+  margin-bottom: 16px;
+  transition: color 0.2s ease;
 }
 
 .project-github:hover {
-    color: #38a169;
+  color: #268c87;
+  text-decoration: underline;
 }
 
 .project-image {
-    width: 30%;
-    max-width: 300px;
-    margin-left: auto;
+  width: 30%;
+  max-width: 300px;
+  margin-left: auto;
 }
 
 .project-image img {
-    width: 100%;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .tech-stack {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .tech-item {
-    background-color: #c6f6d5;
-    color: #22543d;
-    border-radius: 20px;
-    padding: 6px 12px;
-    font-size: 13px;
-    font-weight: 500;
+  background-color: #07255a;
+  color: #81e6d9;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .star-button {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 24px;
-  color: #ffd700;
+  font-size: 1.5rem;
+  color: #ecc94b;
   padding: 0;
   margin-left: 10px;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .star-button:hover {
   transform: scale(1.2);
+  color: #f6e05e;
 }
 
-.star-button span {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
-
-.star-button:hover span {
-  transform: scale(1.2);
+@media (max-width: 768px) {
+  .project-content {
+    flex-direction: column;
+  }
+  
+  .project-image {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-top: 20px;
+  }
+  
+  .project-header {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .author-details {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .follow-button {
+    margin-left: auto;
+    width: auto;
+  }
 }
 </style>

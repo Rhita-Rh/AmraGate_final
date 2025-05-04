@@ -25,12 +25,9 @@
             @change="handleFileUpload"
             style="display: none"
           >
-          <button 
-            class="upload-btn"
-            @click="triggerFileInput"
-          >
-            {{ userData.photoURL ? 'Change Photo' : 'Upload Photo' }}
-          </button>
+          <div style="font-size: 25px">
+            <p>{{ userData.name }}</p>
+          </div>
         </div>
     <div class="profile-container">
       <div class="profile-section">
@@ -38,23 +35,23 @@
 
         <div class="navigation-links">
           <router-link to="/my-projects">
-            <button>My Projects</button>
+            <button class="follow-btn">My Projects</button>
           </router-link>
           <router-link to="/UpdateProfile">
-            <button>Update Profile</button>
+            <button class="follow-btn">Update Profile</button>
           </router-link>
           <router-link to="/mycomp">
-            <button>My competences</button>
+            <button class="follow-btn">My competences</button>
           </router-link>
 
           <router-link to="/followers">
-            <button>My followers</button> 
+            <button class="follow-btn">My followers</button> 
           </router-link>
           <router-link to="/following">
-            <button>Following</button> 
+            <button class="follow-btn">Following</button> 
           </router-link>
         </div>
-
+        
         <div class="user-info">
           <h3>Personal Information</h3>
           <div class="info-item">
@@ -123,7 +120,7 @@
               </div>
 
               <router-link :to="{ name: 'Edit_goal', params: { index } }">
-                <button class="edit-btn">Edit</button>
+                <button class="follow-btn">Edit</button>
               </router-link>
               <button @click="deletegoal(index)" class="cancel-btn">Delete</button>
             </div>
@@ -392,67 +389,29 @@ export default {
   
 };
 </script>
-
 <style scoped>
-.profile-picture-section {
-  margin-top:20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 25px;
-}
-
-.avatar-container {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.profile-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.default-avatar {
-  font-size: 32px;
-  font-weight: bold;
-  color: #555;
-}
-
-.upload-btn {
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.upload-btn:hover {
-  background-color: #0b7dda;
-}
 
 .user-profile {
-  background-color: #f5f7fa;
   min-height: 100vh;
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
-  padding: 20px;
+  padding: 2rem;
+  font-family: 'Quicksand', sans-serif;
+  background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
+  animation: floatBg 10s infinite alternate;
+  color: #4a4a4a;
+  overflow-x: hidden;
+}
+
+@keyframes floatBg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
 
 .profile-container {
   display: flex;
   max-width: 1200px;
   margin: 0 auto;
-  gap: 30px;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .profile-section {
@@ -464,294 +423,346 @@ export default {
   width: 450px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 2rem;
 }
 
 .chart-container {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
 }
+
+/* BACK BUTTON */
 .back-button-container {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .back-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background-color: #f8fafc;
-  color: #2d3748;
-  padding: 10px 20px;
-  border-radius: 8px;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #4d5a6a;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
   text-decoration: none;
   font-weight: 500;
-  font-size: 15px;
-  border: 1px solid #e2e8f0;
+  font-size: 1rem;
+  border: 1px solid #e0e0e0;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 8px rgba(148, 182, 229, 0.1);
 }
 
 .back-button:hover {
-  background-color: #edf2f7;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #f5f8fd;
+  transform: translateY(-2px);
 }
 
 .back-icon {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 1.2rem;
 }
 
-.back-text {
-  margin-left: 4px;
-}
-
+/* HEADINGS */
 h2 {
-  color: #2c3e50;
-  margin-bottom: 20px;
-  font-size: 28px;
+  color: #7ba6dd;
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
 }
 
 h3 {
-  color: #2c3e50;
-  margin: 25px 0 15px;
-  font-size: 20px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
+  color: #4d5a6a;
+  margin: 1.5rem 0 1rem;
+  font-size: 1.25rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 0.5rem;
 }
 
+/* NAVIGATION BUTTONS */
 .navigation-links {
   display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
 }
 
 .navigation-links button {
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
-  font-weight: 500;
   border: none;
-  border-radius: 6px;
-  padding: 10px 18px;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .navigation-links button:hover {
-  background-color: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
 }
 
+/* PROFILE INFO */
 .user-info {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  margin-bottom: 25px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
 }
 
 .info-item {
   display: flex;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
   align-items: center;
 }
 
 .info-label {
   font-weight: 600;
   width: 100px;
-  color: #555;
+  color: #7ba6dd;
 }
 
 .info-value {
   flex: 1;
-  padding: 8px 12px;
-  background: #f9f9f9;
-  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  background: #f5f8fd;
+  border-radius: 8px;
 }
 
-.goal-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  position: relative;
+/* PROFILE PICTURE */
+.profile-picture-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
 }
 
-.edit-btn {
-  background-color: #2196F3;
+.avatar-container {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f9fafd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(148, 182, 229, 0.15);
+  border: 2px solid #7ba6dd;
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-picture-section p {
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: #4a4a4a;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.default-avatar {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #7ba6dd;
+}
+
+.upload-btn {
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
-  border-radius: 6px;
-  height: 40px;
-  padding: 8px 15px;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 10px;
-  margin: 10px;
 }
 
-.edit-btn:hover {
-  background-color: #0b7dda;
-  transform: translateY(-1px);
-}
-.delete-btn {
-  background-color: #f44336;
-  height: 40px;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
-}
-.delete-btn:hover {
-  background-color: #952c25;
-  transform: translateY(-1px);
-}
-.add-btn {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 15px;
-}
-
-.add-btn:hover {
-  background-color: #388e3c;
+.upload-btn:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
 }
 
+/* GOALS & FORMS */
+.goal-card,
 .add-goal-form {
-  background: white;
-  border-radius: 12px;
-  padding: 25px;
-  margin-top: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 8px;
   font-weight: 500;
-  color: #555;
+  color: #4a4a4a;
+  display: block;
+  margin-bottom: 0.5rem;
 }
 
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
+  padding: 0.75rem;
+  border: 1px solid #d0d6e2;
+  border-radius: 10px;
+  background-color: #f9fafd;
+  font-size: 1rem;
 }
 
 .form-actions {
   display: flex;
-  gap: 15px;
-  margin-top: 20px;
+  gap: 1rem;
 }
 
-.save-btn {
-  background-color: #4caf50;
+.save-btn,
+.add-btn {
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 12px 20px;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
   cursor: pointer;
   flex: 1;
   transition: all 0.3s ease;
 }
 
-.save-btn:hover {
-  background-color: #388e3c;
+.save-btn:hover,
+.add-btn:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
 }
 
-.cancel-btn {
-  background-color: #f44336;
+/* EDIT BUTTON */
+.follow-btn {
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 12px 20px;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
   cursor: pointer;
-  flex: 1;
   transition: all 0.3s ease;
+  margin-top: 0.75rem;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
-.cancel-btn:hover {
-  background-color: #d32f2f;
+.follow-btn:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
 }
 
+/* DELETE BUTTON */
+.cancel-btn,
+.delete-btn {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 0.75rem;
+}
+
+.cancel-btn:hover,
+.delete-btn:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
+}
+
+/* STARRED PROJECTS */
 .starred-projects-section {
   margin-top: 2rem;
   padding: 1.5rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
 }
 
 .project-card {
-  margin-bottom: 1rem;
+  background: #f5f8fd;
+  border-radius: 10px;
   padding: 1rem;
-  background: #f8fafc;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
+  margin-bottom: 1rem;
+  border: 1px solid #e0e8f5;
 }
 
-@media (max-width: 992px) {
+.unstar-btn {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.unstar-btn:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+}
+
+.details-btn {
+  background: linear-gradient(135deg, #94e594, #9eeec2);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-top: 10px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.details-btn:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+}
+
+/* MEDIA QUERY */
+@media (max-width: 768px) {
   .profile-container {
     flex-direction: column;
   }
   
   .charts-section {
     width: 100%;
-    margin-top: 30px;
   }
-}
-
-.unstar-btn {
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  margin-top: 8px;
-}
-
-.unstar-btn:hover {
-  background-color: #d32f2f;
-  transform: translateY(-1px);
-}
-
-.details-btn {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 14px;
-  margin-top: 8px;
-  text-decoration: none;
-  margin-left: 15px;
-}
-
-.details-btn:hover {
-  background-color: #388e3c;
-  transform: translateY(-1px);
+  
+  .profile-section {
+    max-width: 100%;
+  }
+  
+  .navigation-links {
+    justify-content: center;
+  }
+  
+  .profile-picture-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .save-btn,
+  .add-btn,
+  .follow-btn,
+  .cancel-btn,
+  .delete-btn {
+    width: 100%;
+  }
 }
 </style>

@@ -185,21 +185,25 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .accounts-container {
-  max-width: 900px;
-  margin: 40px auto;
-  background: linear-gradient(135deg, #f1fff5, #ffffff);
-  border-radius: 20px;
-  padding: 30px 40px;
-  box-shadow: 0 12px 40px rgba(76, 175, 80, 0.1);
+  min-height: 100vh;
+  padding: 20px;
   font-family: 'Quicksand', sans-serif;
+  background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
+  animation: floatBg 10s infinite alternate;
+  color: #4a4a4a;
+  overflow-x: hidden;
+}
+
+@keyframes floatBg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
 
 .accounts-container h2 {
   text-align: center;
-  color: #66bb6a;
+  color: #7ba6dd;
   font-size: 2.5rem;
   margin-bottom: 25px;
   letter-spacing: 1px;
@@ -207,29 +211,32 @@ export default {
 
 .search-bar {
   width: 100%;
-  padding: 10px 15px;
+  padding: 12px 15px;
   margin-bottom: 25px;
-  border: 2px solid #a5d6a7;
-  border-radius: 8px;
+  border: 1px solid #d0d6e2;
+  border-radius: 10px;
   font-size: 1rem;
   outline: none;
+  background-color: #f9fafd;
+  box-shadow: 0 2px 6px rgba(148, 182, 229, 0.1);
 }
 
 .user-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #e8f5e9;
-  border: 2px solid #a5d6a7;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 16px;
   padding: 20px 24px;
   margin-bottom: 20px;
-  box-shadow: 0 6px 14px rgba(76, 175, 80, 0.08);
+  box-shadow: 0 6px 14px rgba(148, 182, 229, 0.15);
   transition: transform 0.3s ease;
+  border: 1px solid #e0e8f5;
 }
 
 .user-card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(148, 182, 229, 0.2);
 }
 
 .user-info {
@@ -242,21 +249,21 @@ export default {
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #66bb6a;
+  border: 2px solid #7ba6dd;
   margin-right: 20px;
-  box-shadow: 0 2px 8px rgba(0, 128, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(123, 166, 221, 0.15);
 }
 
 .user-details h3 {
   margin: 0;
   font-size: 1.4rem;
-  color: #66bb6a;
+  color: #4d5a6a;
 }
 
 .user-details p {
   margin: 4px 0 0;
   font-size: 0.95rem;
-  color: #66bb6a;
+  color: #6b7c93;
   font-weight: 500;
 }
 
@@ -270,38 +277,54 @@ export default {
 .unfollow-btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 25px;
+  border-radius: 10px;
   font-size: 0.95rem;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.25);
+  box-shadow: 0 4px 12px rgba(148, 182, 229, 0.15);
 }
 
 .follow-btn:hover,
 .unfollow-btn:hover {
-  background: linear-gradient(135deg, #66bb6a, #81c784);
-  transform: scale(1.04);
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
+}
+
+.unfollow-btn {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+}
+
+.unfollow-btn:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
 }
 
 .accounts-container p {
   text-align: center;
   margin-top: 40px;
   font-size: 1.2rem;
-  color: #789262;
+  color: #6b7c93;
 }
-.back{
-  background-color: #c62828;
+
+.back {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
   color: white;
   padding: 10px 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(228, 138, 138, 0.2);
 }
+
+.back:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
+}
+
 @media (max-width: 600px) {
   .user-card {
     flex-direction: column;
@@ -312,12 +335,46 @@ export default {
     width: 100%;
     flex-direction: row;
     justify-content: space-between;
-    margin-top: 10px;
+    margin-top: 15px;
   }
 
   .follow-btn,
   .unfollow-btn {
     width: 48%;
   }
+}
+
+/* Additional matching styles from dashboard */
+.info-item {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.info-label {
+  font-weight: 600;
+  width: 100px;
+  color: #7ba6dd;
+}
+
+.info-value {
+  flex: 1;
+  padding: 8px 12px;
+  background: #f5f8fd;
+  border-radius: 6px;
+}
+
+.default-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #6b7c93;
+  border: 2px solid #7ba6dd;
+  font-size: 24px;
 }
 </style>
