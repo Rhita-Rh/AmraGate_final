@@ -15,14 +15,14 @@
         <div class="activity-header">
           <div class="user-info">
             <router-link :to="`/accounts/${activity.userId}`" class="user-link">
-              <img 
-                v-if="activity.userPhotoURL" 
-                :src="activity.userPhotoURL" 
-                alt="Profile Picture"
-                class="profile-avatar"
-              />
-              <div v-else class="initials-avatar">
-                {{ activity.userInitials }}
+              <div class="avatar-container">
+                <img
+                  v-if="activity.userPhotoURL"
+                  :src="activity.userPhotoURL"
+                  alt="Profile Photo"
+                  class="profile-photo"
+                />
+                <span v-else class="default-avatar">{{ activity.userName ? activity.userName.charAt(0).toUpperCase() : 'N' }}</span>
               </div>
               <span class="user-name">{{ activity.userName }}</span>
             </router-link>
@@ -208,6 +208,23 @@ export default {
   border-radius: 50%;
   object-fit: cover;
 }
+.avatar-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #e9e9e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(211, 208, 208, 0.3);
+  border: 2px solid #7ba6dd;
+}
+.default-avatar {
+  font-size: 24px;
+  font-weight: bold;
+  color: #7ba6dd;
+}
 
 .initials-avatar {
   width: 40px;
@@ -296,7 +313,29 @@ export default {
 .goal-status {
   color: #4a5568;
 }
+.avatar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;   /* Adjust size as needed */
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ccc; /* Default background for initials */
+  overflow: hidden;
+}
 
+.profile-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.default-avatar {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+}
 .loading, .no-activities {
   text-align: center;
   color: #718096;

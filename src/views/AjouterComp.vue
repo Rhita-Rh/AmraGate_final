@@ -1,4 +1,4 @@
-<template> 
+<template>
   <div class="add-competence-container">
     <div class="form-card">
       <h1>Add New Competence</h1>
@@ -7,10 +7,10 @@
       <form @submit.prevent="ajouterCompetence" class="competence-form">
         <div class="form-group">
           <label>Skill Name</label>
-          <input 
-            type="text" 
-            v-model="name" 
-            required 
+          <input
+            type="text"
+            v-model="name"
+            required
             placeholder="e.g. JavaScript, Public Speaking"
           />
         </div>
@@ -27,10 +27,10 @@
 
         <div class="form-group">
           <label>Date Acquired</label>
-          <input 
-            type="date" 
-            v-model="date_acqui" 
-            required 
+          <input
+            type="date"
+            v-model="date_acqui"
+            required
             :max="today"
           />
         </div>
@@ -42,7 +42,7 @@
               <span v-else class="spinner"></span>
             </button>
           </div>
-          
+         
           <div>
             <router-link to="/Dashboard" class="back-link">
               <button class="back">Back to Dashboard</button>
@@ -74,7 +74,7 @@ export default {
       name: '',
       level: '',
       date_acqui: '',
-      today: new Date().toISOString().split('T')[0],
+      today: new Date().toISOString().split('T')[0],  // Only date part (YYYY-MM-DD)
       lastAdded: null,
       isLoading: false,
       error: null,
@@ -95,7 +95,6 @@ export default {
       try {
         const auth = getAuth();
         const user = auth.currentUser;
-
         if (!user) throw new Error('User not authenticated');
 
         const userRef = doc(db, 'users', user.uid);
@@ -104,8 +103,10 @@ export default {
           name: this.name.trim(),
           level: this.level,
           date_acqui: this.date_acqui,
-          date_debut: now.toISOString().split('T')[0],
+          date_debut: now.toISOString(),
           date_progr: now.toISOString(),
+          start_date: now.toISOString(),
+          elapsed: 'just now',
         };
 
         await updateDoc(userRef, {
@@ -113,7 +114,7 @@ export default {
         });
 
         this.lastAdded = competence;
-        this.startTime = new Date(competence.date_progr);
+        this.startTime = now;
         this.elapsed = this.getTimeSince(this.startTime);
         this.resetForm();
       } catch (error) {
@@ -169,7 +170,7 @@ export default {
       if (this.startTime) {
         this.elapsed = this.getTimeSince(this.startTime);
       }
-    }, 60000); // Update every 60 seconds
+    }, 60000);
   },
   beforeUnmount() {
     clearInterval(this.timer);

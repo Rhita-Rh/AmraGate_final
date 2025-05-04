@@ -5,9 +5,15 @@
   </router-link>
   <div v-if="user" class="user-details-container">
     <h2>{{ user.name }}</h2>
-    <img :src="user.photoURL || '/profile.png'" alt="Profile Photo" class="profile-photo" />
-    
-    <!-- Follow Button Section - Simplified conditions -->
+    <div class="avatar-container">
+        <img
+          v-if="user.photoURL"
+          :src="user.photoURL"
+          alt="Profile Photo"
+          class="profile-photo"
+        />
+        <span v-else class="default-avatar">{{ user.name ? user.name.charAt(0).toUpperCase() : 'N' }}</span>
+      </div>
     <div v-if="currentUser && currentUser.uid && user.id && currentUser.uid !== user.id">
       <button
         @click="isFollowing(user) ? unfollowUser(user) : followUser(user)"
@@ -18,9 +24,11 @@
       </button>
     </div>
     
-    <p>@{{ user.username }}</p>
+    <p style="font-size: large; font-weight: 500;">@{{ user.username }}</p>
+    <p><span style="font-weight:500;">Email: </span>{{ user.email }}</p>
     <p>{{ user.bio }}</p>
-    <p>{{ user.email }}</p>
+    <br>
+    <p class="createdat">{{ formattedCreatedAt }}</p>
     <h3>Projects</h3>
     <div v-if="projects.length > 0">
       <div v-for="project in projects" :key="project.id" class="project-card">
@@ -40,8 +48,9 @@
 // Your original script remains completely unchanged
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove, serverTimestamp } from 'firebase/firestore';
 import { getAuth } from "firebase/auth";
+import { computed } from 'vue';
 
 export default {
   name: 'UserDetails',
@@ -60,17 +69,57 @@ export default {
         const userDoc = await getDoc(doc(db, "users", currentUser.value.uid));
         if (userDoc.exists()) {
           currentUserData.value = userDoc.data();
+          currentUserData.value.createdAt = currentUser.value.metadata.creationTime;
         }
       }
     };
 
+    const formattedCreatedAt = computed(() => {
+        if (!user.value?.createdAt) return 'Member since: Unknown date';
+        
+        try {
+          // Handle both string timestamps and Firestore Timestamp objects
+          const date = typeof user.value.createdAt === 'string' 
+            ? new Date(user.value.createdAt)
+            : new Date(user.value.createdAt.seconds * 1000);
+          
+          if (isNaN(date.getTime())) {
+            return 'Member since: Unknown date';
+          }
+          
+          return `Member since: ${date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}`;
+        } catch (e) {
+          console.error('Error formatting date:', e);
+          return 'Member since: Unknown date';
+        }
+      });
+
     const fetchUserDetails = async () => {
-      const userDoc = await getDoc(doc(db, 'users', route.params.id));
-      if (userDoc.exists()) {
-        user.value = { id: userDoc.id, ...userDoc.data() };
-        fetchUserProjects(route.params.id);
-      }
-    };
+  const userDoc = await getDoc(doc(db, 'users', route.params.id));
+  if (userDoc.exists()) {
+    const fetchedUser = { id: userDoc.id, ...userDoc.data() };
+
+    // If the viewed user is the current user, add Auth metadata
+    if (auth.currentUser && auth.currentUser.uid === fetchedUser.id) {
+      // Use the correct Firebase Auth creation time property
+      fetchedUser.createdAt = auth.currentUser.metadata.creationTime || new Date().toISOString();
+    } else if (fetchedUser.createdAt) {
+      // If the date exists in Firestore, ensure it's in proper format
+      fetchedUser.createdAt = new Date(fetchedUser.createdAt.seconds * 1000).toISOString();
+    } else {
+      // Fallback to current time if no date exists
+      fetchedUser.createdAt = new Date().toISOString();
+    }
+
+    user.value = fetchedUser;
+    fetchUserProjects(route.params.id);
+  }
+};
+
 
     const isFollowing = (user) => {
       return currentUserData.value?.following?.includes(user.id) || false;
@@ -135,6 +184,7 @@ export default {
       followUser,
       currentUser,
       currentUserData,
+      formattedCreatedAt
     };
   },
 };
@@ -232,7 +282,13 @@ h3 {
   background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
 }
-
+.createdat{
+  padding: 6px 12px;
+  background-color: #c9e3ff; 
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
 .unfollow-btn {
   background: linear-gradient(135deg, #e48a8a, #f2b6b6);
   color: white;
@@ -256,7 +312,15 @@ h3 {
   color: #7ba6dd;
   margin: 0 0 10px 0;
 }
-
+.createdat {
+  padding: 6px 12px;
+  background-color: #f0f7ff; 
+  border-radius: 6px;
+  font-size: 14px;
+  color: #5a7ba6;
+  display: inline-block;
+  margin: 10px 0;
+}
 .view-project-btn {
   display: inline-block;
   background: linear-gradient(135deg, #7ba6dd, #94b6e5);
@@ -274,6 +338,28 @@ h3 {
   background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-1px);
 }
+
+.avatar-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.default-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #7ba6dd;
+  border: 2px solid #7ba6dd;
+  font-size: 24px;
+}
+
 
 @media (max-width: 768px) {
   .user-details-container {
