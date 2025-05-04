@@ -142,102 +142,118 @@ export default {
   }
 };
 </script>
-
 <style scoped>
 .edit-competence-container {
   max-width: 600px;
   margin: 2rem auto;
   padding: 2rem;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(148, 182, 229, 0.15);
+  border: 1px solid #e0e8f5;
 }
 
 .form-title {
   text-align: center;
-  color: #2c3e50;
+  color: #4d5a6a;
   margin-bottom: 2rem;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 12px;
 }
 
 .competence-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.8rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.8rem;
 }
 
 .form-label {
-  font-weight: 500;
-  color: #555;
-  font-size: 0.95rem;
+  font-weight: 600;
+  color: #6b7c93;
+  font-size: 1rem;
 }
 
 .form-input, .form-select {
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  padding: 0.85rem;
+  border: 1px solid #d0d6e2;
+  border-radius: 10px;
   font-size: 1rem;
-  transition: border-color 0.3s;
+  transition: all 0.3s ease;
+  background-color: #f9fafd;
 }
 
 .form-input:focus, .form-select:focus {
   outline: none;
-  border-color: #4caf50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  border-color: #7ba6dd;
+  box-shadow: 0 0 0 3px rgba(123, 166, 221, 0.2);
 }
 
 .form-actions {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
 }
 
 .submit-btn {
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  padding: 0.85rem 1.5rem;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   flex: 1;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(148, 182, 229, 0.2);
 }
 
 .submit-btn:hover {
-  background-color: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
 }
 
 .cancel-btn {
-  background-color: #f5f5f5;
-  color: #555;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #f5f5f5, #f0f0f0);
+  color: #6b7c93;
+  border: 1px solid #d0d6e2;
+  border-radius: 10px;
+  padding: 0.85rem 1.5rem;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   flex: 1;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 }
 
 .cancel-btn:hover {
-  background-color: #e0e0e0;
+  background: linear-gradient(135deg, #e0e0e0, #f0f0f0);
+  transform: translateY(-2px);
+  color: #4d5a6a;
 }
 
 @media (max-width: 640px) {
   .edit-competence-container {
     padding: 1.5rem;
     margin: 1rem;
+    border-radius: 12px;
   }
   
   .form-actions {
     flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .submit-btn, .cancel-btn {
+    width: 100%;
   }
 }
 </style>

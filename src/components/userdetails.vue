@@ -1,4 +1,5 @@
 <template>
+  <!-- Your original template remains completely unchanged -->
   <router-link to="/Home" class="back-button">
     <button class="back">Back to Home</button>
   </router-link>
@@ -43,6 +44,7 @@
 </template>
 
 <script>
+// Your original script remains completely unchanged
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { getFirestore, doc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
@@ -144,11 +146,75 @@ export default {
   },
 };
 </script>
+
 <style scoped>
-.follow-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+/* Updated CSS to match your Dashboard style while preserving functionality */
+.user-profile {
+  min-height: 100vh;
+  padding: 20px;
+  font-family: 'Quicksand', sans-serif;
+  background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
+  animation: floatBg 10s infinite alternate;
+  color: #4a4a4a;
+}
+
+@keyframes floatBg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.user-details-container {
+  max-width: 800px;
+  margin: 20px auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
+}
+
+.back-button {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.back {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.back:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
+}
+
+.profile-photo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #7ba6dd;
+  margin: 0 auto 20px;
+  display: block;
+  box-shadow: 0 4px 12px rgba(123, 166, 221, 0.2);
+}
+
+h2 {
+  color: #7ba6dd;
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+h3 {
+  color: #7ba6dd;
+  margin: 25px 0 15px;
+  font-size: 22px;
 }
 
 .follow-btn,
@@ -157,78 +223,68 @@ export default {
   border: none;
   border-radius: 25px;
   font-size: 0.95rem;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.25);
+  display: block;
+  margin: 0 auto 20px;
 }
 
-.follow-btn:hover,
+.follow-btn {
+  background: linear-gradient(135deg, #94e594, #9eeec2);
+  color: white;
+  box-shadow: 0 4px 12px rgba(148, 229, 148, 0.2);
+}
+
+.follow-btn:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
+}
+
+.unfollow-btn {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+  color: white;
+  box-shadow: 0 4px 12px rgba(228, 138, 138, 0.2);
+}
+
 .unfollow-btn:hover {
-  background: linear-gradient(135deg, #66bb6a, #81c784);
-  transform: scale(1.04);
-}
-.user-details-container {
-  max-width: 900px;
-  margin: 40px auto;
-  background: linear-gradient(135deg, #f1fff5, #ffffff);
-  border-radius: 20px;
-  padding: 30px 40px;
-  box-shadow: 0 12px 40px rgba(76, 175, 80, 0.1);
-  font-family: 'Quicksand', sans-serif;
-}
-
-.user-details-container h2 {
-  text-align: center;
-  color: #66bb6a;
-  font-size: 2.5rem;
-  margin-bottom: 35px;
-  letter-spacing: 1px;
-}
-
-.profile-photo {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #66bb6a;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 128, 0, 0.15);
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
 }
 
 .project-card {
-  background: #e8f5e9;
-  border: 2px solid #a5d6a7;
-  border-radius: 16px;
+  background: #f5f8fd;
+  border-radius: 15px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 6px 14px rgba(76, 175, 80, 0.08);
+  box-shadow: 0 6px 12px rgba(148, 182, 229, 0.12);
 }
 
 .project-card h4 {
-  margin: 0;
-  font-size: 1.4rem;
-  color: #66bb6a;
+  color: #7ba6dd;
+  margin: 0 0 10px 0;
 }
-.project-card p {
-  margin: 5px 0 0;
-  font-size: 1rem;
-  color: #333;
-}
-.back{
-  background-color: #c62828;
+
+.view-project-link {
+  display: inline-block;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
   font-weight: 500;
+  margin-top: 15px;
   transition: all 0.3s ease;
 }
-.back:hover{
-  background-color: #b71c1c;
-  transform: scale(1.05);
+
+.view-project-link:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .user-details-container {
+    padding: 20px;
+  }
 }
 </style>

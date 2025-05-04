@@ -101,10 +101,10 @@ export default {
 
 <style scoped>
 .user-profile {
-  background: radial-gradient(circle at top left, #d0f8ce, #fce4ec);
+  background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
   min-height: 100vh;
   font-family: 'Quicksand', sans-serif;
-  color: #2d2d2d;
+  color: #4a4a4a;
   overflow-x: hidden;
 }
 
@@ -114,13 +114,13 @@ export default {
   align-items: center;
   justify-content: space-between;
   padding: 15px 30px;
-  background-color: #ffffffcc;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid #d0e8c9;
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .logo {
@@ -139,37 +139,39 @@ export default {
   border: none;
   border-radius: 25px;
   font-size: 0.95rem;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: #ffffff;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.25);
+  box-shadow: 0 4px 12px rgba(148, 182, 229, 0.2);
   text-decoration: none;
 }
 
 .follow-btn:hover {
-  background: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(148, 182, 229, 0.25);
 }
 
 /* Logout Button */
 .logout-btn {
-  background: linear-gradient(135deg, #ef5350, #ef9a9a);
+  background: linear-gradient(135deg, #6b0808, #6b0808);
   color: white;
   padding: 10px 18px;
   border: none;
   border-radius: 25px;
   font-size: 0.95rem;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(239, 83, 80, 0.2);
+  box-shadow: 0 4px 10px rgba(228, 138, 138, 0.2);
 }
 
 .logout-btn:hover {
-  background: #6b0808;
+  background: linear-gradient(135deg, #6b0808, #6b0808);
   transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(228, 138, 138, 0.25);
 }
 
 /* Project List */
@@ -191,15 +193,16 @@ export default {
   position: absolute;
   top: 48px;
   left: 0;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.95);
   padding: 15px 20px;
   border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
   white-space: nowrap;
   font-size: 14px;
-  color: #333;
+  color: #5a5a5a;
   z-index: 200;
   animation: fadeIn 0.3s ease-in-out;
+  border: 1px solid #f0f0f0;
 }
 
 /* Animations */
@@ -213,41 +216,99 @@ export default {
     transform: translateY(0);
   }
 }
+
 .profile-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #66bb6a;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border: 2px solid #b1c9f1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
 }
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+}
+
+.profile-avatar-wrapper {
+  position: relative;
+}
+
 .initials-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgb(202, 200, 200);
-  color: white;
+  background-color: #d0d6e2;
+  color: #6b7c93;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.initials-avatar:hover {
+  transform: scale(1.05);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+  .navbar {
+    padding: 12px 20px;
+    flex-wrap: wrap;
+  }
+  
   .nav-links {
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
+    justify-content: center;
+    margin: 10px 0;
+    order: 3;
+    width: 100%;
+  }
+  
+  .follow-btn, .logout-btn {
+    padding: 8px 14px;
+    font-size: 0.85rem;
   }
 
   .logo {
-    height: 38px;
+    height: 35px;
+    order: 1;
+  }
+  
+  .logout-btn {
+    order: 2;
   }
 
   .project-list {
-    padding: 0 10px;
+    padding: 0 15px;
+    margin: 25px auto;
+  }
+  
+  .dropdown-menu {
+    left: -50px;
+    right: -50px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 10px 15px;
+  }
+  
+  .follow-btn, .logout-btn {
+    padding: 7px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .profile-avatar, .initials-avatar {
+    width: 35px;
+    height: 35px;
   }
 }
 </style>

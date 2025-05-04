@@ -25,12 +25,9 @@
             @change="handleFileUpload"
             style="display: none"
           >
-          <button 
-            class="upload-btn"
-            @click="triggerFileInput"
-          >
-            {{ userData.photoURL ? 'Change Photo' : 'Upload Photo' }}
-          </button>
+          <div style="font-size: 25px">
+            <p>{{ userData.name }}</p>
+          </div>
         </div>
     <div class="profile-container">
       <div class="profile-section">
@@ -392,15 +389,15 @@ export default {
   
 };
 </script>
-
 <style scoped>
+
 .user-profile {
   min-height: 100vh;
   padding: 20px;
   font-family: 'Quicksand', sans-serif;
-  background: radial-gradient(circle at top left, #d0f8ce, #fce4ec);
+  background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
   animation: floatBg 10s infinite alternate;
-  color: #2d2d2d;
+  color: #4a4a4a;
   overflow-x: hidden;
 }
 
@@ -433,7 +430,7 @@ export default {
   background: rgba(255, 255, 255, 0.9);
   border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.2);
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
 }
 
 /* BACK BUTTON */
@@ -446,19 +443,19 @@ export default {
   align-items: center;
   gap: 8px;
   background: #ffffffcc;
-  color: #2d3748;
+  color: #4d5a6a;
   padding: 10px 20px;
   border-radius: 12px;
   text-decoration: none;
   font-weight: 500;
   font-size: 15px;
-  border: 1px solid #d0e8c9;
+  border: 1px solid #e0e0e0;
   transition: all 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
 
 .back-button:hover {
-  background-color: #f0f8f2;
+  background-color: #f5f8fd;
   transform: translateY(-1px);
 }
 
@@ -468,13 +465,13 @@ export default {
 
 /* HEADINGS */
 h2 {
-  color: #388e3c;
+  color: #7ba6dd;
   margin-bottom: 20px;
   font-size: 28px;
 }
 
 h3 {
-  color: #2c3e50;
+  color: #4d5a6a;
   margin: 25px 0 15px;
   font-size: 20px;
   border-bottom: 1px solid #e0e0e0;
@@ -490,7 +487,7 @@ h3 {
 }
 
 .navigation-links button {
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
   border-radius: 10px;
@@ -501,7 +498,7 @@ h3 {
 }
 
 .navigation-links button:hover {
-  background: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
 }
 
@@ -511,7 +508,7 @@ h3 {
   border-radius: 20px;
   padding: 25px;
   margin-bottom: 25px;
-  box-shadow: 0 12px 20px rgba(102, 187, 106, 0.2);
+  box-shadow: 0 12px 20px rgba(148, 182, 229, 0.15);
 }
 
 .info-item {
@@ -523,13 +520,13 @@ h3 {
 .info-label {
   font-weight: 600;
   width: 100px;
-  color: #388e3c;
+  color: #7ba6dd;
 }
 
 .info-value {
   flex: 1;
   padding: 8px 12px;
-  background: #f1f8f5;
+  background: #f5f8fd;
   border-radius: 6px;
 }
 
@@ -563,11 +560,11 @@ h3 {
 .default-avatar {
   font-size: 32px;
   font-weight: bold;
-  color: #555;
+  color: #6b7c93;
 }
 
 .upload-btn {
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
   border-radius: 8px;
@@ -577,7 +574,7 @@ h3 {
 }
 
 .upload-btn:hover {
-  background-color: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
 }
 
 /* GOALS & FORMS */
@@ -587,7 +584,7 @@ h3 {
   border-radius: 15px;
   padding: 20px;
   margin-bottom: 15px;
-  box-shadow: 0 6px 12px rgba(120, 190, 90, 0.15);
+  box-shadow: 0 6px 12px rgba(148, 182, 229, 0.12);
 }
 
 .form-group {
@@ -605,9 +602,9 @@ h3 {
 .form-group select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #cde8c9;
+  border: 1px solid #d0d6e2;
   border-radius: 10px;
-  background-color: #f9fff8;
+  background-color: #f9fafd;
   font-size: 15px;
 }
 
@@ -618,7 +615,7 @@ h3 {
 
 .save-btn,
 .add-btn {
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
   border-radius: 10px;
@@ -630,11 +627,12 @@ h3 {
 
 .save-btn:hover,
 .add-btn:hover {
-  background-color: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
 }
+
 /* EDIT BUTTON */
 .follow-btn {
-  background: linear-gradient(135deg, #4caf50, #81c784);
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
   border-radius: 10px;
@@ -646,14 +644,14 @@ h3 {
 }
 
 .follow-btn:hover {
-  background: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
 }
 
 /* DELETE BUTTON */
 .cancel-btn,
 .delete-btn {
-  background: linear-gradient(135deg, #f44336, #e57373);
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
   color: white;
   border: none;
   border-radius: 10px;
@@ -666,7 +664,7 @@ h3 {
 
 .cancel-btn:hover,
 .delete-btn:hover {
-  background: #6a1111;
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
   transform: translateY(-2px);
 }
 
@@ -677,29 +675,34 @@ h3 {
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
-  box-shadow: 0 6px 12px rgba(120, 190, 90, 0.15);
+  box-shadow: 0 6px 12px rgba(148, 182, 229, 0.15);
 }
 
 .project-card {
-  background: #f1f8f5;
+  background: #f5f8fd;
   border-radius: 10px;
   padding: 1rem;
   margin-bottom: 1rem;
-  border: 1px solid #dcedc8;
+  border: 1px solid #e0e8f5;
 }
 
 .unstar-btn {
-  background-color: #b71c1c;
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
   color: white;
   border: none;
   border-radius: 6px;
   padding: 8px 16px;
   cursor: pointer;
   margin-top: 10px;
+  transition: all 0.3s ease;
+}
+
+.unstar-btn:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
 }
 
 .details-btn {
-  background-color: #3aa13e;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
   border-radius: 6px;
@@ -708,10 +711,11 @@ h3 {
   margin-left: 10px;
   margin-top: 10px;
   text-decoration: none;
+  transition: all 0.3s ease;
 }
 
 .details-btn:hover {
-  background-color: #2e7d32;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
 }
 
 /* MEDIA QUERY */
