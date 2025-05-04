@@ -83,6 +83,7 @@ export default {
   }
 };
 </script>
+
 <style scoped>
 /* Background Styling */
 .bigbro {
@@ -90,7 +91,7 @@ export default {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: radial-gradient(circle at top left, #d0f8ce, #fce4ec);
+  background: #e3f0fc;
   font-family: 'Quicksand', sans-serif;
   overflow: hidden;
   animation: floatBg 10s infinite alternate;
@@ -103,12 +104,13 @@ export default {
 
 /* Card Container */
 .page-container {
-  background: linear-gradient(145deg, #ffffff, #f8fff4);
-  border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.2);
+  background: #f2f2f6;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.1);
   padding: 40px 30px;
   max-width: 420px;
   width: 90%;
+  border: 1px solid #cbd9e3;
   transition: transform 0.4s ease;
 }
 
@@ -119,8 +121,10 @@ export default {
 /* Title */
 .title h1 {
   text-align: center;
-  color: #43a047;
-  font-size: 2.2em;
+  background: linear-gradient(to right, #0288d1, #4fc3f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 2.4em;
   letter-spacing: 1px;
   margin-bottom: 25px;
 }
@@ -131,7 +135,7 @@ export default {
 }
 
 label {
-  color: #558b2f;
+  color: #0288d1;
   font-weight: 600;
   font-size: 14px;
   display: block;
@@ -140,19 +144,18 @@ label {
 
 input[type="email"],
 input[type="password"] {
-  width: 90%;
+  width: 95%;
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1.5px solid #aed581;
-  background-color: #f9fff8;
+  border: 1.5px solid #81d4fa;
+  background-color: #e3f2fd;
   font-size: 15px;
   transition: all 0.3s ease;
-
 }
 
 input:focus {
-  border-color: #66bb6a;
-  box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
+  border-color: #4fc3f7;
+  box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.25);
   outline: none;
 }
 
@@ -160,7 +163,7 @@ input:focus {
 button[type="submit"] {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
+  background: linear-gradient(to right, #2563eb, #60a0d4);
   color: white;
   font-weight: bold;
   border: none;
@@ -168,13 +171,15 @@ button[type="submit"] {
   font-size: 16px;
   cursor: pointer;
   margin-top: 10px;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
+  box-shadow: 0 4px 15px rgba(79, 195, 247, 0.4);
   transition: all 0.3s ease;
 }
 
 button[type="submit"]:hover {
-  background: linear-gradient(135deg, #388e3c, #81c784);
+  background: linear-gradient(to right, #294c99, #4a7faa);
+  color: white;
   transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(28, 137, 218, 0.5);
 }
 
 /* Links and Prompts */
@@ -189,7 +194,7 @@ button[type="submit"]:hover {
 }
 
 .signup-link {
-  color: #97ff80;
+  color: #0288d1;
   text-decoration: none;
   font-weight: bold;
   margin-left: 5px;
@@ -197,7 +202,7 @@ button[type="submit"]:hover {
 }
 
 .signup-link:hover {
-  color: #d32f2f;
+  color: #0288d1;
 }
 
 .forgot-password {
@@ -205,7 +210,7 @@ button[type="submit"]:hover {
   text-align: center;
   margin-top: 12px;
   font-size: 13px;
-  color: #789262;
+  color: #0288d1;
   text-decoration: underline dashed;
   transition: text-decoration 0.2s;
 }
@@ -220,20 +225,22 @@ button[type="submit"]:hover {
   text-align: center;
   font-size: 14px;
   color: #616161;
+  font-weight: 500;
 }
 
 .clickable-icon {
   margin-left: 10px;
   vertical-align: middle;
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .clickable-icon:hover {
   transform: rotate(-5deg) scale(1.1);
+  box-shadow: 0 5px 12px rgba(66, 133, 244, 0.5);
 }
 </style>

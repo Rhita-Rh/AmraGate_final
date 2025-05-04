@@ -17,13 +17,13 @@
           </div>
           
         </router-link>
-        <router-link to="/accounts" class="follow-btn">Accounts</router-link>
-        <router-link to="/dashboard" class="follow-btn">Dashboard</router-link>
-        <router-link to="/add-project" class="follow-btn">Add Project</router-link>
-        <router-link to="/feedback" class="follow-btn">Feedback</router-link>
+        <router-link to="/accounts" class="header-btn">Accounts</router-link>
+        <router-link to="/dashboard" class="header-btn">Dashboard</router-link>
+        <router-link to="/add-project" class="header-btn">Add Project</router-link>
+        <router-link to="/feedback" class="header-btn">Feedback</router-link>
 
-        <div class="dropdown" @click="toggleAbout">
-          <button class="follow-btn">About Us</button>
+        <div class="dropdown" @click="toggleAbout" style="border: none;">
+          <button class="header-btn">About Us</button>
           <div v-if="showAbout" class="dropdown-menu">
             <p>Email: AMRA_GATE@gmail.com</p>
             <p>Phone: +123 456 7890</p>
@@ -100,8 +100,9 @@ export default {
 </script>
 
 <style scoped>
+
 .user-profile {
-  background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
+  background:  #e3f0fc;
   min-height: 100vh;
   font-family: 'Quicksand', sans-serif;
   color: #4a4a4a;
@@ -133,7 +134,16 @@ export default {
   align-items: center;
   gap: 15px;
 }
-
+.header-btn{
+  padding: 10px 20px;
+  background: linear-gradient(to right, #6796fb, #8b9df9);
+  color: #ffffff;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
 .follow-btn {
   padding: 10px 18px;
   border: none;

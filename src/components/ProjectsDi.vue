@@ -260,7 +260,7 @@ li {
 }
 
 .project-card {
-  background-color: #eaf0f9;
+  background-color: #ffffff;
   border-left: 4px solid #48bb78;
   border-radius: 8px;
   padding: 20px;

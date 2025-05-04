@@ -101,100 +101,119 @@ export default {
 
 <style scoped>
 .project-details-container {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 2rem auto;
-  padding: 2rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  background: linear-gradient(to bottom right, #f0f4f8, #e0f7fa);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  font-family: 'Quicksand', sans-serif;
 }
 
 .project-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  gap: 1rem;
 }
 
 .project-header h1 {
-  color: #2d3748;
   font-size: 2.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  flex: 1 1 60%;
 }
 
 .project-actions {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .update-btn, .delete-btn {
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .update-btn {
-  background-color: #228550;
+  background: linear-gradient(to right, #2563eb, #0891b2);
   color: white;
 }
 
 .update-btn:hover {
-  background-color: #33b770;
+  background: linear-gradient(to right, #2563eb, #0891b2);
   transform: translateY(-2px);
 }
 
 .delete-btn {
-  background-color: #f44336;
+  background: linear-gradient(to right, #ef4444, #f87171);
   color: white;
 }
 
 .delete-btn:hover {
-  background-color: #d32f2f;
+  background: linear-gradient(to right, #dc2626, #fb7185);
   transform: translateY(-2px);
 }
 
 .home-button {
-    display: inline-block;
-    background-color: #e2e8f0;
-    color: #2d3748;
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border: none;
-    cursor: pointer;
-    text-align: center;
+  background: linear-gradient(to right, #ffffff, #ecdfdf);
+  color: rgb(35, 73, 143);
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
 }
 
 .home-button:hover {
-    background-color: #cbd5e0;
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .project-content {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 2rem;
 }
 
+.project-image {
+  flex: 1 1 300px;
+}
+
 .project-image img {
-  max-width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .project-info {
+  flex: 2 1 500px;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2rem;
+}
+
+.project-description h3,
+.project-tech-stack h3,
+.project-github h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
 }
 
 .project-description p {
-  color: #4a5568;
-  line-height: 1.6;
+  color: #334155;
+  line-height: 1.7;
+  padding: 1rem;
+  border-radius: 10px;
 }
 
 .tech-tags {
@@ -204,19 +223,25 @@ export default {
 }
 
 .tech-tag {
-  background-color: #e6fffa;
+  background: #03105b;
+  color: white;
   padding: 0.5rem 1rem;
-  border-radius: 16px;
-  font-size: 0.875rem;
-  color: #2d3748;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .github-link {
-  color: #3182ce;
+  color: #3b82f6;
   text-decoration: none;
+  font-weight: 600;
+  background: #e0f2fe;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  display: inline-block;
+  transition: background-color 0.2s ease;
 }
 
-.github-link:hover {
-  text-decoration: underline;
-}
+
 </style>

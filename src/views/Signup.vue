@@ -36,7 +36,8 @@
 
               <div class="form-group">
                 <label>PROFILE PICTURE (Optional)</label>
-                <input type="file" @change="handleFileUpload" />
+                <input type="file" id="file-input" @change="handleFileUpload" class="file-input" />
+                <label for="file-input" class="custom-file-input">Choose file</label>
                 <div v-if="previewImage">
                   <img :src="previewImage" alt="Preview" width="100" style="margin-top: 10px; border-radius: 8px;" />
                 </div>
@@ -54,7 +55,7 @@
       </div>
       <div class="login-prompt">
         Already have an account?
-        <RouterLink to="/" style="color: #8b5e3c;">Sign in</RouterLink>
+        <RouterLink to="/" style="color: #4450a0;">Sign in</RouterLink>
       </div>
     </div>
   </div>
@@ -163,139 +164,197 @@ export default {
   },
 };
 </script>
-
 <style scoped>
-  /* Background Styling */
-  .bigbro {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: radial-gradient(circle at bottom right, #e8f5e9, #fff3f3);
-    font-family: 'Quicksand', sans-serif;
-  }
-  
-  /* Column Wrapper Layout */
-  .column-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-  
-  /* Card Container */
-  .page-container {
-    background: linear-gradient(145deg, #ffffff, #f4fff9);
-    border-radius: 20px;
-    box-shadow: 0 12px 30px rgba(120, 190, 90, 0.2);
-    padding: 35px 30px;
-    max-width: 500px;
-    width: 90%;
-    transition: transform 0.4s ease;
-    margin:50px;
-  }
-  
-  .page-container:hover {
-    transform: translateY(-4px);
-  }
-  
-  /* Title */
-  .title h1 {
-    text-align: center;
-    color: #43a047;
-    font-size: 2.2em;
-    margin-bottom: 25px;
-    letter-spacing: 1px;
-  }
-  
-  /* Inputs and Labels */
-  .form-group {
-    margin-bottom: 18px;
-  }
-  
-  label {
-    color: #558b2f;
-    font-weight: 600;
-    font-size: 14px;
-    display: block;
-    margin-bottom: 6px;
-  }
-  
-  input[type="text"],
-  input[type="email"],
-  input[type="password"] ,
-  input[type="tel"]{
-    width: 95%;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1.5px solid #aed581;
-    background-color: #f9fff8;
-    font-size: 15px;
-    transition: all 0.3s ease;
-  }
-  
-  input:focus {
-    border-color: #66bb6a;
-    box-shadow: 0 0 0 3px rgba(102, 187, 106, 0.2);
-    outline: none;
-  }
-  
-  /* Terms Checkbox */
-  .terms {
-    display: flex;
-    align-items: center;
-    margin-bottom: 18px;
-    font-size: 13px;
-    color: #4e4e4e;
-  }
-  .terms input[type="checkbox"] {
-    margin-right: 8px;
-  }
-  
-  .terms span {
-    font-weight: bold;
-    color: #ff7043;
-    cursor: pointer;
-  }
-  
-  /* Submit Button */
-  button[type="submit"] {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #66bb6a, #a5d6a7);
-    color: white;
-    font-weight: bold;
-    border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-    box-shadow: 0 4px 12px rgba(102, 187, 106, 0.4);
-    transition: all 0.3s ease;
-  }
-  
-  button[type="submit"]:hover {
-    background: linear-gradient(135deg, #388e3c, #81c784);
-    transform: translateY(-2px);
-  }
-  
-  /* Sign-in Link Prompt */
-  .login-prompt {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #6e6e6e;
-    text-align: center;
-  }
-  
-  .login-prompt a {
-    font-weight: bold;
-    margin-left: 5px;
-    text-decoration: none;
-    transition: color 0.2s ease;
-  }
-  
-  .login-prompt a:hover {
-    color: #0cbf12;
-  }
-  </style>
-  
+/* Background Styling */
+.bigbro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #e3f0fc;
+  font-family: 'Quicksand', sans-serif;
+  overflow: hidden;
+  animation: floatBg 10s infinite alternate;
+}
+
+@keyframes floatBg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* Card Container */
+.page-container {
+  background: #f2f2f6;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.1);
+  padding: 40px 30px;
+  max-width: 420px;
+  width: 90%;
+  border: 1px solid #cbd9e3;
+  transition: transform 0.4s ease;
+}
+
+.page-container:hover {
+  transform: translateY(-5px);
+}
+.file-input {
+  display: none;
+}
+
+/* Style the custom label to look like a button */
+.custom-file-input {
+  padding: 12px 24px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 8px;
+  width: 35%;
+  height: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: center;
+}
+
+.custom-file-input:hover {
+  background-color: #4caf50;
+}
+
+.custom-file-input:active {
+  background-color: #479d4a;
+}
+
+/* Title */
+.title h1 {
+  text-align: center;
+  background: linear-gradient(to right, #0288d1, #4fc3f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 2.4em;
+  letter-spacing: 1px;
+  margin-bottom: 25px;
+}
+
+/* Input Fields */
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  color: #0288d1;
+  font-weight: 600;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] {
+  width: 95%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #81d4fa;
+  background-color: #e3f2fd;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  border-color: #4fc3f7;
+  box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.25);
+  outline: none;
+}
+
+/* Terms Checkbox */
+.terms {
+  display: flex;
+  align-items: center;
+  margin: 18px 0;
+  font-size: 13px;
+  color: #4e4e4e;
+}
+
+.terms input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: #0288d1;
+}
+
+.terms span {
+  font-weight: bold;
+  color: #0288d1;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Submit Button */
+button[type="submit"] {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(to right, #2563eb, #60a0d4);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(79, 195, 247, 0.4);
+  transition: all 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(to right, #294c99, #4a7faa);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(28, 137, 218, 0.5);
+}
+
+/* Login Link Prompt */
+.login-prompt {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+}
+
+.login-text {
+  color: #4e4e4e;
+}
+
+.login-link {
+  color: #0288d1;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 5px;
+  transition: color 0.2s;
+}
+
+.login-link:hover {
+  color: #01579b;
+  text-decoration: underline;
+}
+
+/* Google Sign-in */
+.google-signin {
+  margin-top: 25px;
+  text-align: center;
+  font-size: 14px;
+  color: #616161;
+  font-weight: 500;
+}
+
+.clickable-icon {
+  margin-left: 10px;
+  vertical-align: middle;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.clickable-icon:hover {
+  transform: rotate(-5deg) scale(1.1);
+  box-shadow: 0 5px 12px rgba(66, 133, 244, 0.5);
+}
+</style>

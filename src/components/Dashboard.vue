@@ -540,8 +540,8 @@ h3 {
 }
 
 .avatar-container {
-  width: 80px;
-  height: 80px;
+  width: 120px; /* Increase the size */
+  height: 120px; /* Increase the size */
   border-radius: 50%;
   overflow: hidden;
   background-color: #e0e0e0;
@@ -557,8 +557,23 @@ h3 {
   object-fit: cover;
 }
 
+.profile-picture-section p {
+  font-size: 30px; /* Make the name bigger */
+  font-weight: 600; /* Add some weight to the text */
+  color: #4a4a4a;
+  margin: 0; /* Remove default margin */
+  text-transform: capitalize; /* Make name more formal */
+}
+.profile-picture-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+  margin-top: 20px;
+}
+
 .default-avatar {
-  font-size: 32px;
+  font-size: 48px; /* Increase the font size */
   font-weight: bold;
   color: #6b7c93;
 }
