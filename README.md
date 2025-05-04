@@ -2,7 +2,7 @@
 
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/Rhita-Rh/AmraGate_final)
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://your-demo-url.com)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://amragate-dev.vercel.app/)
 
 ## Description
 
