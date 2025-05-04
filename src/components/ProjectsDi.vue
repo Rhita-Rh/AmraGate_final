@@ -100,6 +100,7 @@ export default {
       starredProjects: [],
       followedUsers: [],
       user: null,
+      userProfiles: {}
     };
   },
   computed: {
@@ -181,37 +182,65 @@ export default {
       } catch (error) {
         console.error("Error updating follow state:", error);
       }
+    },
+
+    async fetchUserProfile(userId) {
+      if (!userId) return null;
+      
+      if (this.userProfiles[userId]) {
+        return this.userProfiles[userId];
+      }
+
+      try {
+        const userDocRef = doc(db, 'users', userId);
+        const userDoc = await getDoc(userDocRef);
+        
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          const profile = {
+            name: userData.name || 'Unknown',
+            photoURL: userData.photoURL || null
+          };
+          
+          this.userProfiles[userId] = profile;
+          return profile;
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+      
+      return null;
+    },
+
+    async fetchProjects() {
+      const querySnapshot = await getDocs(collection(db, "projects"));
+      this.projects = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      this.projects.sort((a, b) => {
+        const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+        const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+        return dateB - dateA;
+      });
+
+      for (let project of this.projects) {
+        if (project.owner) {
+          const profile = await this.fetchUserProfile(project.owner);
+          if (profile) {
+            project.authorName = profile.name;
+            project.authorPhotoURL = profile.photoURL;
+          }
+        }
+      }
     }
   },
   async created() {
     const auth = getAuth();
     this.user = auth.currentUser;
 
-    const querySnapshot = await getDocs(collection(db, "projects"));
-    this.projects = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    // Sort projects by timestamp in descending order (most recent first)
-    this.projects.sort((a, b) => {
-      const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
-      const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
-      return dateB - dateA;
-    });
-
-    for (let project of this.projects) {
-      const authorId = project.owner;
-      if (authorId) {
-        const userDocRef = doc(db, 'users', authorId);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          project.authorPhotoURL = data.photoURL || null;
-          project.authorName = data.name || 'Unknown';
-        }
-      }
-    }
+    await this.fetchProjects();
 
     if (this.user) {
       const userDocRef = doc(db, 'users', this.user.uid);
@@ -282,6 +311,7 @@ li {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 6px rgba(211, 208, 208, 0.3);
+  border: 2px solid #7ba6dd;
 }
 
 .follow-button {
@@ -350,7 +380,7 @@ li {
 .default-avatar {
   font-size: 24px;
   font-weight: bold;
-  color: #a0aec0;
+  color: #7ba6dd;
 }
 
 .project-header {
@@ -368,9 +398,10 @@ li {
 }
 
 .author-name {
-  color: #000000;
-  font-weight: 500;
+  color: #4a4a4a;
+  font-weight: 600;
   margin: 0;
+  font-size: 1rem;
 }
 
 .project-content {
