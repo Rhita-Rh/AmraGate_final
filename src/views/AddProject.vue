@@ -1,4 +1,5 @@
 <template>
+  <!-- Your template remains exactly the same -->
   <form @submit.prevent="submitForm" class="form">
     <h1 class="form-title">Add Project</h1>
 
@@ -95,6 +96,7 @@
 </template>
 
 <script>
+// Your script remains exactly the same
 import { db } from "../firebase-config";
 import { collection, addDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -224,13 +226,14 @@ export default {
   max-width: 600px;
   margin: 2rem auto;
   padding: 2rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
+  font-family: 'Quicksand', sans-serif;
 }
 
 .form-title {
-  color: #2d3748;
+  color: #7ba6dd;
   text-align: center;
   margin-bottom: 2rem;
   font-size: 2rem;
@@ -244,25 +247,24 @@ export default {
   display: block;
   margin-bottom: 0.5rem;
   color: #4a5568;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .form-input,
-.tech-input,
-.file-input {
+.tech-input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background: #fff;
-  transition: border-color 0.2s;
+  border: 1px solid #d0d6e2;
+  border-radius: 10px;
+  background: #f9fafd;
+  transition: all 0.3s ease;
 }
 
 .form-input:focus,
 .tech-input:focus {
   outline: none;
-  border-color: #a0aec0;
-  box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.1);
+  border-color: #7ba6dd;
+  box-shadow: 0 0 0 2px rgba(123, 166, 221, 0.2);
 }
 
 .input-container {
@@ -273,17 +275,17 @@ export default {
 
 .add-btn {
   padding: 0.5rem 1rem;
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
-  font-weight: 500;
+  font-weight: 600;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .add-btn:hover {
-  background-color: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
 }
 
@@ -297,7 +299,7 @@ export default {
 .tech-tag {
   display: inline-flex;
   align-items: center;
-  background-color: #e6fffa;
+  background: #e6fffa;
   padding: 0.25rem 0.75rem;
   border-radius: 16px;
   font-size: 0.875rem;
@@ -311,11 +313,12 @@ export default {
   color: #718096;
   cursor: pointer;
   padding: 0;
+  transition: all 0.2s ease;
 }
 
 .remove-btn:hover {
   color: #e53e3e;
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 
 .preview {
@@ -325,7 +328,7 @@ export default {
 .preview-img {
   max-width: 100%;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .form-actions {
@@ -341,34 +344,33 @@ export default {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  color: white;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .submit-btn {
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
-  font-weight: 500;
 }
 
 .submit-btn:hover {
-  background-color: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
 }
 
 .submit-btn:disabled {
-  background-color: #cbd5e0;
+  background: #cbd5e0;
   cursor: not-allowed;
+  transform: none;
 }
 
 .home-btn {
-  background-color: #e2e8f0;
-  color: black;
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+  color: white;
 }
 
-.home-btn:hover{
-  background-color: #c9cdd3;
+.home-btn:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
   transform: translateY(-2px);
 }
 
@@ -385,15 +387,15 @@ export default {
 .custom-button {
   display: inline-block;
   padding: 0.75rem 1.5rem;
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border-radius: 8px;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
 .custom-button:hover {
-  background-color: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
 }
 
@@ -401,8 +403,20 @@ export default {
   margin-left: 1rem;
   color: #4a5568;
   font-size: 0.9rem;
-  font-style: italic;
 }
 
-
+@media (max-width: 768px) {
+  .form {
+    padding: 1.5rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .submit-btn,
+  .home-btn {
+    width: 100%;
+  }
+}
 </style>

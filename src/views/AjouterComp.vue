@@ -176,162 +176,176 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .add-competence-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #f8f9fa;
-  padding: 20px;
-  font-family: 'Segoe UI', system-ui, sans-serif;
+  background-color: #f0f4f8;
+  padding: 2rem;
+  font-family: 'Quicksand', sans-serif;
 }
 
 .form-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 32px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
+  padding: 2rem;
   width: 100%;
-  max-width: 450px;
+  max-width: 600px;
 }
 
 h1 {
-  color: #2d3748;
-  font-size: 1.5rem;
+  color: #7ba6dd;
+  font-size: 2rem;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
   text-align: center;
 }
 
 .subtitle {
   color: #718096;
-  font-size: 0.9rem;
+  font-size: 1rem;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
 }
 
 .competence-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.5rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 label {
   color: #4a5568;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
-input, select {
-  padding: 10px 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  transition: border-color 0.2s;
+input,
+select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d0d6e2;
+  border-radius: 10px;
+  background: #f9fafd;
+  transition: all 0.3s ease;
+  font-size: 1rem;
 }
 
-input:focus, select:focus {
+input:focus,
+select:focus {
   outline: none;
-  border-color: #4CAF50;
+  border-color: #7ba6dd;
+  box-shadow: 0 0 0 2px rgba(123, 166, 221, 0.2);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.submit-btn,
+.back {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .submit-btn {
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 12px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: background-color 0.2s;
-  height: 44px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .submit-btn:hover {
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
 }
-.back{
-  background-color: #c62828;
+
+.submit-btn:disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.back {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
   color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 12px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: background-color 0.2s;
-  height: 44px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .back:hover {
-  background-color: #c62828;
-}
-.back-link {
-  color: #718096;
-  text-align: center;
-  font-size: 0.9rem;
-  text-decoration: none;
-  margin-top: 8px;
-  transition: color 0.2s;
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
 }
 
-.back-link:hover {
-  color: #4a5568;
-  text-decoration: underline;
+.back-link {
+  text-decoration: none;
+  flex: 1;
 }
 
 .success-message {
   background-color: #f0fff4;
   color: #2f855a;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin-top: 16px;
-  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
   text-align: center;
 }
 
 .error-message {
   background-color: #fff5f5;
   color: #c53030;
-  padding: 10px 12px;
-  border-radius: 6px;
-  margin-top: 16px;
-  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
   text-align: center;
 }
 
 .spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .form-card {
-    padding: 24px;
+    padding: 1.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .submit-btn,
+  .back {
+    width: 100%;
   }
 }
 </style>

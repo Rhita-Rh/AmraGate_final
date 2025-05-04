@@ -187,7 +187,6 @@ export default {
 };
 
 </script>
-
 <style scoped>
 li {
   list-style-type: none;
@@ -209,10 +208,11 @@ li {
 .add-project {
   margin: 0;
 }
-.e{
+.e {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 }
 
 .add-project-button {
@@ -230,46 +230,48 @@ li {
 }
 
 .avatar-container {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   overflow: hidden;
-  background-color: #e0e0e0;
+  background-color: #e9e9e9;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(211, 208, 208, 0.3);
 }
+
 .follow-button {
   background-color: #4ed185;
   color: white;
   border: none;
   padding: 8px 16px;
-  margin-top: 10px;
+  margin-left: 15px;
   border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
   height: 40px;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .follow-button:hover {
   background-color: #38a169;
+  transform: translateY(-1px);
 }
 
 .project-card {
-  background-color: #105a24; /* Light green background */
-  border-left: 6px solid #48bb78; /* Green accent border */
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 8px rgba(0, 128, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: #ffffff;
+  border-left: 4px solid #48bb78;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(244, 244, 244, 0.2);
+  transition: all 0.3s ease;
 }
 
 .project-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 128, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .profile-avatar {
@@ -279,47 +281,25 @@ li {
 }
 
 .default-avatar {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: bold;
-  color: #555;
-}
-
-.home-button {
-  background-color: #e2e8f0;
-  color: #2d3748;
-  padding: 10px 20px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-
-.home-button:hover {
-  background-color: #cbd5e0;
-}
-
-.project-card {
-  background-color: #f8fafc;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.project-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  color: #a0aec0;
 }
 
 .project-header {
+  display: flex;
+  align-items: center;
   margin-bottom: 16px;
 }
 
-.project-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #2d3748;
+.author-details {
+  margin-left: 15px;
+}
+
+.author-name {
+  color: #000000;
+  font-weight: 500;
+  margin: 0;
 }
 
 .project-content {
@@ -331,16 +311,23 @@ li {
   flex: 1;
 }
 
+.project-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #080909;
+  margin-bottom: 12px;
+}
+
 .project-description {
-  font-size: 15px;
-  color: #4a5568;
+  font-size: 0.9rem;
+  color: #424343;
   line-height: 1.6;
   margin-bottom: 16px;
 }
 
 .project-github {
   display: inline-block;
-  color: #48bb78;
+  color: #178e82;
   text-decoration: none;
   font-weight: 500;
   margin-bottom: 16px;
@@ -348,7 +335,8 @@ li {
 }
 
 .project-github:hover {
-  color: #38a169;
+  color: #268c87;
+  text-decoration: underline;
 }
 
 .project-image {
@@ -359,8 +347,8 @@ li {
 
 .project-image img {
   width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .tech-stack {
@@ -371,11 +359,11 @@ li {
 }
 
 .tech-item {
-  background-color: #c6f6d5;
-  color: #22543d;
-  border-radius: 20px;
-  padding: 6px 12px;
-  font-size: 13px;
+  background-color: #07255a;
+  color: #81e6d9;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
@@ -383,23 +371,38 @@ li {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 24px;
-  color: #ffd700;
+  font-size: 1.5rem;
+  color: #ecc94b;
   padding: 0;
   margin-left: 10px;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .star-button:hover {
   transform: scale(1.2);
+  color: #f6e05e;
 }
 
-.star-button span {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
-
-.star-button:hover span {
-  transform: scale(1.2);
+@media (max-width: 768px) {
+  .project-content {
+    flex-direction: column;
+  }
+  
+  .project-image {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-top: 20px;
+  }
+  
+  .e {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .follow-button {
+    margin-left: 0;
+    margin-top: 10px;
+  }
 }
 </style>
