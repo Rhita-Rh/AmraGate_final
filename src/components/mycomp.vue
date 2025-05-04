@@ -131,237 +131,246 @@
   }
 }
   </script>
-  
-  <style scoped>
-  .competences-view {
-    background-color: #f8f9fa;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  
-  .competences-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Quicksand', sans-serif;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  }
-  
-  .header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-  
-  .header-section h1 {
-    color: #2c3e50;
-    margin: 0;
-  }
-  
-  .action-buttons {
-    display: flex;
-    gap: 15px;
-  }
-  
-  button {
-    border: none;
-    border-radius: 6px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Quicksand', sans-serif;
-    font-weight: 500;
-  }
-  
-  .add-btn {
-    background-color: #42b983;
-    color: white;
-  }
-  
-  .add-btn:hover {
-    background-color: #35a771;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 6px rgba(66, 185, 131, 0.3);
-  }
-  
-  .back-btn {
-    background-color: #c62828;
-    color: white;
-  }
-  
-  .back-btn:hover {
-    background-color: #b71c1c;
-    transform: translateY(-2px);
-    box-shadow: 0 3px 6px rgba(198, 40, 40, 0.3);
-  }
-  
-  .loading, .empty-state {
-    text-align: center;
-    padding: 40px;
-    color: #666;
-  }
-  
-  .competences-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-  }
-  
-  .competence-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    padding: 20px;
-    position: relative;
-    background: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .competence-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .competence-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .competence-header h3 {
-    color: #2c3e50;
-    margin: 0;
-    font-size: 1.1rem;
-  }
-  
-  .level-badge {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: capitalize;
-  }
-  
-  .level-badge.beginner {
-    background-color: #e3f2fd;
-    color: #1976d2;
-  }
-  
-  .level-badge.intermediate {
-    background-color: #fff8e1;
-    color: #ff8f00;
-  }
-  
-  .level-badge.advanced {
-    background-color: #e8f5e9;
-    color: #388e3c;
-  }
-  
-  .detail-item {
-    margin-bottom: 8px;
-    display: flex;
-  }
-  
-  .detail-label {
-    font-weight: 600;
-    margin-right: 8px;
-    min-width: 120px;
-    color: #555;
-    font-size: 0.9rem;
-  }
-  
-  .detail-item span:last-child {
-    color: #2c3e50;
-  }
-  
-  .buttons{
-    position:absolute;
-    display: flex;
-    direction:column;
-    justify-content: space-between;
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-  }
-  .edit-btn {
-    top: 15px;
-    right: 15px;
-    background-color: #42b983;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(66, 185, 131, 0.3);
-  }
-  
-  .edit-btn:hover {
-    background-color: #35a771;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 6px rgba(66, 185, 131, 0.4);
-  }
-  
-  .delete-btn {
-    margin-left:15px;
-    top: 15px;
-    right: 15px;
-    background-color: #c62828;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(66, 185, 131, 0.3);
-  }
-  
-  .delete-btn:hover {
-    background-color: #b71c1c;
-    transform: translateY(-1px);
-    box-shadow: 0 3px 6px rgba(66, 185, 131, 0.4);
-  }
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .header-section {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    
-    .action-buttons {
-      width: 100%;
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .action-buttons button {
-      width: 100%;
-    }
-    
-    .competences-list {
-      grid-template-columns: 1fr;
-    }
-    
-    .competence-card {
-      padding: 15px;
-    }
-    
-    .detail-label {
-      min-width: 100px;
-    }
-  }
-  </style>
+ <style scoped>
+ .competences-view {
+   min-height: 100vh;
+   padding: 30px;
+   font-family: 'Quicksand', sans-serif;
+   background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
+   animation: floatBg 10s infinite alternate;
+ }
+ 
+ @keyframes floatBg {
+   0% { background-position: 0% 50%; }
+   100% { background-position: 100% 50%; }
+ }
+ 
+ .competences-container {
+   max-width: 900px;
+   margin: 0 auto;
+   padding: 30px;
+   background: rgba(255, 255, 255, 0.95);
+   border-radius: 16px;
+   box-shadow: 0 6px 20px rgba(148, 182, 229, 0.15);
+   border: 1px solid #e0e8f5;
+ }
+ 
+ .header-section {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 30px;
+   flex-wrap: wrap;
+   gap: 15px;
+   border-bottom: 1px solid #e0e0e0;
+   padding-bottom: 20px;
+ }
+ 
+ .header-section h1 {
+   color: #4d5a6a;
+   margin: 0;
+   font-size: 2rem;
+ }
+ 
+ .action-buttons {
+   display: flex;
+   gap: 15px;
+ }
+ 
+ button {
+   border: none;
+   border-radius: 10px;
+   padding: 12px 24px;
+   font-size: 1rem;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   font-weight: 600;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+ }
+ 
+ .add-btn {
+   background: linear-gradient(135deg, #7ba6dd, #a5c1eb);
+   color: white;
+ }
+ 
+ .add-btn:hover {
+   background: linear-gradient(135deg, #6a96d2, #95b4e0);
+   transform: translateY(-2px);
+   box-shadow: 0 6px 12px rgba(123, 166, 221, 0.3);
+ }
+ 
+ .back-btn {
+   background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+   color: white;
+ }
+ 
+ .back-btn:hover {
+   background: linear-gradient(135deg, #db7979, #e9a0a0);
+   transform: translateY(-2px);
+   box-shadow: 0 6px 12px rgba(228, 138, 138, 0.3);
+ }
+ 
+ .loading, .empty-state {
+   text-align: center;
+   padding: 40px;
+   color: #6b7c93;
+   font-size: 1.1rem;
+ }
+ 
+ .competences-list {
+   display: grid;
+   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+   gap: 20px;
+   margin-top: 20px;
+ }
+ 
+ .competence-card {
+   background: white;
+   border-radius: 12px;
+   padding: 20px;
+   position: relative;
+   box-shadow: 0 4px 12px rgba(148, 182, 229, 0.1);
+   border: 1px solid #e0e8f5;
+   transition: all 0.3s ease;
+ }
+ 
+ .competence-card:hover {
+   transform: translateY(-5px);
+   box-shadow: 0 8px 20px rgba(148, 182, 229, 0.2);
+ }
+ 
+ .competence-header {
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   margin-bottom: 15px;
+ }
+ 
+ .competence-header h3 {
+   color: #4d5a6a;
+   margin: 0;
+   font-size: 1.2rem;
+ }
+ 
+ .level-badge {
+   padding: 6px 12px;
+   border-radius: 20px;
+   font-size: 0.8rem;
+   font-weight: 600;
+   text-transform: capitalize;
+ }
+ 
+ .level-badge.beginner {
+   background-color: #e3f2fd;
+   color: #1976d2;
+ }
+ 
+ .level-badge.intermediate {
+   background-color: #fff8e1;
+   color: #ff8f00;
+ }
+ 
+ .level-badge.advanced {
+   background-color: #e8f5e9;
+   color: #388e3c;
+ }
+ 
+ .detail-item {
+   margin-bottom: 10px;
+   display: flex;
+ }
+ 
+ .detail-label {
+   font-weight: 600;
+   margin-right: 10px;
+   min-width: 120px;
+   color: #6b7c93;
+   font-size: 0.9rem;
+ }
+ 
+ .detail-item span:last-child {
+   color: #4d5a6a;
+ }
+ 
+ .buttons {
+   position: absolute;
+   display: flex;
+   bottom: 15px;
+   right: 15px;
+   gap: 10px;
+ }
+ 
+ .edit-btn {
+   background: linear-gradient(135deg, #7ba6dd, #a5c1eb);
+   color: white;
+   border: none;
+   border-radius: 8px;
+   padding: 8px 16px;
+   font-size: 0.85rem;
+   font-weight: 600;
+   cursor: pointer;
+   text-decoration: none;
+   transition: all 0.3s ease;
+   box-shadow: 0 2px 6px rgba(123, 166, 221, 0.2);
+ }
+ 
+ .edit-btn:hover {
+   background: linear-gradient(135deg, #6a96d2, #95b4e0);
+   transform: translateY(-2px);
+   box-shadow: 0 4px 8px rgba(123, 166, 221, 0.3);
+ }
+ 
+ .delete-btn {
+   background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+   color: white;
+   border: none;
+   border-radius: 8px;
+   padding: 8px 16px;
+   font-size: 0.85rem;
+   font-weight: 600;
+   cursor: pointer;
+   transition: all 0.3s ease;
+   box-shadow: 0 2px 6px rgba(228, 138, 138, 0.2);
+ }
+ 
+ .delete-btn:hover {
+   background: linear-gradient(135deg, #db7979, #e9a0a0);
+   transform: translateY(-2px);
+   box-shadow: 0 4px 8px rgba(228, 138, 138, 0.3);
+ }
+ 
+ @media (max-width: 768px) {
+   .competences-container {
+     padding: 20px;
+   }
+   
+   .header-section {
+     flex-direction: column;
+     align-items: flex-start;
+   }
+   
+   .action-buttons {
+     width: 100%;
+     flex-direction: column;
+     gap: 10px;
+   }
+   
+   .action-buttons button {
+     width: 100%;
+   }
+   
+   .competences-list {
+     grid-template-columns: 1fr;
+   }
+   
+   .competence-card {
+     padding: 20px 15px;
+   }
+   
+   .buttons {
+     position: static;
+     margin-top: 15px;
+     justify-content: flex-end;
+   }
+ }
+ </style>

@@ -1,47 +1,45 @@
 <template>
   <div>
     <ul>
-      <li v-for="project in projects" :key="project.id" class="project-card">
+      <li v-for="project in filteredProjects" :key="project.id" class="project-card">
         <!-- Project Header: Author and Profile Picture -->
         <div class="project-header">
-          <div class="e">
-          <div class="avatar-container">
-            <!-- Display author photo if available, otherwise show the author's initials -->
-            <div v-if="project.owner === user.uid">
-              <router-link to="/Dashboard" style="text-decoration: none;"><img 
-                v-if="project.authorPhotoURL" 
-                :src="project.authorPhotoURL" 
-                alt="Profile Picture"
-                class="profile-avatar"
-              >
-              <span v-else class="default-avatar">{{ user.displayName ? user.displayName.charAt(0) : 'N' }}</span>
-              </router-link>
-
+          <div class="author-details">
+            <div class="avatar-container">
+              <!-- Display author photo if available, otherwise show the author's initials -->
+              <div v-if="project.owner === user.uid">
+                <router-link to="/Dashboard" style="text-decoration: none;">
+                  <img 
+                    v-if="project.authorPhotoURL" 
+                    :src="project.authorPhotoURL" 
+                    alt="Profile Picture"
+                    class="profile-avatar"
+                  />
+                  <span v-else class="default-avatar">{{ user.displayName ? user.displayName.charAt(0) : 'N' }}</span>
+                </router-link>
+              </div>
+              
+              <div v-else>
+                <router-link :to="`/accounts/${project.owner}`" style="text-decoration: none;">
+                  <img 
+                    v-if="project.authorPhotoURL" 
+                    :src="project.authorPhotoURL" 
+                    alt="Profile Picture"
+                    class="profile-avatar"
+                  />
+                  <span v-else class="default-avatar">{{ project.authorName ? project.authorName.charAt(0) : 'N' }}</span>
+                </router-link>
+              </div>
             </div>
-            
-            <div v-else>
-              <router-link :to="`/accounts/${project.owner}`" style="text-decoration: none;"><img 
-                v-if="project.authorPhotoURL" 
-                :src="project.authorPhotoURL" 
-                alt="Profile Picture"
-                class="profile-avatar"
-              >
-              <span v-else class="default-avatar">{{ project.authorName ? project.authorName.charAt(0) : 'N' }}</span>
-              </router-link>
-            </div>
-
+            <p class="author-name">{{ project.authorName }}</p>
           </div>
           <button 
             v-if="user && project.owner !== user.uid" 
             @click="toggleFollow(project.owner)" 
-          class="follow-button"
-              >
-          {{ followedUsers.includes(project.owner) ? 'Unfollow' : 'Follow' }}
-            </button>
-          </div>
-          <div class="author-details">
-            <p class="author-name">{{ project.authorName }}</p>
-          </div>
+            :class="followedUsers.includes(project.owner) ? 'unfollow-button' : 'follow-button'"
+          >
+            {{ followedUsers.includes(project.owner) ? 'Unfollow' : 'Follow' }}
+          </button>
         </div>
         
         <div class="project-content">
@@ -85,6 +83,16 @@ import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, updateDoc, arrayUn
 
 export default {
   name: 'ProjectsDiv',
+  props: {
+    searchQuery: {
+      type: String,
+      default: ''
+    },
+    selectedTech: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       projects: [],
@@ -92,6 +100,20 @@ export default {
       followedUsers: [],
       user: null,
     };
+  },
+  computed: {
+    filteredProjects() {
+      return this.projects.filter(project => {
+        const matchesSearch = this.searchQuery === '' || 
+          project.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          project.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+        
+        const matchesTech = this.selectedTech === '' || 
+          (project.techStack && project.techStack.includes(this.selectedTech));
+        
+        return matchesSearch && matchesTech;
+      });
+    }
   },
   methods: {
     async toggleStar(projectId) {
@@ -157,6 +179,13 @@ export default {
       ...doc.data(),
     }));
 
+    // Sort projects by timestamp in descending order (most recent first)
+    this.projects.sort((a, b) => {
+      const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+      const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+      return dateB - dateA;
+    });
+
     for (let project of this.projects) {
       const authorId = project.owner;
       if (authorId) {
@@ -187,7 +216,6 @@ export default {
 };
 
 </script>
-
 <style scoped>
 li {
   list-style-type: none;
@@ -209,10 +237,11 @@ li {
 .add-project {
   margin: 0;
 }
-.e{
+.e {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
 }
 
 .add-project-button {
@@ -230,46 +259,72 @@ li {
 }
 
 .avatar-container {
-  width: 80px;
-  height: 80px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   overflow: hidden;
-  background-color: #e0e0e0;
+  background-color: #e9e9e9;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(211, 208, 208, 0.3);
 }
+
 .follow-button {
-  background-color: #4ed185;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
-  padding: 8px 16px;
-  margin-top: 10px;
-  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   height: 40px;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
+  margin-left: auto;
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
 }
 
 .follow-button:hover {
-  background-color: #38a169;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
+}
+
+.unfollow-button {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 40px;
+  transition: all 0.3s ease;
+  margin-left: auto;
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
+}
+
+.unfollow-button:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
 }
 
 .project-card {
-  background-color: #105a24; /* Light green background */
-  border-left: 6px solid #48bb78; /* Green accent border */
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 8px rgba(0, 128, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background-color: #ffffff;
+  border-left: 4px solid #48bb78;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(244, 244, 244, 0.2);
+  transition: all 0.3s ease;
 }
 
 .project-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 128, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .profile-avatar {
@@ -279,47 +334,29 @@ li {
 }
 
 .default-avatar {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: bold;
-  color: #555;
-}
-
-.home-button {
-  background-color: #e2e8f0;
-  color: #2d3748;
-  padding: 10px 20px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: background-color 0.2s ease;
-}
-
-.home-button:hover {
-  background-color: #cbd5e0;
-}
-
-.project-card {
-  background-color: #f8fafc;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.project-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  color: #a0aec0;
 }
 
 .project-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
+  gap: 1rem;
 }
 
-.project-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #2d3748;
+.author-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.author-name {
+  color: #000000;
+  font-weight: 500;
+  margin: 0;
 }
 
 .project-content {
@@ -331,16 +368,23 @@ li {
   flex: 1;
 }
 
+.project-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #080909;
+  margin-bottom: 12px;
+}
+
 .project-description {
-  font-size: 15px;
-  color: #4a5568;
+  font-size: 0.9rem;
+  color: #424343;
   line-height: 1.6;
   margin-bottom: 16px;
 }
 
 .project-github {
   display: inline-block;
-  color: #48bb78;
+  color: #178e82;
   text-decoration: none;
   font-weight: 500;
   margin-bottom: 16px;
@@ -348,7 +392,8 @@ li {
 }
 
 .project-github:hover {
-  color: #38a169;
+  color: #268c87;
+  text-decoration: underline;
 }
 
 .project-image {
@@ -359,8 +404,8 @@ li {
 
 .project-image img {
   width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .tech-stack {
@@ -371,11 +416,11 @@ li {
 }
 
 .tech-item {
-  background-color: #c6f6d5;
-  color: #22543d;
-  border-radius: 20px;
-  padding: 6px 12px;
-  font-size: 13px;
+  background-color: #07255a;
+  color: #81e6d9;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
@@ -383,23 +428,44 @@ li {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 24px;
-  color: #ffd700;
+  font-size: 1.5rem;
+  color: #ecc94b;
   padding: 0;
   margin-left: 10px;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .star-button:hover {
   transform: scale(1.2);
+  color: #f6e05e;
 }
 
-.star-button span {
-  display: inline-block;
-  transition: transform 0.2s ease;
-}
-
-.star-button:hover span {
-  transform: scale(1.2);
+@media (max-width: 768px) {
+  .project-content {
+    flex-direction: column;
+  }
+  
+  .project-image {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-top: 20px;
+  }
+  
+  .project-header {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .author-details {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .follow-button {
+    margin-left: auto;
+    width: auto;
+  }
 }
 </style>

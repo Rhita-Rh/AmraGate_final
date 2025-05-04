@@ -2,7 +2,7 @@
   <div class="user-profile">
     <!-- Navbar -->
     <nav class="navbar">
-      <img src="R.png" alt="Logo" class="logo" />
+      <img src="@/assets/logo.png" alt="Logo" class="logo" />
       <div class="nav-links">
         <router-link to="/Dashboard" style="text-decoration: none;">
           <div v-if="user && user.photoURL" class="profile-avatar-wrapper">
@@ -17,13 +17,13 @@
           </div>
           
         </router-link>
-        <router-link to="/accounts" class="follow-btn">Accounts</router-link>
-        <router-link to="/dashboard" class="follow-btn">Dashboard</router-link>
-        <router-link to="/add-project" class="follow-btn">Add Project</router-link>
-        <router-link to="/feedback" class="follow-btn">Feedback</router-link>
+        <router-link to="/accounts" class="header-btn">Accounts</router-link>
+        <router-link to="/dashboard" class="header-btn">Dashboard</router-link>
+        <router-link to="/add-project" class="header-btn">Add Project</router-link>
+        <router-link to="/feedback" class="header-btn">Feedback</router-link>
 
-        <div class="dropdown" @click="toggleAbout">
-          <button class="follow-btn">About Us</button>
+        <div class="dropdown" @click="toggleAbout" style="border: none;">
+          <button class="header-btn">About Us</button>
           <div v-if="showAbout" class="dropdown-menu">
             <p>Email: AMRA_GATE@gmail.com</p>
             <p>Phone: +123 456 7890</p>
@@ -36,9 +36,33 @@
 
     </nav>
 
+    <!-- Search and Filters -->
+    <div class="search-container">
+      <div class="search-bar">
+        <input 
+          type="text" 
+          v-model="searchQuery" 
+          placeholder="Search projects..." 
+          class="search-input"
+        />
+        <select v-model="selectedTech" class="tech-filter">
+          <option value="">All Technologies</option>
+          <option v-for="tech in availableTechs" :key="tech" :value="tech">
+            {{ tech }}
+          </option>
+        </select>
+        <button class="search-button" @click="applyFilters">
+          <span class="search-icon">🔍</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Project List -->
     <main class="project-list">
-      <ProjectsDi />
+      <ProjectsDi 
+        :search-query="searchQuery"
+        :selected-tech="selectedTech"
+      />
     </main>
   </div>
 </template>
@@ -48,7 +72,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../firebase-config";
 import ProjectsDi from '@/components/ProjectsDi.vue';
 import { onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getFirestore, doc, getDoc, collection, getDocs } from "firebase/firestore";
 const db = getFirestore();
 
 export default {
@@ -59,7 +83,10 @@ export default {
   data() {
     return {
       showAbout: false,
-      user:null
+      user: null,
+      searchQuery: '',
+      selectedTech: '',
+      availableTechs: []
     };
   },
   computed: {
@@ -69,18 +96,29 @@ export default {
       return names.map(name => name[0]).join('').toUpperCase();
     }
   },
-  created() {
+  async created() {
     onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         const docSnap = await getDoc(doc(db, "users", authUser.uid));
         if (docSnap.exists()) {
           const userData = docSnap.data();
-          this.user = { ...authUser, ...userData }; // merge both
+          this.user = { ...authUser, ...userData };
         } else {
-          this.user = authUser; // fallback
+          this.user = authUser;
         }
       }
     });
+
+    // Fetch all unique technologies from projects
+    const projectsSnapshot = await getDocs(collection(db, "projects"));
+    const techs = new Set();
+    projectsSnapshot.forEach(doc => {
+      const project = doc.data();
+      if (project.techStack) {
+        project.techStack.forEach(tech => techs.add(tech));
+      }
+    });
+    this.availableTechs = Array.from(techs).sort();
   },
   methods: {
     toggleAbout() {
@@ -95,32 +133,40 @@ export default {
         console.error("Error signing out:", error);
       }
     },
+    applyFilters() {
+      // The filtering is handled by the ProjectsDi component
+    }
   },
 };
 </script>
 
 <style scoped>
-.user-profile {
-  background: radial-gradient(circle at top left, #d0f8ce, #fce4ec);
+
+/* Background Styling */
+.home-view {
   min-height: 100vh;
   font-family: 'Quicksand', sans-serif;
-  color: #2d2d2d;
-  overflow-x: hidden;
+  background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
+  animation: floatBg 10s infinite alternate;
+  color: #4a4a4a;
+  padding: 2rem;
+}
+
+@keyframes floatBg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
 
 /* Navbar */
 .navbar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 15px 30px;
-  background-color: #ffffffcc;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  backdrop-filter: blur(6px);
-  border-bottom: 1px solid #d0e8c9;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
+  margin-bottom: 2rem;
 }
 
 .logo {
@@ -130,56 +176,73 @@ export default {
 /* Nav Links */
 .nav-links {
   display: flex;
-  align-items: center;
-  gap: 15px;
+  gap: 1rem;
+}
+
+/* Buttons */
+.header-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
+  color: white;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.header-btn:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
 }
 
 .follow-btn {
-  padding: 10px 18px;
-  border: none;
-  border-radius: 25px;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
+  color: white;
+  border-radius: 10px;
   font-size: 0.95rem;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
-  color: #ffffff;
-  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.25);
+  box-shadow: 0 4px 12px rgba(148, 182, 229, 0.2);
   text-decoration: none;
 }
 
 .follow-btn:hover {
-  background: #388e3c;
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
   transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(148, 182, 229, 0.25);
 }
 
 /* Logout Button */
 .logout-btn {
-  background: linear-gradient(135deg, #ef5350, #ef9a9a);
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
   color: white;
-  padding: 10px 18px;
+  padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 25px;
+  border-radius: 10px;
   font-size: 0.95rem;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(239, 83, 80, 0.2);
+  box-shadow: 0 4px 12px rgba(228, 138, 138, 0.2);
 }
 
 .logout-btn:hover {
-  background: #6b0808;
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
   transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(228, 138, 138, 0.25);
 }
 
 /* Project List */
 .project-list {
   max-width: 1000px;
-  margin: 40px auto;
-  padding: 0 20px;
+  margin: 2rem auto;
+  padding: 0 2rem;
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 1.5rem;
 }
 
 /* Dropdown */
@@ -189,17 +252,18 @@ export default {
 
 .dropdown-menu {
   position: absolute;
-  top: 48px;
+  top: 3rem;
   left: 0;
-  background: #ffffff;
-  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 18px rgba(148, 182, 229, 0.15);
   white-space: nowrap;
-  font-size: 14px;
-  color: #333;
+  font-size: 0.9rem;
+  color: #4d5a6a;
   z-index: 200;
   animation: fadeIn 0.3s ease-in-out;
+  border: 1px solid #e0e0e0;
 }
 
 /* Animations */
@@ -213,41 +277,198 @@ export default {
     transform: translateY(0);
   }
 }
+
 .profile-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #66bb6a;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border: 2px solid #7ba6dd;
+  box-shadow: 0 2px 6px rgba(148, 182, 229, 0.15);
+  transition: transform 0.3s ease;
 }
+
+.profile-avatar:hover {
+  transform: scale(1.05);
+}
+
+.profile-avatar-wrapper {
+  position: relative;
+}
+
 .initials-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgb(202, 200, 200);
-  color: white;
+  background-color: #f9fafd;
+  color: #7ba6dd;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(148, 182, 229, 0.15);
+  transition: transform 0.3s ease;
+  border: 2px solid #7ba6dd;
+}
+
+.initials-avatar:hover {
+  transform: scale(1.05);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+  
   .nav-links {
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 0.5rem 0;
+    order: 3;
+    width: 100%;
+  }
+  
+  .follow-btn, .logout-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
   }
 
   .logo {
-    height: 38px;
+    height: 35px;
+    order: 1;
+  }
+  
+  .logout-btn {
+    order: 2;
   }
 
   .project-list {
-    padding: 0 10px;
+    padding: 0 1rem;
+    margin: 1.5rem auto;
+  }
+  
+  .dropdown-menu {
+    left: -50px;
+    right: -50px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.75rem;
+  }
+  
+  .follow-btn, .logout-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .profile-avatar, .initials-avatar {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* Search Container */
+.search-container {
+  max-width: 1000px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+}
+
+.search-bar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(148, 182, 229, 0.15);
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d0d6e2;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #f9fafd;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #7ba6dd;
+  box-shadow: 0 0 0 2px rgba(123, 166, 221, 0.2);
+}
+
+.tech-filter {
+  padding: 0.75rem 1rem;
+  border: 1px solid #d0d6e2;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #f9fafd;
+  color: #4a4a4a;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tech-filter:focus {
+  outline: none;
+  border-color: #7ba6dd;
+  box-shadow: 0 0 0 2px rgba(123, 166, 221, 0.2);
+}
+
+.search-button {
+  background: linear-gradient(135deg, #94e594, #9eeec2);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-button:hover {
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
+}
+
+.search-icon {
+  font-size: 1.1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-container {
+    padding: 0 1rem;
+  }
+  
+  .search-bar {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .search-input,
+  .tech-filter,
+  .search-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-container {
+    margin-bottom: 1.5rem;
   }
 }
 </style>
