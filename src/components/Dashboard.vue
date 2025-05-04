@@ -1,6 +1,11 @@
 <template>
   <div class="user-profile">
-    <router-link to="/Home"><button class="back">Back to Home</button></router-link>
+    <div class="back-button-container">
+      <router-link to="/Home" class="back-button">
+        <span class="back-icon">←</span>
+        <span class="back-text">Back to Home</span>
+      </router-link>
+    </div>
     <div class="profile-picture-section">
           <div class="avatar-container">
             <img 
@@ -33,23 +38,23 @@
 
         <div class="navigation-links">
           <router-link to="/my-projects">
-            <button>My Projects</button>
+            <button class="follow-btn">My Projects</button>
           </router-link>
           <router-link to="/UpdateProfile">
-            <button>Update Profile</button>
+            <button class="follow-btn">Update Profile</button>
           </router-link>
           <router-link to="/mycomp">
-            <button>My competences</button>
+            <button class="follow-btn">My competences</button>
           </router-link>
 
           <router-link to="/followers">
-            <button>My followers</button> 
+            <button class="follow-btn">My followers</button> 
           </router-link>
           <router-link to="/following">
-            <button>Following</button> 
+            <button class="follow-btn">Following</button> 
           </router-link>
         </div>
-
+        
         <div class="user-info">
           <h3>Personal Information</h3>
           <div class="info-item">
@@ -67,6 +72,32 @@
           <div class="info-item">
             <span class="info-label">Phone:</span>
             <span class="info-value">{{ userData.phone }}</span>
+          </div>
+        </div>
+
+        <!-- Starred Projects Section -->
+        <div class="starred-projects-section">
+          <h3>Starred Projects</h3>
+          <div v-if="starredProjects.length > 0">
+            <div
+              v-for="project in starredProjects"
+              :key="project.id"
+              class="project-card"
+            >
+              <div class="info-item">
+                <span class="info-label">Project:</span>
+                <span class="info-value">{{ project.title }}</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Description:</span>
+                <span class="info-value">{{ project.description }}</span>
+              </div>
+              <button @click="unstarProject(project.id)" class="unstar-btn">Unstar</button>
+              <router-link :to="`/project/${project.id}`" class="details-btn">View Details</router-link>
+            </div>
+          </div>
+          <div v-else>
+            <p>No starred projects.</p>
           </div>
         </div>
 
@@ -92,7 +123,7 @@
               </div>
 
               <router-link :to="{ name: 'Edit_goal', params: { index } }">
-                <button class="edit-btn">Edit</button>
+                <button class="follow-btn">Edit</button>
               </router-link>
               <button @click="deletegoal(index)" class="cancel-btn">Delete</button>
             </div>
@@ -155,6 +186,8 @@ import nbre_competences_mois from "./nbre_competences_mois.vue";
 import projet_realis from "./projet_realis.vue";
 import { nextTick } from "vue";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, getDocs, deleteDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 export default {
   props: {
@@ -176,8 +209,9 @@ export default {
         bio: "",
         phone: "",
         goals: [],
-        competences: []
+        competences: [],
       },
+      starredProjects: [],
       showAddGoalForm: false,
       newGoal: {
         obj: "",
@@ -196,6 +230,7 @@ export default {
   },
   created() {
     this.fetchUserData();
+    this.fetchStarredProjects();
   },
   methods: {
     async fetchUserData() {
@@ -208,6 +243,50 @@ export default {
           this.userData = data;
           this.competences = data.competences || [];
           this.goalEditVisible = (data.goals || []).map(() => false);
+        }
+      }
+    },
+    async fetchStarredProjects() {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (user) {
+        try {
+          // Get starred projects for current user
+          const starredQuery = collection(db, 'starred');
+          const starredSnapshot = await getDocs(starredQuery);
+          const starredProjectIds = starredSnapshot.docs
+            .filter(doc => doc.data().userId === user.uid)
+            .map(doc => doc.data().projectId);
+
+          // Get project details for each starred project
+          const projectsCollection = collection(db, 'projects');
+          const projectsSnapshot = await getDocs(projectsCollection);
+          this.starredProjects = projectsSnapshot.docs
+            .filter(doc => starredProjectIds.includes(doc.id))
+            .map(doc => ({
+              id: doc.id,
+              ...doc.data()
+            }));
+        } catch (error) {
+          console.error('Error fetching starred projects:', error);
+        }
+      }
+    },
+    async unstarProject(projectId) {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      
+      if (user) {
+        try {
+          const starredRef = collection(db, 'starred');
+          const starDoc = doc(starredRef, `${user.uid}_${projectId}`);
+          await deleteDoc(starDoc);
+          
+          // Update local state
+          this.starredProjects = this.starredProjects.filter(project => project.id !== projectId);
+        } catch (error) {
+          console.error('Error unstarring project:', error);
         }
       }
     },
@@ -315,58 +394,19 @@ export default {
 </script>
 
 <style scoped>
-.profile-picture-section {
-  margin-top:20px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 25px;
-}
-
-.avatar-container {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  overflow: hidden;
-  background-color: #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.profile-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.default-avatar {
-  font-size: 32px;
-  font-weight: bold;
-  color: #555;
-}
-
-.upload-btn {
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.upload-btn:hover {
-  background-color: #0b7dda;
-}
-
 .user-profile {
-  background-color: #f5f7fa;
   min-height: 100vh;
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
   padding: 20px;
+  font-family: 'Quicksand', sans-serif;
+  background: radial-gradient(circle at top left, #d0f8ce, #fce4ec);
+  animation: floatBg 10s infinite alternate;
+  color: #2d2d2d;
+  overflow-x: hidden;
+}
+
+@keyframes floatBg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
 }
 
 .profile-container {
@@ -374,6 +414,7 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   gap: 30px;
+  flex-wrap: wrap;
 }
 
 .profile-section {
@@ -389,24 +430,45 @@ export default {
 }
 
 .chart-container {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
   padding: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 30px rgba(120, 190, 90, 0.2);
 }
-.back{
-  background-color: #f44336;
+
+/* BACK BUTTON */
+.back-button-container {
+  margin-bottom: 20px;
+}
+
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffffcc;
+  color: #2d3748;
   padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: 600;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 500;
   font-size: 15px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  border: 1px solid #d0e8c9;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }
+
+.back-button:hover {
+  background-color: #f0f8f2;
+  transform: translateY(-1px);
+}
+
+.back-icon {
+  font-size: 18px;
+}
+
+/* HEADINGS */
 h2 {
-  color: #2c3e50;
+  color: #388e3c;
   margin-bottom: 20px;
   font-size: 28px;
 }
@@ -415,38 +477,41 @@ h3 {
   color: #2c3e50;
   margin: 25px 0 15px;
   font-size: 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #e0e0e0;
   padding-bottom: 8px;
 }
 
+/* NAVIGATION BUTTONS */
 .navigation-links {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
   margin-bottom: 30px;
 }
 
 .navigation-links button {
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
   color: white;
-  font-weight: 500;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 10px 18px;
+  font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .navigation-links button:hover {
-  background-color: #388e3c;
+  background: #388e3c;
   transform: translateY(-2px);
 }
 
+/* PROFILE INFO */
 .user-info {
-  background: white;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
   padding: 25px;
   margin-bottom: 25px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 12px 20px rgba(102, 187, 106, 0.2);
 }
 
 .info-item {
@@ -458,142 +523,203 @@ h3 {
 .info-label {
   font-weight: 600;
   width: 100px;
-  color: #555;
+  color: #388e3c;
 }
 
 .info-value {
   flex: 1;
   padding: 8px 12px;
-  background: #f9f9f9;
+  background: #f1f8f5;
   border-radius: 6px;
 }
 
-.goal-card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  position: relative;
+/* PROFILE PICTURE */
+.profile-picture-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 25px;
+  margin-top: 20px;
 }
 
-.edit-btn {
-  background-color: #2196F3;
+.avatar-container {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  font-size: 32px;
+  font-weight: bold;
+  color: #555;
+}
+
+.upload-btn {
+  background: linear-gradient(135deg, #66bb6a, #a5d6a7);
   color: white;
   border: none;
-  border-radius: 6px;
-  height: 40px;
-  padding: 8px 15px;
+  border-radius: 8px;
+  padding: 8px 16px;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 10px;
-  margin: 10px;
 }
 
-.edit-btn:hover {
-  background-color: #0b7dda;
-  transform: translateY(-1px);
-}
-.delete-btn {
-  background-color: #f44336;
-  height: 40px;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
-}
-.delete-btn:hover {
-  background-color: #952c25;
-  transform: translateY(-1px);
-}
-.add-btn {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 15px;
-}
-
-.add-btn:hover {
+.upload-btn:hover {
   background-color: #388e3c;
-  transform: translateY(-2px);
 }
 
+/* GOALS & FORMS */
+.goal-card,
 .add-goal-form {
   background: white;
-  border-radius: 12px;
-  padding: 25px;
-  margin-top: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 6px 12px rgba(120, 190, 90, 0.15);
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 8px;
   font-weight: 500;
-  color: #555;
+  color: #4a4a4a;
+  display: block;
+  margin-bottom: 6px;
 }
 
 .form-group input,
 .form-group select {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
+  border: 1px solid #cde8c9;
+  border-radius: 10px;
+  background-color: #f9fff8;
+  font-size: 15px;
 }
 
 .form-actions {
   display: flex;
   gap: 15px;
-  margin-top: 20px;
 }
 
-.save-btn {
+.save-btn,
+.add-btn {
   background-color: #4caf50;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 12px 20px;
   cursor: pointer;
   flex: 1;
   transition: all 0.3s ease;
 }
 
-.save-btn:hover {
+.save-btn:hover,
+.add-btn:hover {
   background-color: #388e3c;
 }
+/* EDIT BUTTON */
+.follow-btn {
+  background: linear-gradient(135deg, #4caf50, #81c784);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
 
-.cancel-btn {
-  background-color: #f44336;
+.follow-btn:hover {
+  background: #388e3c;
+  transform: translateY(-2px);
+}
+
+/* DELETE BUTTON */
+.cancel-btn,
+.delete-btn {
+  background: linear-gradient(135deg, #f44336, #e57373);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.cancel-btn:hover,
+.delete-btn:hover {
+  background: #6a1111;
+  transform: translateY(-2px);
+}
+
+
+/* STARRED PROJECTS */
+.starred-projects-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgba(120, 190, 90, 0.15);
+}
+
+.project-card {
+  background: #f1f8f5;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #dcedc8;
+}
+
+.unstar-btn {
+  background-color: #b71c1c;
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 12px 20px;
+  padding: 8px 16px;
   cursor: pointer;
-  flex: 1;
-  transition: all 0.3s ease;
+  margin-top: 10px;
 }
 
-.cancel-btn:hover {
-  background-color: #d32f2f;
+.details-btn {
+  background-color: #3aa13e;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-left: 10px;
+  margin-top: 10px;
+  text-decoration: none;
 }
 
+.details-btn:hover {
+  background-color: #2e7d32;
+}
+
+/* MEDIA QUERY */
 @media (max-width: 992px) {
   .profile-container {
     flex-direction: column;
   }
-  
+
   .charts-section {
     width: 100%;
     margin-top: 30px;

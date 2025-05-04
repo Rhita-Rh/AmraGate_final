@@ -87,8 +87,8 @@
         {{ loading ? "Submitting..." : "Submit" }}
       </button>
 
-      <button type="button" @click="$router.push('/Home')" class="home-btn">
-        Back to Home
+      <button type="button" @click="$router.push('/Dashboard')" class="home-btn">
+        Back to Dashboard
       </button>
     </div>
   </form>

@@ -33,57 +33,46 @@ export default {
         return [];
       }
     };
-
     onMounted(async () => {
-      const projects = await getProjects();
-      
-      // Filter completed projects (assuming there's a 'status' field with value 'Terminé')
-      //const completedProjects = projects.filter((project) => project.status === "Terminé");
-      
-      // Count the completed projects by type (or any other attribute, you can modify this logic)
-      const projectTypes = projects.map((project) => project.type);
-      const data = projectTypes.reduce((acc, type) => {
-        acc[type] = (acc[type] || 0) + 1;  // Count the occurrences of each project type
-        return acc;
-      }, {});
+  const projects = await getProjects();
 
-      const labels = Object.keys(data);  // Types of projects
-      const dataValues = Object.values(data);  // Number of completed projects per type
+  const labels = projects.map(p => p.title || "Sans titre");
+  const dataValues = projects.map(() => 1);  // 1 for each project
+  const backgroundColors = projects.map((_, i) =>
+    `hsl(${(i * 360) / projects.length}, 70%, 60%)`
+  ); // Generate distinct HSL colors
 
-      // Render Doughnut chart for projects
-      const ctx = document.getElementById("projectsChart").getContext("2d");
-      new Chart(ctx, {
-        type: "doughnut",  // Use doughnut chart
-        data: {
-          labels: labels,  // Use project types as labels
-          datasets: [{
-            label: "Projets réalisés",
-            data: dataValues,  // The count of completed projects by type
-            backgroundColor: [
-              "#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#33FFF5", 
-              "#FFD700", "#FF4500", "#32CD32", "#8A2BE2", "#7FFF00"
-            ],  // Colors for each segment
-            borderColor: ["#fff", "#fff", "#fff", "#fff", "#fff"],  // Border color for each slice
-            borderWidth: 2  // Border width
-          }]
+  const ctx = document.getElementById("projectsChart").getContext("2d");
+  new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Projets",
+        data: dataValues,
+        backgroundColor: backgroundColors,
+        borderColor: "#fff",
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top",
         },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: "top",
-            },
-            tooltip: {
-              callbacks: {
-                label: function(tooltipItem) {
-                  return tooltipItem.label + ": " + tooltipItem.raw + " projet(s) terminé(s)";
-                }
-              }
+        tooltip: {
+          callbacks: {
+            label: function (tooltipItem) {
+              return `${tooltipItem.label}: ${tooltipItem.raw} projet`;
             }
           }
         }
-      });
-    });
+      }
+    }
+  });
+});
+
   }
 };
 </script>

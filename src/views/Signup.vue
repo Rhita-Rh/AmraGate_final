@@ -11,17 +11,17 @@
 
               <div class="form-group">
                 <label>NAME</label>
-                <input type="text" v-model="name" required placeholder="enter your name..."/>
+                <input type="text" v-model="name" required placeholder="enter your name..." />
               </div>
 
               <div class="form-group">
                 <label>USERNAME</label>
-                <input type="text" v-model="username" required placeholder="enter your username.."/>
+                <input type="text" v-model="username" required placeholder="enter your username.." />
               </div>
 
               <div class="form-group">
                 <label>PASSWORD</label>
-                <input type="password" v-model="password" required minlength="8" placeholder="enter your password.."/>
+                <input type="password" v-model="password" required minlength="8" placeholder="enter your password.." />
               </div>
 
               <div class="form-group">
@@ -37,6 +37,9 @@
               <div class="form-group">
                 <label>PROFILE PICTURE (Optional)</label>
                 <input type="file" @change="handleFileUpload" />
+                <div v-if="previewImage">
+                  <img :src="previewImage" alt="Preview" width="100" style="margin-top: 10px; border-radius: 8px;" />
+                </div>
               </div>
 
               <div class="terms">
@@ -57,7 +60,6 @@
   </div>
 </template>
 
-  
 <script>
 import { registerWithEmailAndPassword, db } from "../firebase-config";
 import { doc, setDoc } from "firebase/firestore";
@@ -66,7 +68,7 @@ import { RouterLink } from "vue-router";
 export default {
   name: "Signup",
   components: {
-    RouterLink
+    RouterLink,
   },
   data() {
     return {
@@ -74,19 +76,20 @@ export default {
       username: "",
       email: "",
       password: "",
-      phone: "", // Added phone number
+      phone: "",
       agreeToTerms: false,
-      photo: null, // Added photo for profile picture
+      photo: null,
+      previewImage: null,
     };
   },
   methods: {
     validateForm() {
       if (!this.name || !this.username || !this.email || !this.password) {
-        alert('Please fill in all required fields');
+        alert("Please fill in all required fields");
         return false;
       }
       if (!this.agreeToTerms) {
-        alert('You must agree to the terms and conditions.');
+        alert("You must agree to the terms and conditions.");
         return false;
       }
       return true;
@@ -96,52 +99,72 @@ export default {
       const file = event.target.files[0];
       if (file) {
         this.photo = file;
+        this.previewImage = URL.createObjectURL(file);
       }
+    },
+
+    async uploadImage(file) {
+      const url = "https://api.cloudinary.com/v1_1/dgcpm3hlg/image/upload";
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "unsigned"); // Replace with your actual preset
+
+      const response = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Cloudinary error response:", errorText);
+        throw new Error("Image upload failed");
+      }
+
+      const data = await response.json();
+      return data.secure_url;
     },
 
     async submitForm() {
       if (!this.validateForm()) return;
 
       try {
-        // Create user in Firebase Auth
-        const user = await registerWithEmailAndPassword(this.email, this.password, this.username);
+        const user = await registerWithEmailAndPassword(
+          this.email,
+          this.password,
+          this.username
+        );
 
-        // Prepare user data for Firestore
+        let photoURL = "";
+
+        if (this.photo) {
+          photoURL = await this.uploadImage(this.photo);
+        }
+
         const userData = {
           name: this.name,
           username: this.username,
           email: this.email,
-          phone: this.phone, // Add phone number
+          phone: this.phone,
           bio: "",
-          followers:[],
+          followers: [],
           following: [],
           createdAt: new Date(),
-          photoURL: "", // Placeholder for photo URL
+          photoURL: photoURL,
         };
 
-        // If the user uploaded a photo, include it (you'll need to handle storage separately if needed)
-        if (this.photo) {
-          // For example, upload the photo to Firebase Storage and get the URL
-          // You can implement Firebase Storage upload logic here if needed
-          const photoURL = await uploadPhoto(this.photo);
-          userData.photoURL = photoURL;
-        }
-
-        // Create Firestore user document
         await setDoc(doc(db, "users", user.uid), userData);
 
-        alert('Registration successful!');
-        this.$router.push('/');
-
+        alert("Registration successful!");
+        this.$router.push("/");
       } catch (error) {
-        alert('Registration failed: ' + error.message);
+        alert("Registration failed: " + error.message);
       }
-    }
-  }
+    },
+  },
 };
 </script>
 
-  <style scoped>
+<style scoped>
   /* Background Styling */
   .bigbro {
     display: flex;
