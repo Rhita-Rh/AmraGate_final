@@ -7,14 +7,28 @@
           <div class="e">
           <div class="avatar-container">
             <!-- Display author photo if available, otherwise show the author's initials -->
-            <img 
-              v-if="project.authorPhotoURL" 
-              :src="project.authorPhotoURL" 
-              alt="Profile Picture"
-              class="profile-avatar"
-            >
-            <span v-else class="default-avatar">{{ project.authorName ? project.authorName.charAt(0) : 'N' }}</span>
+            <div v-if="project.owner === user.uid">
+              <router-link to="/Dashboard" style="text-decoration: none;"><img 
+                v-if="project.authorPhotoURL" 
+                :src="project.authorPhotoURL" 
+                alt="Profile Picture"
+                class="profile-avatar"
+              >
+              <span v-else class="default-avatar">{{ user.displayName ? user.displayName.charAt(0) : 'N' }}</span>
+              </router-link>
+
+            </div>
             
+            <div v-else>
+              <router-link :to="`/accounts/${project.owner}`" style="text-decoration: none;"><img 
+                v-if="project.authorPhotoURL" 
+                :src="project.authorPhotoURL" 
+                alt="Profile Picture"
+                class="profile-avatar"
+              >
+              <span v-else class="default-avatar">{{ project.authorName ? project.authorName.charAt(0) : 'N' }}</span>
+              </router-link>
+            </div>
 
           </div>
           <button 
@@ -27,7 +41,6 @@
           </div>
           <div class="author-details">
             <p class="author-name">{{ project.authorName }}</p>
-           
           </div>
         </div>
         
@@ -50,6 +63,9 @@
               <span v-if="starredProjects.includes(project.id)">★</span>
               <span v-else>☆</span>
             </button>
+            <div style="margin-top: 15px;">
+              <router-link :to="`/project/${project.id}`" class="follow-button" style="text-decoration: none;">View Project</router-link>
+            </div>
           </div>
 
           <!-- Project Image -->
