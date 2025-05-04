@@ -5,23 +5,16 @@
   </router-link>
   <div v-if="user" class="user-details-container">
     <h2>{{ user.name }}</h2>
-    <img :src="user.profilePhoto || '/profile.png'" alt="Profile Photo" class="profile-photo" />
+    <img :src="user.photoURL || '/profile.png'" alt="Profile Photo" class="profile-photo" />
     
     <!-- Follow Button Section - Simplified conditions -->
     <div v-if="currentUser && currentUser.uid && user.id && currentUser.uid !== user.id">
       <button
-        v-if="!isFollowing(user)"
-        @click="followUser(user)"
-        class="follow-btn"
+        @click="isFollowing(user) ? unfollowUser(user) : followUser(user)"
+        :class="isFollowing(user) ? 'unfollow-btn' : 'follow-btn'"
+        class="toggle-btn"
       >
-        Follow
-      </button>
-      <button
-        v-else
-        @click="unfollowUser(user)"
-        class="unfollow-btn"
-      >
-        Unfollow
+        {{ isFollowing(user) ? 'Unfollow' : 'Follow' }}
       </button>
     </div>
     
@@ -34,7 +27,7 @@
         <h4>{{ project.title }}</h4>
         <p>{{ project.description }}</p>
       <div style="margin-top: 15px;">
-        <router-link :to="`/project/${project.id}`" class="follow-btn" style="text-decoration: none;">View Project</router-link>
+        <router-link :to="`/project/${project.id}`" class="view-project-btn">View Project</router-link>
       </div>
       </div>
     </div>
@@ -148,7 +141,6 @@ export default {
 </script>
 
 <style scoped>
-/* Updated CSS to match your Dashboard style while preserving functionality */
 .user-profile {
   min-height: 100vh;
   padding: 20px;
@@ -217,8 +209,7 @@ h3 {
   font-size: 22px;
 }
 
-.follow-btn,
-.unfollow-btn {
+.toggle-btn {
   padding: 10px 20px;
   border: none;
   border-radius: 25px;
@@ -228,6 +219,7 @@ h3 {
   transition: all 0.3s ease;
   display: block;
   margin: 0 auto 20px;
+  min-width: 100px;
 }
 
 .follow-btn {
@@ -265,13 +257,14 @@ h3 {
   margin: 0 0 10px 0;
 }
 
-.view-project-link {
+.view-project-btn {
   display: inline-block;
-  background: linear-gradient(135deg, #94e594, #9eeec2);
+  background: linear-gradient(135deg, #7ba6dd, #94b6e5);
   color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 10px 20px;
+  border-radius: 25px;
   text-decoration: none;
+  font-weight: 600;
   font-weight: 500;
   margin-top: 15px;
   transition: all 0.3s ease;

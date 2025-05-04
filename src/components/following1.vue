@@ -24,8 +24,17 @@
         </div>
       </div>
       <div class="follow-buttons">
-        <button @click="unfollowUser(user)" class="unfollow-btn">
+        <button 
+          @click="unfollowUser(user)" 
+          class="unfollow-btn"
+        >
           Unfollow
+        </button>
+        <button 
+          @click="goToUserDetails(user.id)" 
+          class="view-details-btn"
+        >
+          View Details
         </button>
       </div>
     </div>
@@ -38,6 +47,7 @@
 
 <script>
 import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
 import {
   getFirestore,
   doc,
@@ -52,12 +62,17 @@ import { getAuth } from "firebase/auth";
 export default {
   name: "Following",
   setup() {
+    const router = useRouter();
     const db = getFirestore();
     const auth = getAuth();
 
     const currentUser = ref(null);
     const followingUsers = ref([]);
     const searchQuery = ref("");
+
+    const goToUserDetails = (userId) => {
+      router.push(`/accounts/${userId}`);
+    };
 
     const loadFollowingUsers = async () => {
       currentUser.value = auth.currentUser;
@@ -115,6 +130,7 @@ export default {
       searchQuery,
       filteredFollowing,
       unfollowUser,
+      goToUserDetails,
     };
   },
 };
@@ -210,8 +226,7 @@ export default {
 
 .follow-buttons {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  gap: 10px;
 }
 
 .unfollow-btn {
@@ -224,11 +239,29 @@ export default {
   transition: all 0.3s ease;
   background: linear-gradient(135deg, #e48a8a, #f2b6b6);
   color: white;
-  box-shadow: 0 4px 12px rgba(228, 138, 138, 0.15);
+  box-shadow: 0 4px 12px rgba(228, 138, 138, 0.2);
 }
 
 .unfollow-btn:hover {
   background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
+}
+
+.view-details-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #7ba6dd, #a5c1eb);
+  color: white;
+  box-shadow: 0 4px 12px rgba(123, 166, 221, 0.15);
+}
+
+.view-details-btn:hover {
+  background: linear-gradient(135deg, #6a96d2, #95b4e0);
   transform: translateY(-2px);
 }
 
@@ -273,7 +306,8 @@ export default {
     margin-top: 15px;
   }
   
-  .unfollow-btn {
+  .unfollow-btn,
+  .view-details-btn {
     width: 100%;
   }
 }
