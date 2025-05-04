@@ -227,7 +227,6 @@ export default {
 .title h1 {
   text-align: center;
   background: linear-gradient(to right, #0288d1, #4fc3f7);
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 2.4em;
   letter-spacing: 1px;
