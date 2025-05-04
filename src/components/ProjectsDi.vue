@@ -179,6 +179,13 @@ export default {
       ...doc.data(),
     }));
 
+    // Sort projects by timestamp in descending order (most recent first)
+    this.projects.sort((a, b) => {
+      const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+      const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+      return dateB - dateA;
+    });
+
     for (let project of this.projects) {
       const authorId = project.owner;
       if (authorId) {
