@@ -1,7 +1,7 @@
 <template>
   <div>
     <ul>
-      <li v-for="project in filteredProjects" :key="project.id" class="project-card">
+      <li v-for="project in projects" :key="project.id" class="project-card">
         <!-- Project Header: Author and Profile Picture -->
         <div class="project-header">
           <div class="author-details">
@@ -83,23 +83,12 @@ import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, updateDoc, arrayUn
 
 export default {
   name: 'ProjectsDiv',
-  props: {
-    searchQuery: {
-      type: String,
-      default: ''
-    },
-    selectedTech: {
-      type: String,
-      default: ''
-    }
-  },
   data() {
     return {
       projects: [],
       starredProjects: [],
       followedUsers: [],
       user: null,
-      userProfiles: {}
     };
   },
   computed: {
@@ -168,65 +157,30 @@ export default {
       } catch (error) {
         console.error("Error updating follow state:", error);
       }
-    },
-
-    async fetchUserProfile(userId) {
-      if (!userId) return null;
-      
-      if (this.userProfiles[userId]) {
-        return this.userProfiles[userId];
-      }
-
-      try {
-        const userDocRef = doc(db, 'users', userId);
-        const userDoc = await getDoc(userDocRef);
-        
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          const profile = {
-            name: userData.name || 'Unknown',
-            photoURL: userData.photoURL || null
-          };
-          
-          this.userProfiles[userId] = profile;
-          return profile;
-        }
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-      
-      return null;
-    },
-
-    async fetchProjects() {
-      const querySnapshot = await getDocs(collection(db, "projects"));
-      this.projects = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
-      this.projects.sort((a, b) => {
-        const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
-        const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
-        return dateB - dateA;
-      });
-
-      for (let project of this.projects) {
-        if (project.owner) {
-          const profile = await this.fetchUserProfile(project.owner);
-          if (profile) {
-            project.authorName = profile.name;
-            project.authorPhotoURL = profile.photoURL;
-          }
-        }
-      }
     }
   },
   async created() {
     const auth = getAuth();
     this.user = auth.currentUser;
 
-    await this.fetchProjects();
+    const querySnapshot = await getDocs(collection(db, "projects"));
+    this.projects = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    for (let project of this.projects) {
+      const authorId = project.owner;
+      if (authorId) {
+        const userDocRef = doc(db, 'users', authorId);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          project.authorPhotoURL = data.photoURL || null;
+          project.authorName = data.name || 'Unknown';
+        }
+      }
+    }
 
     if (this.user) {
       const userDocRef = doc(db, 'users', this.user.uid);
@@ -243,7 +197,6 @@ export default {
     }
   }
 };
-
 </script>
 <style scoped>
 li {
@@ -310,7 +263,6 @@ li {
   cursor: pointer;
   height: 40px;
   transition: all 0.3s ease;
-  margin-left: auto;
   white-space: nowrap;
   min-width: 100px;
   text-align: center;
@@ -331,7 +283,6 @@ li {
   cursor: pointer;
   height: 40px;
   transition: all 0.3s ease;
-  margin-left: auto;
   white-space: nowrap;
   min-width: 100px;
   text-align: center;
