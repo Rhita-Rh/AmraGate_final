@@ -393,7 +393,7 @@ export default {
 
 .user-profile {
   min-height: 100vh;
-  padding: 20px;
+  padding: 2rem;
   font-family: 'Quicksand', sans-serif;
   background: radial-gradient(circle at top left, #f3f8fd, #f8f0f8);
   animation: floatBg 10s infinite alternate;
@@ -410,7 +410,7 @@ export default {
   display: flex;
   max-width: 1200px;
   margin: 0 auto;
-  gap: 30px;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
@@ -423,67 +423,67 @@ export default {
   width: 450px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 2rem;
 }
 
 .chart-container {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
-  padding: 20px;
+  padding: 1.5rem;
   box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
 }
 
 /* BACK BUTTON */
 .back-button-container {
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem;
 }
 
 .back-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: #ffffffcc;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
   color: #4d5a6a;
-  padding: 10px 20px;
+  padding: 0.75rem 1.5rem;
   border-radius: 12px;
   text-decoration: none;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1rem;
   border: 1px solid #e0e0e0;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 8px rgba(148, 182, 229, 0.1);
 }
 
 .back-button:hover {
   background-color: #f5f8fd;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .back-icon {
-  font-size: 18px;
+  font-size: 1.2rem;
 }
 
 /* HEADINGS */
 h2 {
   color: #7ba6dd;
-  margin-bottom: 20px;
-  font-size: 28px;
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
 }
 
 h3 {
   color: #4d5a6a;
-  margin: 25px 0 15px;
-  font-size: 20px;
+  margin: 1.5rem 0 1rem;
+  font-size: 1.25rem;
   border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 8px;
+  padding-bottom: 0.5rem;
 }
 
 /* NAVIGATION BUTTONS */
 .navigation-links {
   display: flex;
-  gap: 15px;
+  gap: 1rem;
   flex-wrap: wrap;
-  margin-bottom: 30px;
+  margin-bottom: 2rem;
 }
 
 .navigation-links button {
@@ -491,8 +491,8 @@ h3 {
   color: white;
   border: none;
   border-radius: 10px;
-  padding: 10px 18px;
-  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -506,14 +506,14 @@ h3 {
 .user-info {
   background: rgba(255, 255, 255, 0.95);
   border-radius: 20px;
-  padding: 25px;
-  margin-bottom: 25px;
-  box-shadow: 0 12px 20px rgba(148, 182, 229, 0.15);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
 }
 
 .info-item {
   display: flex;
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
   align-items: center;
 }
 
@@ -525,30 +525,31 @@ h3 {
 
 .info-value {
   flex: 1;
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   background: #f5f8fd;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 /* PROFILE PICTURE */
 .profile-picture-section {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 25px;
-  margin-top: 20px;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .avatar-container {
-  width: 120px; /* Increase the size */
-  height: 120px; /* Increase the size */
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   overflow: hidden;
-  background-color: #e0e0e0;
+  background-color: #f9fafd;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(148, 182, 229, 0.15);
+  border: 2px solid #7ba6dd;
 }
 
 .profile-avatar {
@@ -558,74 +559,68 @@ h3 {
 }
 
 .profile-picture-section p {
-  font-size: 30px; /* Make the name bigger */
-  font-weight: 600; /* Add some weight to the text */
+  font-size: 1.875rem;
+  font-weight: 600;
   color: #4a4a4a;
-  margin: 0; /* Remove default margin */
-  text-transform: capitalize; /* Make name more formal */
-}
-.profile-picture-section {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 25px;
-  margin-top: 20px;
+  margin: 0;
+  text-transform: capitalize;
 }
 
 .default-avatar {
-  font-size: 48px; /* Increase the font size */
+  font-size: 3rem;
   font-weight: bold;
-  color: #6b7c93;
+  color: #7ba6dd;
 }
 
 .upload-btn {
   background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .upload-btn:hover {
   background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
 }
 
 /* GOALS & FORMS */
 .goal-card,
 .add-goal-form {
-  background: white;
-  border-radius: 15px;
-  padding: 20px;
-  margin-bottom: 15px;
-  box-shadow: 0 6px 12px rgba(148, 182, 229, 0.12);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
 }
 
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
   font-weight: 500;
   color: #4a4a4a;
   display: block;
-  margin-bottom: 6px;
+  margin-bottom: 0.5rem;
 }
 
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 10px;
+  padding: 0.75rem;
   border: 1px solid #d0d6e2;
   border-radius: 10px;
   background-color: #f9fafd;
-  font-size: 15px;
+  font-size: 1rem;
 }
 
 .form-actions {
   display: flex;
-  gap: 15px;
+  gap: 1rem;
 }
 
 .save-btn,
@@ -634,7 +629,7 @@ h3 {
   color: white;
   border: none;
   border-radius: 10px;
-  padding: 12px 20px;
+  padding: 0.75rem 1.5rem;
   cursor: pointer;
   flex: 1;
   transition: all 0.3s ease;
@@ -643,6 +638,7 @@ h3 {
 .save-btn:hover,
 .add-btn:hover {
   background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
 }
 
 /* EDIT BUTTON */
@@ -651,11 +647,13 @@ h3 {
   color: white;
   border: none;
   border-radius: 10px;
-  padding: 10px 18px;
-  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 10px;
+  margin-top: 0.75rem;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .follow-btn:hover {
@@ -670,11 +668,11 @@ h3 {
   color: white;
   border: none;
   border-radius: 10px;
-  padding: 10px 18px;
-  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 10px;
+  margin-top: 0.75rem;
 }
 
 .cancel-btn:hover,
@@ -683,14 +681,13 @@ h3 {
   transform: translateY(-2px);
 }
 
-
 /* STARRED PROJECTS */
 .starred-projects-section {
   margin-top: 2rem;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 15px;
-  box-shadow: 0 6px 12px rgba(148, 182, 229, 0.15);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(148, 182, 229, 0.15);
 }
 
 .project-card {
@@ -734,14 +731,38 @@ h3 {
 }
 
 /* MEDIA QUERY */
-@media (max-width: 992px) {
+@media (max-width: 768px) {
   .profile-container {
     flex-direction: column;
   }
-
+  
   .charts-section {
     width: 100%;
-    margin-top: 30px;
+  }
+  
+  .profile-section {
+    max-width: 100%;
+  }
+  
+  .navigation-links {
+    justify-content: center;
+  }
+  
+  .profile-picture-section {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .save-btn,
+  .add-btn,
+  .follow-btn,
+  .cancel-btn,
+  .delete-btn {
+    width: 100%;
   }
 }
 </style>

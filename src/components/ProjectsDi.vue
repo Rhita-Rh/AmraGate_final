@@ -1,47 +1,45 @@
 <template>
   <div>
     <ul>
-      <li v-for="project in projects" :key="project.id" class="project-card">
+      <li v-for="project in filteredProjects" :key="project.id" class="project-card">
         <!-- Project Header: Author and Profile Picture -->
         <div class="project-header">
-          <div class="e">
-          <div class="avatar-container">
-            <!-- Display author photo if available, otherwise show the author's initials -->
-            <div v-if="project.owner === user.uid">
-              <router-link to="/Dashboard" style="text-decoration: none;"><img 
-                v-if="project.authorPhotoURL" 
-                :src="project.authorPhotoURL" 
-                alt="Profile Picture"
-                class="profile-avatar"
-              >
-              <span v-else class="default-avatar">{{ user.displayName ? user.displayName.charAt(0) : 'N' }}</span>
-              </router-link>
-
+          <div class="author-details">
+            <div class="avatar-container">
+              <!-- Display author photo if available, otherwise show the author's initials -->
+              <div v-if="project.owner === user.uid">
+                <router-link to="/Dashboard" style="text-decoration: none;">
+                  <img 
+                    v-if="project.authorPhotoURL" 
+                    :src="project.authorPhotoURL" 
+                    alt="Profile Picture"
+                    class="profile-avatar"
+                  />
+                  <span v-else class="default-avatar">{{ user.displayName ? user.displayName.charAt(0) : 'N' }}</span>
+                </router-link>
+              </div>
+              
+              <div v-else>
+                <router-link :to="`/accounts/${project.owner}`" style="text-decoration: none;">
+                  <img 
+                    v-if="project.authorPhotoURL" 
+                    :src="project.authorPhotoURL" 
+                    alt="Profile Picture"
+                    class="profile-avatar"
+                  />
+                  <span v-else class="default-avatar">{{ project.authorName ? project.authorName.charAt(0) : 'N' }}</span>
+                </router-link>
+              </div>
             </div>
-            
-            <div v-else>
-              <router-link :to="`/accounts/${project.owner}`" style="text-decoration: none;"><img 
-                v-if="project.authorPhotoURL" 
-                :src="project.authorPhotoURL" 
-                alt="Profile Picture"
-                class="profile-avatar"
-              >
-              <span v-else class="default-avatar">{{ project.authorName ? project.authorName.charAt(0) : 'N' }}</span>
-              </router-link>
-            </div>
-
+            <p class="author-name">{{ project.authorName }}</p>
           </div>
           <button 
             v-if="user && project.owner !== user.uid" 
             @click="toggleFollow(project.owner)" 
-          class="follow-button"
-              >
-          {{ followedUsers.includes(project.owner) ? 'Unfollow' : 'Follow' }}
-            </button>
-          </div>
-          <div class="author-details">
-            <p class="author-name">{{ project.authorName }}</p>
-          </div>
+            :class="followedUsers.includes(project.owner) ? 'unfollow-button' : 'follow-button'"
+          >
+            {{ followedUsers.includes(project.owner) ? 'Unfollow' : 'Follow' }}
+          </button>
         </div>
         
         <div class="project-content">
@@ -85,6 +83,16 @@ import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, updateDoc, arrayUn
 
 export default {
   name: 'ProjectsDiv',
+  props: {
+    searchQuery: {
+      type: String,
+      default: ''
+    },
+    selectedTech: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       projects: [],
@@ -92,6 +100,20 @@ export default {
       followedUsers: [],
       user: null,
     };
+  },
+  computed: {
+    filteredProjects() {
+      return this.projects.filter(project => {
+        const matchesSearch = this.searchQuery === '' || 
+          project.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          project.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+        
+        const matchesTech = this.selectedTech === '' || 
+          (project.techStack && project.techStack.includes(this.selectedTech));
+        
+        return matchesSearch && matchesTech;
+      });
+    }
   },
   methods: {
     async toggleStar(projectId) {
@@ -242,21 +264,45 @@ li {
 }
 
 .follow-button {
-  background-color: #4ed185;
+  background: linear-gradient(135deg, #94e594, #9eeec2);
   color: white;
   border: none;
-  padding: 8px 16px;
-  margin-left: 15px;
-  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   font-weight: 500;
   cursor: pointer;
   height: 40px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  margin-left: auto;
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
 }
 
 .follow-button:hover {
-  background-color: #38a169;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #7bdd8a, #9eeec2);
+  transform: translateY(-2px);
+}
+
+.unfollow-button {
+  background: linear-gradient(135deg, #e48a8a, #f2b6b6);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  height: 40px;
+  transition: all 0.3s ease;
+  margin-left: auto;
+  white-space: nowrap;
+  min-width: 100px;
+  text-align: center;
+}
+
+.unfollow-button:hover {
+  background: linear-gradient(135deg, #db7979, #e9a0a0);
+  transform: translateY(-2px);
 }
 
 .project-card {
@@ -289,11 +335,15 @@ li {
 .project-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
+  gap: 1rem;
 }
 
 .author-details {
-  margin-left: 15px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .author-name {
@@ -395,14 +445,20 @@ li {
     margin-top: 20px;
   }
   
-  .e {
-    flex-direction: column;
-    align-items: flex-start;
+  .project-header {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .author-details {
+    flex: 1;
+    min-width: 0;
   }
   
   .follow-button {
-    margin-left: 0;
-    margin-top: 10px;
+    margin-left: auto;
+    width: auto;
   }
 }
 </style>

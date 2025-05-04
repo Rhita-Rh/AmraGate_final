@@ -225,9 +225,19 @@
 .hero-content h1 {
   font-size: 3.5rem;
   font-weight: 700;
-  background: linear-gradient(to right, #7ba6dd, #94b6e7);
+  background: linear-gradient(135deg, #7ba6dd 0%, #94b6e7 50%, #7ba6dd 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1.5rem;
+  animation: gradient 8s ease infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .hero-subtitle {
