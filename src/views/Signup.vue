@@ -156,7 +156,7 @@ export default {
         await setDoc(doc(db, "users", user.uid), userData);
 
         alert("Registration successful!");
-        this.$router.push("/");
+        this.$router.push("/signin");
       } catch (error) {
         alert("Registration failed: " + error.message);
       }
