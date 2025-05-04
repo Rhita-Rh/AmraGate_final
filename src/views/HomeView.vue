@@ -2,7 +2,7 @@
   <div class="user-profile">
     <!-- Navbar -->
     <nav class="navbar">
-      <img src="R.png" alt="Logo" class="logo" />
+      <img src="@/assets/logo.png" alt="Logo" class="logo" />
       <div class="nav-links">
         <router-link to="/Dashboard" style="text-decoration: none;">
           <div v-if="user && user.photoURL" class="profile-avatar-wrapper">
@@ -133,7 +133,11 @@ export default {
   display: flex;
   align-items: center;
   gap: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
+
 .header-btn{
   padding: 10px 20px;
   background: linear-gradient(to right, #6796fb, #8b9df9);
@@ -144,6 +148,7 @@ export default {
   text-decoration: none;
   transition: all 0.3s ease;
 }
+
 .follow-btn {
   padding: 10px 18px;
   border: none;
